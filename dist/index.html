@@ -6352,7 +6352,7 @@ ${convData.sqls.join('\n')}
       const container = document.querySelector('#' + aiId + ' .flex.items-center.gap-1');
       if (!container) return;
       container.innerHTML = `
-        <button onclick="pushLikeLog('${aiId}')" class="msg-like-btn icon-btn w-8 h-8" title="点赞"><i data-lucide="thumbs-up" class="w-4 h-4"></i></button>
+        <button onclick="toggleMsgLike('${aiId}')" class="msg-like-btn icon-btn w-8 h-8" title="点赞"><i data-lucide="thumbs-up" class="w-4 h-4"></i></button>
         <button onclick="toggleMsgDislike('${aiId}')" class="msg-dislike-btn icon-btn w-8 h-8" title="点踩"><i data-lucide="thumbs-down" class="w-4 h-4"></i></button>
         <button onclick="copyMessage('${aiId}')" class="icon-btn w-8 h-8" title="复制"><i data-lucide="copy" class="w-4 h-4"></i></button>
         <button onclick="openExportModal()" class="icon-btn w-8 h-8" title="导出"><i data-lucide="download" class="w-4 h-4"></i></button>
@@ -6667,14 +6667,39 @@ ${convData.sqls.join('\n')}
       _pushToFeishu({ text: text, label: '未识别记录' });
     }
 
-    // ⑦ 点赞记录
-    function pushLikeLog(aiId) {
-      var el = document.getElementById(aiId);
-      var q = el ? (el.dataset.question || '') : '';
-      var now = new Date().toLocaleString('zh-CN', { hour12: false });
-      var text = '👍 用户点赞\n🕐 ' + now + '\n🙋 问题：' + q.slice(0, 200);
-      _pushToFeishu({ text: text, label: '点赞记录' });
-      showToast('已点赞', 'success');
+    // ⑦ 点赞记录（细分原因）
+    var _msgLikeReasons = [];
+    function toggleMsgLike(aiId) {
+      var existing = document.getElementById('like-panel-' + aiId);
+      if (existing) { existing.remove(); return; }
+      _msgLikeReasons = [];
+      var panel = document.createElement('div');
+      panel.id = 'like-panel-' + aiId;
+      panel.style.cssText = 'margin-top:6px;padding:8px 10px;background:var(--color-surface-2);border-radius:8px;border:1px solid var(--color-accent);';
+      panel.innerHTML = '<p style="font-size:11px;color:var(--color-text-secondary);margin:0 0 6px;">哪些方面做得好？（可多选）：</p>' +
+        ['指标理解准确','维度识别正确','聚合方式正确','SQL语法正确','图表类型合适','数据数值准确','分析结论准确','推荐问句合适','回复详实','格式排版好'].map(function(r) {
+          return '<button onclick="submitMsgLike(\'' + aiId + '\',\'' + r + '\',this)" style="font-size:11px;padding:3px 8px;margin:0 3px 3px 0;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface);cursor:pointer;color:var(--color-text-secondary);">' + r + '</button>';
+        }).join('');
+      panel.innerHTML += '<div style="margin-top:6px;display:flex;gap:4px;align-items:center;"><input id="like-extra-' + aiId + '" placeholder="补充说明（选填）" style="flex:1;font-size:11px;padding:3px 8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-surface);color:var(--color-text-primary);" /><button onclick="submitMsgLike(\'' + aiId + '\',\'其他\',null)" style="font-size:11px;padding:4px 12px;background:var(--color-accent);color:#fff;border:0;border-radius:6px;cursor:pointer;">提交反馈</button></div>';
+      var actionsRow = document.querySelector('#' + aiId).querySelector('.flex.items-center.gap-1');
+      if (actionsRow) actionsRow.closest('.message-ai').appendChild(panel);
+    }
+    function submitMsgLike(aiId, reason, btn) {
+      if (btn) { btn.style.background = 'var(--color-accent)'; btn.style.color = '#fff'; }
+      if (reason !== '其他') { _msgLikeReasons.push(reason); }
+      if (reason === '其他') {
+        var extra = document.getElementById('like-extra-' + aiId);
+        var extraText = extra ? extra.value.trim() : '';
+        var finalReason = _msgLikeReasons.join('、') + (extraText ? '(' + extraText + ')' : '');
+        var el = document.getElementById(aiId);
+        var q = el ? (el.dataset.question || '') : '';
+        var now = new Date().toLocaleString('zh-CN', { hour12: false });
+        var text = '👍 用户点赞\n🕐 ' + now + '\n🙋 问题：' + q.slice(0, 200) + '\n📋 原因：' + finalReason;
+        _pushToFeishu({ text: text, label: '点赞记录' });
+        var panel = document.getElementById('like-panel-' + aiId);
+        if (panel) panel.innerHTML = '<p style="font-size:11px;color:var(--color-accent);text-align:center;margin:0;">✅ 反馈已提交，感谢！</p>';
+        _msgLikeReasons = [];
+      }
     }
 
     function pauseGeneration() {
