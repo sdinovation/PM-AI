@@ -6651,7 +6651,9 @@ ${convData.sqls.join('\n')}
       var fields = (parsedData && parsedData.fieldInfo) ? parsedData.fieldInfo.map(function(f) { return f.name + '(' + f.type + ')'; }).join('、') : '无';
 
       var text = [
-        '🔔 **数分精灵 · 未识别问题**',
+        '#待训练',
+        '',
+        '🚩 **数分精灵 · 未识别问题**',
         '',
         '🕐 **时间**：' + now,
         '📂 **数据源**：' + ds,
