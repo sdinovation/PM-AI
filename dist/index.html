@@ -2306,8 +2306,8 @@
       initChartResizeObserver();
       initConversationScrollCollapse();
       initSmartScroll();
-      // 飞书埋点：新会话开始（同一标签页只发一次）
-      setTimeout(pushSessionStartLog, 1000);
+      // 飞书埋点：新会话（已关闭，减少噪音）
+      // setTimeout(pushSessionStartLog, 1000);
       // 页面加载时同步文件信息条
       if (currentConversationId) updateDataSourceDisplay();
       // 清空旧版 localStorage（旧布局会导致头像位置不一致）
@@ -2609,10 +2609,8 @@
       document.getElementById('fileMeta').textContent = `${sizeText} · ${rowCount.toLocaleString()} 行数据`;
       document.getElementById('exportDataSource').textContent = fileName;
       document.getElementById('fileName').textContent = fileName;
-      // 飞书埋点：文件上传
-      var colCount = (parsedData && parsedData.columns) ? parsedData.columns.length : 0;
-      var cols = (parsedData && parsedData.columns) ? parsedData.columns : [];
-      pushFileUploadLog(fileName, fileSize, rowCount, colCount, cols);
+      // 飞书埋点：文件上传（已关闭，减少噪音）
+      // pushFileUploadLog(fileName, fileSize, rowCount, colCount, cols);
       // updateDataSourceDisplay 移到数据 push 之后调用
       // 如果尚无对话（初次使用），自动创建
       if (!currentConversationId) {
@@ -6448,7 +6446,8 @@ ${convData.sqls.join('\n')}
       document.getElementById('pauseBtn').classList.add('hidden');
       if (generationTimeout) clearTimeout(generationTimeout);
       saveCurrentConversation();
-      setTimeout(sendFeishuLog, 500);
+      // 分析完成日志已关闭（只保留 点踩/待训练/报错/报告导出）
+      // setTimeout(sendFeishuLog, 500);
     }
 
     // ===== 飞书日志推送（增强版 v2）=====
