@@ -3354,6 +3354,7 @@
           } else {
             aiMessage.classList.remove('typing-cursor');
             aiMessage.innerHTML = highlightKeywordsInText(responseText, keywords, extractDataValues(analysis));
+            document.getElementById(aiId).dataset.intent = analysis.intent?.type || analysis.type || '';
             addIntentBadge(aiId, analysis.intent, analysis.pipeline || ['parse_file', 'generate_sql', 'render_chart']);
             // 始终确保有 chartType 和 chartData（兜底）
             const ct = analysis.chartType || 'bar';
