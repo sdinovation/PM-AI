@@ -6517,7 +6517,7 @@ ${convData.sqls.join('\n')}
         var ds = document.getElementById('fileName')?.textContent || '未知';
         var rowCount = (parsedData && parsedData.rows) ? parsedData.rows.length : 0;
         var colCount = (parsedData && parsedData.columns) ? parsedData.columns.length : 0;
-        var now = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
+        var now = new Date().toLocaleString('zh-CN', { hour12: false });
         var roundIdx = getRoundIndex();
 
         // 获取 AI 意图信息
@@ -6558,7 +6558,7 @@ ${convData.sqls.join('\n')}
 
     // ② 文件上传
     function pushFileUploadLog(fileName, fileSize, rowCount, colCount, columns) {
-      var now = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
+      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var sizeKB = fileSize ? Math.round(fileSize / 1024) : 0;
       var sizeMB = fileSize ? (fileSize / (1024 * 1024)).toFixed(2) : '0';
       var colsPreview = (columns || []).slice(0, 10).join('、');
@@ -6579,7 +6579,7 @@ ${convData.sqls.join('\n')}
 
     // ③ 报告导出
     function pushReportExportLog(format, title, chartCount, hasLLM) {
-      var now = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
+      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var formatLabel = { html: 'HTML 网页', doc: 'Word 文档', pdf: 'PDF 文件' }[format] || format;
       var llmLabel = hasLLM ? 'LLM 智能填充' : '本地模板生成';
 
@@ -6598,7 +6598,7 @@ ${convData.sqls.join('\n')}
 
     // ④ 错误告警
     function pushErrorLog(errorType, errorMsg, context) {
-      var now = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
+      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var ds = document.getElementById('fileName')?.textContent || '未知';
       var roundIdx = getRoundIndex();
 
@@ -6625,7 +6625,7 @@ ${convData.sqls.join('\n')}
       if (sessionStorage.getItem('shufen-session-sent')) return;
       sessionStorage.setItem('shufen-session-sent', '1');
 
-      var now = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
+      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var hasKey = hasUserApiKey();
       var darkMode = document.documentElement.classList.contains('dark');
 
@@ -6645,7 +6645,7 @@ ${convData.sqls.join('\n')}
 
     // ⑥ 未识别问题记录（训练用）
     function pushUntrainedLog(userQuestion) {
-      var now = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
+      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var ds = document.getElementById('fileName')?.textContent || '未知';
       var fields = (parsedData && parsedData.fieldInfo) ? parsedData.fieldInfo.map(function(f) { return f.name + '(' + f.type + ')'; }).join('、') : '无';
 
