@@ -6352,7 +6352,7 @@ ${convData.sqls.join('\n')}
       const container = document.querySelector('#' + aiId + ' .flex.items-center.gap-1');
       if (!container) return;
       container.innerHTML = `
-        <button onclick="showToast('已点赞', 'success')" class="msg-like-btn icon-btn w-8 h-8" title="点赞"><i data-lucide="thumbs-up" class="w-4 h-4"></i></button>
+        <button onclick="pushLikeLog('${aiId}')" class="msg-like-btn icon-btn w-8 h-8" title="点赞"><i data-lucide="thumbs-up" class="w-4 h-4"></i></button>
         <button onclick="toggleMsgDislike('${aiId}')" class="msg-dislike-btn icon-btn w-8 h-8" title="点踩"><i data-lucide="thumbs-down" class="w-4 h-4"></i></button>
         <button onclick="copyMessage('${aiId}')" class="icon-btn w-8 h-8" title="复制"><i data-lucide="copy" class="w-4 h-4"></i></button>
         <button onclick="openExportModal()" class="icon-btn w-8 h-8" title="导出"><i data-lucide="download" class="w-4 h-4"></i></button>
@@ -6665,6 +6665,16 @@ ${convData.sqls.join('\n')}
       ].join('\n');
 
       _pushToFeishu({ text: text, label: '未识别记录' });
+    }
+
+    // ⑦ 点赞记录
+    function pushLikeLog(aiId) {
+      var el = document.getElementById(aiId);
+      var q = el ? (el.dataset.question || '') : '';
+      var now = new Date().toLocaleString('zh-CN', { hour12: false });
+      var text = '👍 用户点赞\n🕐 ' + now + '\n🙋 问题：' + q.slice(0, 200);
+      _pushToFeishu({ text: text, label: '点赞记录' });
+      showToast('已点赞', 'success');
     }
 
     function pauseGeneration() {
