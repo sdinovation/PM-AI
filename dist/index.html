@@ -3798,9 +3798,35 @@
       }
 
       // 检测意图模糊（PRD §5.5 兜底策略 + §8.5 追问机制）
+      // 只匹配纯问候/纯招呼这种无关键词的情况
       const vaguePatterns = /^(帮我|请帮我|想|看看|分析|说|了解一下)?\s*(看看|分析|了解一下|看一下)?$/;
-      const specificKeywords = /销售|用户|订单|转化|渠道|城市|品类|客户|增长|趋势|占比|对比|排名|分布|分析|补考|成绩|科目|班级|学生|部门|月薪|绩效|利润|成本|产品|活动|花费|曝光|评分|发货|退货|准时|在职|离职|平均|最高|最低|哪个|多少|什么|人数|月份|变化|收入/;
-      const isVague = question.length < 6 || (vaguePatterns.test(question.trim()) && !specificKeywords.test(question));
+      const specificKeywords = /销售|用户|订单|转化|渠道|城市|品类|客户|增长|趋势|占比|对比|排名|分布|分析|补考|成绩|科目|班级|学生|部门|月薪|绩效|利润|成本|产品|活动|花费|曝光|评分|发货|退货|准时|在职|离职|平均|最高|最低|哪个|多少|什么|人数|月份|变化|收入|卡|续费|门店|到店|性别|会员|次|电/;
+      // 改成：纯招呼式（不带任何业务关键词）才算模糊
+      const isVague = vaguePatterns.test(question.trim()) && !specificKeywords.test(question);
+
+      // 闲聊识别
+      const chatKeywords = /^(你好|您好|hi|hello|hey|嗨|早上好|下午好|晚上好|嗨喽|在吗|谢谢|感谢|thanks|thx|再见|拜拜|bye|88|好的|明白了|收到)$/i;
+      if (chatKeywords.test(question.trim())) {
+        const chatReplies = [
+          '你好！我是数分精灵，可以帮你分析数据。试试上传一个 CSV/Excel 文件，然后告诉我你想看什么～',
+          '嗨！今天想分析什么数据？',
+          '你好呀～文件已上传就可以问问题啦，例如：销售额趋势、转化率分析'
+        ];
+        return {
+          type: 'Chat',
+          confidence: 0.95,
+          intent: { type: 'Chat', confidence: 0.95 },
+          sql: '',
+          interpretation: chatReplies[Math.floor(Math.random() * chatReplies.length)],
+          queryUnderstanding: '',
+          chartType: null,
+          chartData: null,
+          title: null,
+          rawResult: [],
+          followUps: ['数据概览', '查看数据画像', '智能推荐问句']
+        };
+      }
+
       if (isVague) {
         return {
           type: 'Unclear',
@@ -4133,7 +4159,7 @@
         return { field: '__COUNT__', label: '计数' };
       }
       // 窗口函数
-      if (intentInfo && intentInfo.intent === 'window_function') {
+      if (window._lastIntent && window._lastIntent.intent === 'window_function') {
         return { field: '__WINDOW__', label: '窗口函数' };
       }
 
