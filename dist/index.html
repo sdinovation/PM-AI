@@ -2032,6 +2032,26 @@
         return result;
       } catch(e) { console.warn('[LLM识别]',e.message); return null; }
     }
+
+    // 新版：通过代理调用，返回字段+候选
+    async function callLLMIdentifyFields(question, textFields, numFields, allColumns) {
+      try {
+        var prompt = '分析用户问题需要用哪个维度(dimension)和指标(metric)。\n\n' +
+          '文本字段: [' + textFields.join(', ') + ']\n' +
+          '数值字段: [' + numFields.join(', ') + ']\n' +
+          '用户问题: "' + question + '"\n\n' +
+          '请输出 JSON：{"dimension":"列名","metric":"列名","candidates":[{"field":"列名","score":0.0-1.0,"reason":"理由"},...]}\n' +
+          '只输出 JSON，不要其他解释。';
+        var raw = await callLLMviaProxy(prompt, '你是字段识别助手。只输出 JSON。');
+        var m = raw.match(/\{[\s\S]*\}/);
+        if (!m) return null;
+        return JSON.parse(m[0]);
+      } catch(e) {
+        console.warn('[LLM代理识别]', e.message);
+        return null;
+      }
+    }
+
     function updateTrainingBadge() {
       var badge = document.getElementById('trainStatusBadge'), store = loadEdgeStore();
       if (!badge) return;
@@ -3403,6 +3423,10 @@
               }
             }
             addChartToMessage(aiId, ct, cd, analysis.title || '分析结果', rr);
+            // 维度候选提示（如果 LLM 返回了多个候选）
+            if (window._lastCandidates && window._lastCandidates.length > 1) {
+              addDimensionCandidates(aiId, window._lastCandidates);
+            }
             addSqlBlock(aiId, analysis.sql);
             addDataTableBlock(aiId, analysis.rawResult);
             addMessageActions(aiId);
@@ -3611,6 +3635,16 @@
           intent = 'summary'; confidence = 0.9;
           examples = 'SELECT SUM(' + metric + ') as total, AVG(' + metric + ') as avg_value FROM ' + table;
         }
+        // 7. 窗口函数（环比/同比/累计）
+        else if (/环比|同比|累计|累计值|逐月|逐周|累计增长/.test(q)) {
+          intent = 'window_function'; confidence = 0.85;
+          if (dateCol) {
+            examples = 'SELECT ' + dateCol + ', SUM(' + metric + ') as period_total, SUM(SUM(' + metric + ')) OVER (ORDER BY ' + dateCol + ') AS cumulative FROM ' + table + ' GROUP BY ' + dateCol + ' ORDER BY ' + dateCol;
+          } else {
+            examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total, RANK() OVER (ORDER BY SUM(' + metric + ') DESC) AS rank_num FROM ' + table + ' GROUP BY ' + dim;
+          }
+          window._windowSql = examples;
+        }
         return { intent: intent || 'fallback', confidence: confidence, examples: examples, metric: metric, dim: dim, dateCol: dateCol };
       }
 
@@ -3769,21 +3803,27 @@
         };
       }
 
-      if (needLLMCheck) {
-        console.log('[LLM降级] 字段不在已知关键词中，调用LLM...');
+      // 冷启动：歧义时走 LLM；改进：返回候选维度让用户可纠正
+      var shouldCallLLM = needLLMCheck || (!dimension && dimensionFields.length > 1) || (!metric && numericFields.length > 0);
+      if (shouldCallLLM) {
+        console.log('[LLM降级] 字段识别模糊，调用LLM...');
         try {
-          const llmResult = await llmIdentifyFields(question, dimensionFields, numericFields);
+          var llmResult = await callLLMIdentifyFields(question, dimensionFields, numericFields, columns);
           if (llmResult) {
             if (llmResult.dimension) {
-              var dm = dimensionFields.find(function(f) { return f === llmResult.dimension || f.includes(llmResult.dimension); });
+              var dm = dimensionFields.find(function(f) { return f === llmResult.dimension || f.indexOf(llmResult.dimension) >= 0 || llmResult.dimension.indexOf(f) >= 0; });
               if (dm) { dimension = dm; console.log('[LLM] dim=' + dm); }
             }
             if (llmResult.metric) {
-              var mm = numericFields.find(function(f) { return f === llmResult.metric || f.includes(llmResult.metric); });
+              var mm = numericFields.find(function(f) { return f === llmResult.metric || f.indexOf(llmResult.metric) >= 0 || llmResult.metric.indexOf(f) >= 0; });
               if (mm) { metric = { field: mm, label: mm }; console.log('[LLM] metric=' + mm); }
             }
+            // 保存候选维度供 UI 展示
+            window._lastCandidates = llmResult.candidates || [];
           }
         } catch(e) { console.warn('[LLM降级] 失败:', e.message); }
+      } else {
+        window._lastCandidates = [];
       }
 
       const aggregation = parseAggregation(q, metric.field);
@@ -4038,6 +4078,10 @@
       if (numericFields.length === 1 && numericFields[0] === '__COUNT__') {
         return { field: '__COUNT__', label: '计数' };
       }
+      // 窗口函数
+      if (intentInfo && intentInfo.intent === 'window_function') {
+        return { field: '__WINDOW__', label: '窗口函数' };
+      }
 
       const metricKeywords = [
         { keywords: ['销售额','收入','金额','gmv','revenue','sales','amount'], field: findFieldByKeywords(numericFields, ['销售额','收入','金额','gmv','revenue','sales','amount','price']) },
@@ -4107,6 +4151,10 @@
     }
     
     function generateSQL(timeRange, dimension, metric, aggregation, sortOrder, limit) {
+      // 窗口函数：直接展示 LLM 生成的 SQL
+      if (metric.field === '__WINDOW__') {
+        return window._windowSql || '-- 窗口函数 SQL';
+      }
       // 用真实数据源名称替代表名
       const conv = conversations.find(c => c.id === currentConversationId);
       const active = getActiveData(conv);
@@ -6165,6 +6213,43 @@ ${convData.sqls.join('\n')}
       showToast('图表类型已切换', 'success');
     }
     
+    // 维度候选提示：用户可切换维度重新查询
+    function addDimensionCandidates(aiId, candidates) {
+      var aiBlock = document.getElementById(aiId);
+      if (!aiBlock) return;
+      var chartContainer = aiBlock.querySelector('.chart-container');
+      if (!chartContainer) return;
+      var hint = document.createElement('div');
+      hint.className = 'mt-2 mb-2 flex flex-wrap items-center gap-2 text-xs';
+      var label = '<span class="text-text-tertiary">可能是：</span>';
+      var btns = candidates.slice(0, 4).map(function(c, i) {
+        return '<button onclick="correctDimension(\'' + aiId + '\', \'' + escapeHtml(c.field) + '\', this)" ' +
+               'class="border-2 border-blue-200 rounded-full px-3 py-1 hover:bg-blue-50 cursor-pointer transition-colors text-text-secondary">' +
+               escapeHtml(c.field) + (c.score ? ' (' + Math.round(c.score * 100) + '%)' : '') + '</button>';
+      }).join('');
+      hint.innerHTML = label + btns;
+      chartContainer.parentNode.insertBefore(hint, chartContainer.nextSibling);
+    }
+
+    function correctDimension(aiId, newDim, btn) {
+      // 用户纠正维度，重新执行分析
+      var aiBlock = document.getElementById(aiId);
+      if (!aiBlock) return;
+      var question = aiBlock.dataset.question || '';
+      // 重新分析：注入维度到 edge store
+      var store = loadEdgeStore();
+      store.learnedDims = store.learnedDims || {};
+      store.learnedDims[question.slice(0, 30)] = newDim;
+      saveEdgeStore(store);
+      // 推飞书
+      _pushToFeishu({ text: '✅ 已纠正\n🙋 问题：' + question.slice(0, 200) + '\n📐 用户选择维度：' + newDim, label: '维度纠正' });
+      btn.style.background = '#10b981';
+      btn.style.color = '#fff';
+      btn.style.borderColor = '#10b981';
+      btn.innerHTML += ' ✓';
+      showToast('已记住，下次自动用此维度', 'success');
+    }
+
     function toggleChartMenu(chartId) {
       const menu = document.getElementById(`menu-${chartId}`);
       menu.classList.toggle('active');
