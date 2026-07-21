@@ -3849,7 +3849,6 @@
       const chatKeywords = /^(你好|您好|hi|hello|hey|嗨|早上好|下午好|晚上好|嗨喽|在吗|谢谢|感谢|thanks|thx|再见|拜拜|bye|88|好的|明白了|收到|哦|嗯|ok|OK|知道了|了解)$/i;
       var qTrimmed = question.trim();
       if (chatKeywords.test(qTrimmed) || (qTrimmed.length <= 3 && /^[a-zA-Z一-龥]+$/.test(qTrimmed) && !/销售|订单|金额|数据|分析|趋势|排名|统计/.test(qTrimmed))) {
-        var chatReplies = [
         const chatReplies = [
           '你好！我是数分精灵，可以帮你分析数据。试试上传一个 CSV/Excel 文件，然后告诉我你想看什么～',
           '嗨！今天想分析什么数据？',
@@ -3899,6 +3898,16 @@
       const timeRange = parseTimeRange(q, dateField, rows);
       let dimension = parseDimension(q, dimensionFields, columns);
       let metric = parseMetric(q, numericFields, columns);
+
+      // 单值筛选："抖音的销售额" → dimension='渠道', extraWhere={渠道:'抖音'}
+      var singleFilter = parseSingleValueFilter(q, dimensionFields);
+      if (singleFilter) {
+        window._lastExtraWhere = {};
+        window._lastExtraWhere[singleFilter.field] = singleFilter.value;
+        console.log('[单值筛选]', singleFilter);
+      } else {
+        window._lastExtraWhere = null;
+      }
 
       // 三层匹配：关键词 → 边缘学习 → LLM识别
       // 1. 关键词匹配（parseDimension/parseMetric 已做）
@@ -3993,10 +4002,9 @@
       }
       if (compareFields) {
         multiMetricResults = compareFields.map(mf => {
-          const m = { field: mf, label: mf };
-          const agg = parseAggregation(q, mf) || 'sum';
-          const r = executeQuery(rows, timeRange, dimension, m, agg, sortOrder, limit);
-          return { metric: mf, aggregation: agg, result: r };
+          const m = { field: mf.name, label: mf.name };
+          const r = executeQuery(rows, timeRange, dimension, m, mf.aggregation, sortOrder, limit);
+          return { metric: mf.name, aggregation: mf.aggregation, result: r };
         });
       }
 
@@ -4271,6 +4279,33 @@
       if (nameField) return nameField;
       return dimensionFields[0];
     }
+
+    // 检测单值筛选："抖音的销售额" → {渠道:'抖音'}
+    function parseSingleValueFilter(q, dimensionFields) {
+      var m = q.match(/([一-龥a-zA-Z0-9]+)(?:的|方面)/);
+      if (!m) return null;
+      var key = m[1];
+      // 在维度字段里找匹配
+      for (var i=0;i<dimensionFields.length;i++){
+        var field = dimensionFields[i];
+        // 直接匹配字段名
+        if (key.indexOf(field) >= 0 || field.indexOf(key) >= 0) {
+          return { field: field, value: key };
+        }
+      }
+      // 收集这个 key 在数据里出现过的字段值
+      var rows = parsedData.rows || [];
+      for (var i=0;i<dimensionFields.length;i++){
+        var f = dimensionFields[i];
+        for (var j=0;j<rows.length;j++){
+          var v = String(rows[j][f] || '');
+          if (v && v === key) {
+            return { field: f, value: key };
+          }
+        }
+      }
+      return null;
+    }
     
     function findFieldByKeywords(fields, keywords) {
       const sorted = [...fields].sort((a, b) => {
@@ -4315,8 +4350,12 @@
         if (item.keywords.some(k => q.includes(k)) && item.field) return { field: item.field, label: item.field };
       }
       
-      // 默认第一个数值字段
-      return { field: numericFields[0], label: numericFields[0] };
+      // 默认第一个数值字段（智能判断：转化率类用 avg，其他用 sum）
+      const first = numericFields[0];
+      if (/转化|率|占比|percent|rate/i.test(first)) {
+        return { field: first, label: first, aggregation: 'avg' };
+      }
+      return { field: first, label: first, aggregation: 'sum' };
     }
     
     // 检测多指标对比语义（如"销售额和销量对比"）
@@ -4324,7 +4363,12 @@
       const compareKW = /对比|比较|vs|相比|哪个更|关系/;
       if (!compareKW.test(q)) return null;
       const matched = numericFields.filter(f => q.includes(f));
-      return matched.length >= 2 ? matched : null;
+      if (matched.length < 2) return null;
+      // 每个指标带聚合方式：转化率类用 avg，其他用 sum
+      return matched.map(name => ({
+        name,
+        aggregation: /转化|率|占比|percent|rate/i.test(name) ? 'avg' : 'sum'
+      }));
     }
 
     // 通用对比检测：防止对比类问题乱加维度，统一处理各类对比
@@ -4339,8 +4383,8 @@
       if (/最大|最高|max/.test(q)) return 'max';
       if (/最小|最低|min/.test(q)) return 'min';
       if (/计数|数量|count|多少/.test(q)) return 'count';
-      // 率/占比 → ratio 聚合（触发 CASE WHEN 计算）
-      if (/(.+)率|占比|比例|百分比|percent/.test(q)) {
+      // 率/占比/比例/百分比/留存/转化/续费/复购/到达/打开/点击/回访 → ratio 聚合
+      if (/率|占比|比例|百分比|留存|转化|续费率|复购率|到达率|打开率|点击率|回访率/.test(q)) {
         return 'ratio';
       }
       // 默认对转化率/率字段取平均，其他取总和
@@ -4368,7 +4412,9 @@
       // 4) "限制/只要/只要 N 条" 显式约束
       m = q.match(/(?:限制|只要|只显示|上限)\s*(\d{1,4})\s*(?:个|名|条|项|行)?/);
       if (m) return Math.max(1, Math.min(1000, parseInt(m[1], 10)));
-      return null;  // 不限
+      // 5) "排名"/"Top"/"最高"/"最大" 等语义默认 LIMIT 10
+      if (/(?:排名|排行|\btop\b|最高|最大|最多|最强)/i.test(q)) return 10;
+      return null;
     }
     
     function generateSQL(timeRange, dimension, metric, aggregation, sortOrder, limit) {
@@ -4465,6 +4511,16 @@
 
     function executeQuery(rows, timeRange, dimension, metric, aggregation, sortOrder, limit) {
       let filtered = rows;
+
+      // 单值筛选："抖音的销售额" → dimension='渠道', extraWhere={渠道:'抖音'}
+      var extraWhere = window._lastExtraWhere || null;
+      if (extraWhere && typeof extraWhere === 'object') {
+        filtered = filtered.filter(function(r){
+          return Object.keys(extraWhere).every(function(k){
+            return String(r[k] || '') === extraWhere[k];
+          });
+        });
+      }
 
       if (timeRange) {
         filtered = filtered.filter(r => {
@@ -6507,11 +6563,11 @@ ${convData.sqls.join('\n')}
     
     function switchChartType(chartId, newType) {
       const info = chartInstances[chartId];
-      if (!info) return;
+      if (!info) { showToast('图表数据未就绪，请稍后重试', 'error'); return; }
       info.currentType = newType;
+      info.userSpecified = true;  // 标记用户手动选择，防止被智能规则覆盖
       renderChart(chartId, newType, info.data, info.title);
       toggleChartMenu(chartId);
-      showToast('图表类型已切换', 'success');
     }
     
     // 维度候选提示：用户可切换维度重新查询
