@@ -1978,6 +1978,52 @@
     function recordCorrectMapping(question, dimension, metric) {
       recordLike(question, dimension, metric);
     }
+    // 业务术语别名表：用户口语 → 数据字段名
+    var FIELD_ALIASES = {
+      // 指标别名
+      'gmv': ['销售额','收入','金额','revenue','gmv'],
+      '客单价': ['订单金额','单价','avg_order'],
+      'dau': ['日活用户','日活','daily_active'],
+      'mau': ['月活用户','月活','monthly_active'],
+      '转化率': ['转化率','转化','conversion_rate'],
+      '留存率': ['留存','retention'],
+      'arpu': ['人均收入','人均','arpu'],
+      'roi': ['投资回报','回报率','roi'],
+      'ctr': ['点击率','ctr','click_rate'],
+      'cvr': ['转化','cvr'],
+      '复购率': ['复购','repurchase_rate'],
+      '退款率': ['退款','refund_rate'],
+      '跳失率': ['跳失','bounce_rate'],
+      '下单数': ['订单数','订单量','order_count'],
+      '销售额': ['销售额','营收','revenue'],
+      // 维度别名
+      '渠道': ['渠道','channel','来源','source'],
+      '城市': ['城市','地区','city','region','province'],
+      '品类': ['品类','类别','category','产品类目'],
+      '部门': ['部门','组织','department'],
+      '品牌': ['品牌','brand'],
+      '客户': ['客户','customer','用户'],
+      '会员等级': ['会员等级','会员','member_level','vip_level'],
+      '性别': ['性别','gender','sex'],
+      '年龄段': ['年龄段','年龄','age_group'],
+      '状态': ['状态','status','订单状态']
+    };
+
+    function resolveFieldAlias(q, fields) {
+      var lowered = q.toLowerCase();
+      for (var alias in FIELD_ALIASES) {
+        if (lowered.indexOf(alias.toLowerCase()) >= 0) {
+          var candidates = FIELD_ALIASES[alias];
+          for (var i=0;i<candidates.length;i++){
+            var c = candidates[i];
+            var m = fields.find(function(f){return f === c || f.toLowerCase().indexOf(c.toLowerCase()) >= 0 || c.toLowerCase().indexOf(f.toLowerCase()) >= 0; });
+            if (m) return m;
+          }
+        }
+      }
+      return null;
+    }
+
     function adaptiveFindDim(q, dimensionFields) {
       var store = loadEdgeStore(), learned = store.learnedDims || {};
       // 先匹配用户历史问过的相似问题
@@ -1988,6 +2034,10 @@
           if (m) return m;
         }
       }
+      // 1. 别名表匹配
+      var aliasHit = resolveFieldAlias(q, dimensionFields);
+      if (aliasHit) return aliasHit;
+      // 2. 字段名直接匹配
       for (var i=0; i<dimensionFields.length; i++) {
         if (q.indexOf(dimensionFields[i]) >= 0) return dimensionFields[i];
       }
@@ -2002,6 +2052,10 @@
           if (m) return m;
         }
       }
+      // 1. 别名表匹配
+      var aliasHit = resolveFieldAlias(q, numericFields);
+      if (aliasHit) return aliasHit;
+      // 2. 字段名直接匹配
       for (var i=0; i<numericFields.length; i++) {
         if (q.indexOf(numericFields[i]) >= 0) return numericFields[i];
       }
