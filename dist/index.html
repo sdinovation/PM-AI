@@ -3546,7 +3546,23 @@
       const numericFields = (parsedData.fieldInfo || []).filter(f => ['int','float','currency','percent'].includes(f.type)).map(f => f.name);
 
       if (numericFields.length === 0) {
-        return fallbackResponse('当前数据中没有找到可计算的数值字段，请上传包含数字列的数据。');
+        // 长期：无数值字段时，尝试用 COUNT 做分析（如按日期统计用户增长趋势）
+        const dateCol = findFieldByType('date') || '';
+        const idCandidates = columns.filter(function(c) {
+          return /id|user|客户|用户|会员|订单|order|编号/.test(c.toLowerCase());
+        });
+        const countField = idCandidates.length > 0 ? idCandidates[0] : (columns.length > 0 ? columns[0] : '');
+
+        if (dateCol && countField) {
+          // 有日期和可统计字段，注入 COUNT 指标
+          numericFields.push('__COUNT__');
+          // 标记为 COUNT 模式，后续生成 SQL 时处理
+          window._countMode = { dateCol: dateCol, countField: countField, allNumericFields: [] };
+        } else {
+          return fallbackResponse('当前数据中没有找到可计算的数值字段，请上传包含数字列的数据。');
+        }
+      } else {
+        window._countMode = null;
       }
 
       // 检测意图模糊（PRD §5.5 兜底策略 + §8.5 追问机制）
@@ -3818,7 +3834,12 @@
     
     function parseMetric(q, numericFields, columns) {
       if (numericFields.length === 0) return null;
-      
+
+      // COUNT 模式：无数值字段时，用 COUNT 作为指标
+      if (numericFields.length === 1 && numericFields[0] === '__COUNT__') {
+        return { field: '__COUNT__', label: '计数' };
+      }
+
       const metricKeywords = [
         { keywords: ['销售额','收入','金额','gmv','revenue','sales','amount'], field: findFieldByKeywords(numericFields, ['销售额','收入','金额','gmv','revenue','sales','amount','price']) },
         { keywords: ['用户数','用户','注册','新增用户'], field: findFieldByKeywords(numericFields, ['用户','注册','user','register','customer']) },
@@ -3893,11 +3914,19 @@
       const tableName = active && active.fileName ? active.fileName.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_一-鿿]/g, '_') : 'data';
       let sql = 'SELECT ';
       if (dimension) sql += `${dimension}, `;
-      sql += `${aggregation.toUpperCase()}(${metric.field}) AS ${metric.field}`;
+      // COUNT 模式：无数值字段时用 COUNT 统计
+      if (metric.field === '__COUNT__') {
+        var cm = window._countMode;
+        var countCol = cm ? cm.countField : '*';
+        sql += 'COUNT(' + countCol + ') AS 计数';
+      } else {
+        sql += `${aggregation.toUpperCase()}(${metric.field}) AS ${metric.field}`;
+      }
       sql += `\nFROM ${tableName}`;
       if (timeRange) sql += `\nWHERE ${timeRange.field} >= '${formatDate(timeRange.minDate)}' AND ${timeRange.field} <= '${formatDate(timeRange.maxDate)}'`;
       if (dimension) sql += `\nGROUP BY ${dimension}`;
-      if (sortOrder) sql += `\nORDER BY ${metric.field} ${sortOrder.toUpperCase()}`;
+      var sortCol = metric.field === '__COUNT__' ? '计数' : metric.field;
+      if (sortOrder) sql += `\nORDER BY ${sortCol} ${sortOrder.toUpperCase()}`;
       if (limit) sql += `\nLIMIT ${limit}`;
       return sql;
     }
@@ -3916,30 +3945,56 @@
         });
       }
 
+      // COUNT 模式：统计每组的行数
+      var isCountMode = metric.field === '__COUNT__';
+      var metricKey = isCountMode ? '计数' : metric.field;
+
       if (!dimension) {
         // 整体聚合
-        const value = aggregate(filtered.map(r => r[metric.field]), aggregation);
-        return [{ [metric.field]: value }];
+        if (isCountMode) {
+          return [{ '计数': filtered.length }];
+        }
+        var value = aggregate(filtered.map(function(r) { return r[metric.field]; }), aggregation);
+        var result = {}; result[metric.field] = value;
+        return [result];
       }
 
       // 按维度分组聚合
-      const groups = {};
-      filtered.forEach(r => {
-        const key = r[dimension] || '未知';
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(r[metric.field]);
+      var groups = {};
+      filtered.forEach(function(r) {
+        var key = r[dimension] || '未知';
+        if (!groups[key]) groups[key] = isCountMode ? 0 : [];
+        if (isCountMode) {
+          groups[key]++;
+        } else {
+          groups[key].push(r[metric.field]);
+        }
       });
 
-      let result = Object.entries(groups).map(([key, values]) => ({
-        [dimension]: key,
-        [metric.field]: aggregate(values, aggregation)
-      }));
-
-      if (sortOrder) {
-        result.sort((a, b) => sortOrder === 'desc' ? b[metric.field] - a[metric.field] : a[metric.field] - b[metric.field]);
+      var result;
+      if (isCountMode) {
+        result = Object.entries(groups).map(function(entry) {
+          var obj = {};
+          obj[dimension] = entry[0];
+          obj[metricKey] = entry[1];
+          return obj;
+        });
+      } else {
+        result = Object.entries(groups).map(function(entry) {
+          var obj = {};
+          obj[dimension] = entry[0];
+          obj[metric.field] = aggregate(entry[1], aggregation);
+          return obj;
+        });
       }
 
-      // 应用 LIMIT（用户指定"前 N 个"等）
+      if (sortOrder) {
+        result.sort(function(a, b) {
+          return sortOrder === 'desc' ? b[metricKey] - a[metricKey] : a[metricKey] - b[metricKey];
+        });
+      }
+
+      // 应用 LIMIT
       if (limit && limit > 0 && result.length > limit) {
         result = result.slice(0, limit);
       }
