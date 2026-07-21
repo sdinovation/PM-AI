@@ -2065,30 +2065,34 @@
       var cfg = getApiKeyConfig(); if (!cfg) return null;
       var preset = PROVIDER_PRESETS[cfg.provider] || {}, baseUrl = cfg.baseUrl || preset.baseUrl || '';
       if (!baseUrl) return null;
-      var prompt = '可用列（务必原样使用列名，禁止杜撰）：\n' +
+      var prompt = '【任务】根据用户问题和可用列，输出查询方案 JSON。\n\n' +
+        '可用列（只能使用以下列名，禁止杜撰）：\n' +
         '- 文本/维度列：[' + textFields.join(', ') + ']\n' +
         '- 数值列：[' + numFields.join(', ') + ']\n\n' +
         '用户问题："' + question + '"\n\n' +
-        '请判断应如何查询，只输出如下 JSON：\n' +
+        '输出一个 JSON 对象（不要 Markdown、不要解释）：\n' +
         '{\n' +
-        '  "dimension": "分组维度列名；整体汇总无需分组则填 null",\n' +
-        '  "metric": "主指标列名；若问的是数量/人数/条数则填 null 且 aggregation=count",\n' +
-        '  "secondaryMetric": "第二指标列名，否则 null",\n' +
-        '  "aggregation": "sum|avg|count|max|min|ratio 之一",\n' +
-        '  "isScalar": "true=只要一个总体数字无需按维度分组；否则 false",\n' +
-        '  "ratioCondition": "当 aggregation=ratio 时给出分子条件；否则 null"\n' +
+        '  "dimension": "分组列名，整体汇总填 null",\n' +
+        '  "metric": "指标列名，问人数/条数/订单数填 null",\n' +
+        '  "secondaryMetric": "第二指标列名或 null",\n' +
+        '  "aggregation": "sum|avg|count|max|min|ratio",\n' +
+        '  "isScalar": true或false,\n' +
+        '  "ratioColumn": "当 aggregation=ratio 时，用来算比例的列名，如 是否续费",\n' +
+        '  "ratioValue": "当 aggregation=ratio 时分母的匹配值，如 是"\n' +
         '}\n' +
-        '规则：\n' +
-        '1. dimension/metric/secondaryMetric 必须用上面列出的原始列名或 null，禁止编造。\n' +
-        '2. 用户明确提到的维度（"各门店""按城市""快充和慢充"）必须选为 dimension。\n' +
-        '3. "人数/会员数/订单数/条数"一律 aggregation=count 且 metric=null，不要拿无关数值列求和。\n' +
-        '4. "率/占比/百分比"用 aggregation=ratio 并给出 ratioCondition。\n' +
-        '5. "总…和平均…"设 isScalar=true。';
+        '规则（务必遵守）：\n' +
+        '1. 所有字段必须是上面列出的原始列名或 null，禁止编造。\n' +
+        '2. 用户明确提到的类别词（"各门店""按城市""快充和慢充""男和女"）→ 对应列必须做 dimension。\n' +
+        '3. "人数/会员数/订单数/条数" → aggregation=count, metric=null。\n' +
+        '4. "率/占比/百分比" → aggregation=ratio, 必须填 ratioColumn 和 ratioValue。\n' +
+        '5. "总…和平均…" → isScalar=true, 用 SUM 和 AVG 双指标。\n' +
+        '6. 绝对禁止使用 RATIO()、PERCENT() 等不存在的 SQL 函数。ratio 仅输出 ratioColumn+ratioValue，由下游代码生成 CASE WHEN。\n' +
+        '7. 本轮问题独立判断，不受任何上一轮结果影响。';
       try {
         var res = await fetch(baseUrl + '/v1/chat/completions', { method:'POST',
           headers: {'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},
-          body: JSON.stringify({model:cfg.model||preset.model||'deepseek-chat',temperature:0.1,max_tokens:256,
-            messages:[{role:'system',content:'你是数据分析的字段与意图识别器。只输出一个 JSON 对象，不要任何多余文字、解释或 Markdown 代码块。'},{role:'user',content:prompt}]})
+          body: JSON.stringify({model:cfg.model||preset.model||'deepseek-chat',temperature:0,max_tokens:256,
+            messages:[{role:'system',content:'你是数据分析的字段与意图识别器。只输出一个 JSON 对象，不要任何多余文字、解释或 Markdown 代码块。禁止使用不存在的 SQL 函数。'},{role:'user',content:prompt}]})
         });
         if (!res.ok) return null;
         var data = await res.json(), content = data.choices[0].message.content;
@@ -2107,19 +2111,23 @@
     // 新版：通过代理调用，返回字段+候选+聚合+isScalar
     async function callLLMIdentifyFields(question, textFields, numFields, allColumns) {
       try {
-        var prompt = '可用列（务必原样使用列名，禁止杜撰）：\n' +
+        var prompt = '【任务】根据用户问题和可用列，输出查询方案 JSON。\n\n' +
+          '可用列（只能使用以下列名，禁止杜撰）：\n' +
           '- 文本/维度列：[' + textFields.join(', ') + ']\n' +
           '- 数值列：[' + numFields.join(', ') + ']\n\n' +
           '用户问题："' + question + '"\n\n' +
-          '请判断应如何查询，只输出如下 JSON：\n' +
+          '输出一个 JSON 对象（不要 Markdown、不要解释）：\n' +
           '{"dimension":"列名或null","metric":"列名或null","secondaryMetric":"列名或null",' +
           '"aggregation":"sum|avg|count|max|min|ratio","isScalar":true/false,' +
-          '"ratioCondition":"条件或null","candidates":[{"field":"列名","score":0-1,"reason":"理由"}]}\n\n' +
-          '规则：\n' +
-          '1. 字段必须用上面列出的原始列名，禁止编造。\n' +
-          '2. "各X""按Y"必须选为 dimension。"人数/条数"用 aggregation=count。\n' +
-          '3. "率/占比"用 aggregation=ratio 并给 ratioCondition。\n' +
-          '4. "总X是多少"设 isScalar=true。';
+          '"ratioColumn":"ratio时的列名","ratioValue":"ratio时的匹配值","candidates":[{"field":"列名","score":0-1,"reason":"理由"}]}\n\n' +
+          '规则（务必遵守）：\n' +
+          '1. 所有字段必须是上面列出的原始列名或 null，禁止编造。\n' +
+          '2. 用户明确提到的类别词（"各门店""按城市""快充和慢充"）→ 对应列必须做 dimension。\n' +
+          '3. "人数/会员数/条数"用 aggregation=count, metric=null。\n' +
+          '4. "率/占比"用 aggregation=ratio, 必须填 ratioColumn 和 ratioValue。\n' +
+          '5. "总…和平均…"设 isScalar=true。\n' +
+          '6. 绝对禁止使用 RATIO()、PERCENT() 等不存在的 SQL 函数。\n' +
+          '7. 本轮问题独立判断，不受上一轮结果影响。';
         var raw = await callLLMviaProxy(prompt, '你是数据分析的字段与意图识别器。只输出 JSON，不要任何多余文字。');
         var m = raw.match(/\{[\s\S]*\}/);
         if (!m) return null;
@@ -3889,12 +3897,18 @@
       if (learnedMetric) metric = { field: learnedMetric, label: learnedMetric };
 
       // 3. 检查是否仍需LLM：用户明确提到的字段 ≠ 引擎实际选中的字段
+      // ===== 清理上轮 LLM 状态，防跨轮污染 =====
+      window._llmAggOverride = null;
+      window._llmIsScalar = false;
+      window._llmRatioCond = null;
+      window._llmSecondMetric = null;
+      // ============================================
       const userMentionedDim = dimensionFields.filter(function(f) { return q.includes(f); });
       const userMentionedMetric = numericFields.filter(function(f) { return q.includes(f); });
       const dimMismatch = userMentionedDim.length > 0 && !userMentionedDim.includes(dimension);
       const metricMismatch = userMentionedMetric.length > 0 && !userMentionedMetric.includes(metric.field);
       // 放宽触发：语义自然语言也走 LLM
-      var semanticGap = /率|占比|百分比|人数|会员数|订单数|数量|条数|电量|时长|金额|人均|客单|复购|转化/.test(q);
+      var semanticGap = /率|占比|百分比|人数|会员数|订单数|数量|条数|电量|时长|金额|人均|客单|复购|转化|对比|比较|不同|每个|分别|各.*的|哪个|汇总|总计|总共|平均.*是/.test(q);
       var lowConf = (window._lastIntent && window._lastIntent.confidence < 0.6);
       const needLLMCheck = (dimMismatch || metricMismatch || semanticGap || lowConf) && getApiKeyConfig();
 
@@ -3923,7 +3937,7 @@
       if (shouldCallLLM) {
         console.log('[LLM降级] 字段识别模糊，调用LLM...');
         try {
-          var llmResult = await callLLMIdentifyFields(question, dimensionFields, numericFields, columns);
+          var llmResult = getApiKeyConfig() ? await llmIdentifyFields(question, dimensionFields, numericFields) : await callLLMIdentifyFields(question, dimensionFields, numericFields, columns);
           if (llmResult) {
             if (llmResult.dimension) {
               var dm = dimensionFields.find(function(f) { return f === llmResult.dimension || f.indexOf(llmResult.dimension) >= 0 || llmResult.dimension.indexOf(f) >= 0; });
@@ -3933,10 +3947,13 @@
               var mm = numericFields.find(function(f) { return f === llmResult.metric || f.indexOf(llmResult.metric) >= 0 || llmResult.metric.indexOf(f) >= 0; });
               if (mm) { metric = { field: mm, label: mm }; console.log('[LLM] metric=' + mm); }
             }
-            // 消费新字段：aggregation 覆盖引擎猜测 / isScalar / ratioCondition / secondaryMetric
+            // 消费新字段：aggregation 覆盖引擎猜测 / isScalar / ratio / secondaryMetric
             window._llmAggOverride = llmResult.aggregation || null;
             window._llmIsScalar  = llmResult.isScalar === true || llmResult.isScalar === 'true';
-            window._llmRatioCond = llmResult.ratioCondition || null;
+            // 兼容两种格式：新版 ratioColumn+ratioValue, 旧版 ratioCondition
+            window._llmRatioCond = (llmResult.ratioColumn && llmResult.ratioValue)
+              ? (llmResult.ratioColumn + " = '" + llmResult.ratioValue + "'")
+              : (llmResult.ratioCondition || null);
             window._llmSecondMetric = llmResult.secondaryMetric || null;
             // 保存候选维度供 UI 展示
             window._lastCandidates = llmResult.candidates || [];
@@ -4317,8 +4334,10 @@
       var sortCol = metric.field === '__COUNT__' ? '计数' : (isRatio ? 'ratio_pct' : metric.field);
       if (sortOrder) sql += '\nORDER BY ' + sortCol + ' ' + sortOrder.toUpperCase();
       if (limit) sql += '\nLIMIT ' + limit;
-      // 清空
+      // 清空所有 LLM 状态，防下一轮污染
       window._isScalar = false; window._ratioCond = null;
+      window._llmAggOverride = null; window._llmIsScalar = false;
+      window._llmRatioCond = null; window._llmSecondMetric = null;
       return sql;
     }
     
