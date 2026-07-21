@@ -2760,9 +2760,14 @@
       renderFollowUpChips(defaultFollowUps);
     }
     
-    // ===== 基于数据字段生成推荐问题 =====
+    // ===== 基于数据字段生成推荐问题（动态）=====
     function generateRecommendedQuestions(fieldInfo) {
-      const names = fieldInfo.map(f => f.name);
+      // 优先用动态生成
+      if (window.generateSmartRecommendations) {
+        var recs = window.generateSmartRecommendations();
+        if (recs && recs.length > 0) return recs.map(function(r){ return r.text; });
+      }
+      var names = fieldInfo.map(f => f.name);
       const hasDate = names.some(n => /日期|时间|date|time/i.test(n));
       const hasChannel = names.some(n => /渠道|来源|channel|source/i.test(n));
       const hasCity = names.some(n => /城市|地区|city|region/i.test(n));
@@ -3351,7 +3356,12 @@
             generationTimeout = setTimeout(typeNextChar, 18 + Math.random() * 20);
           } else {
             aiMessage.classList.remove('typing-cursor');
-            aiMessage.innerHTML = highlightKeywordsInText(responseText, keywords, extractDataValues(analysis));
+            var mainHtml = highlightKeywordsInText(responseText, keywords, extractDataValues(analysis));
+            if (analysis.intent && analysis.intent.validateFlag && analysis.intent.validateFlag.wasRetried) {
+              var retryHint = '<div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mb-2">⚠️ 已自动修正：原查询因“' + (analysis.intent.validateFlag.issue || '数据异常') + '”返回异常，系统已优化查询条件并重新获取数据。</div>';
+              mainHtml = retryHint + mainHtml;
+            }
+            aiMessage.innerHTML = mainHtml;
             document.getElementById(aiId).dataset.intent = analysis.intent?.type || analysis.type || '';
             addIntentBadge(aiId, analysis.intent, analysis.pipeline || ['parse_file', 'generate_sql', 'render_chart']);
             // 始终确保有 chartType 和 chartData（兜底）
@@ -3515,6 +3525,114 @@
 
     // ===== 自然语言分析引擎 =====
     async function analyzeQuestion(question) {
+
+      // ===== 意图预分类 + Few-shot 示例库 =====
+      function getNumericFieldName() {
+        var nfs = (parsedData.fieldInfo || []).filter(function(f) { return ['int','float','currency','percent'].indexOf(f.type) >= 0; });
+        if (nfs.length === 0) return null;
+        var preferred = nfs.find(function(f) { return /额|金额|收入|成本|利润|销量|数量|用户数|次数|费用/.test(f.name); });
+        return preferred ? preferred.name : nfs[0].name;
+      }
+      function getDimensionFieldName() {
+        var tfs = (parsedData.fieldInfo || []).filter(function(f) { return f.type === 'text'; });
+        if (tfs.length === 0) return null;
+        var preferred = tfs.find(function(f) { return /渠道|区域|城市|类别|类型|名称|部门|品牌|产品/.test(f.name); });
+        if (preferred) return preferred.name;
+        var small = tfs.filter(function(f) { var u = {}; var cnt = 0; (parsedData.rows||[]).forEach(function(r){ var v=r[f.name]; if(v!=null && !u[v]){u[v]=1; cnt++;}}); return cnt >= 1 && cnt <= 50; }).sort(function(a,b){return a.name.length-b.name.length;})[0];
+        return small ? small.name : tfs[0].name;
+      }
+      function getDateFieldName() {
+        var df = (parsedData.fieldInfo || []).find(function(f) { return f.type === 'date' || /日期|时间|date|time/i.test(f.name); });
+        return df ? df.name : null;
+      }
+      function extractNumber(q, re) {
+        var m = q.match(re);
+        return m ? parseInt(m[1], 10) : null;
+      }
+
+      function classifyIntent(userQuestion, schema) {
+        var q = userQuestion;
+        var intent = null, confidence = 0.5, examples = '';
+        var metric = getNumericFieldName() || 'metric';
+        var dim = getDimensionFieldName() || 'dimension';
+        var dateCol = getDateFieldName() || 'date_col';
+        var table = (parsedData.fileName || 'data').replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_一-鿿]/g, '_');
+
+        // 1. ranking
+        if (/Top|排名|前几|最多|最少|最大|最小|最高|最低/.test(q)) {
+          intent = 'ranking'; confidence = 0.9;
+          var lim = extractNumber(q, /(\d+)/) || 10;
+          examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total FROM ' + table + ' GROUP BY ' + dim + ' ORDER BY total DESC LIMIT ' + lim;
+        }
+        // 2. trend
+        else if (/趋势|走势|变化|增长|下降|最近|近.+天|环比|同比|每日|每月/.test(q) && dateCol) {
+          intent = 'trend'; confidence = 0.9;
+          var days = extractNumber(q, /近?(\d+)\s*天/) || 30;
+          examples = 'SELECT DATE(' + dateCol + ') as period, SUM(' + metric + ') as total FROM ' + table + " WHERE " + dateCol + " >= CURRENT_DATE - INTERVAL '" + days + " day' GROUP BY period ORDER BY period";
+        }
+        // 3. comparison
+        else if (/对比|比较|vs|和.+相比|差异|差距|相差|分别|各|不同|每个|按/.test(q)) {
+          intent = 'comparison'; confidence = 0.85;
+          examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total FROM ' + table + ' GROUP BY ' + dim + ' ORDER BY total DESC';
+        }
+        // 4. distribution
+        else if (/占比|比例|分布|构成|百分比|份额/.test(q)) {
+          intent = 'distribution'; confidence = 0.9;
+          examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total, ROUND(SUM(' + metric + ') * 100.0 / (SELECT SUM(' + metric + ') FROM ' + table + '), 2) as pct FROM ' + table + ' GROUP BY ' + dim;
+        }
+        // 5. summary
+        else if (/总计|总共|平均|均值|总和|一共|汇总|统计/.test(q)) {
+          intent = 'summary'; confidence = 0.9;
+          examples = 'SELECT SUM(' + metric + ') as total, AVG(' + metric + ') as avg_value FROM ' + table;
+        }
+        return { intent: intent || 'fallback', confidence: confidence, examples: examples, metric: metric, dim: dim, dateCol: dateCol };
+      }
+
+      // ===== 智能推荐问句 =====
+      window.generateSmartRecommendations = function() {
+        var recs = [];
+        var schema = parsedData.fieldInfo || [];
+        var dateField = schema.find(function(f){ return f.type === 'date'; });
+        var numericFields = schema.filter(function(f){ return ['int','float','currency','percent'].indexOf(f.type) >= 0; });
+        var metricField = numericFields.find(function(f){ return /额|金额|收入|成本|利润|销量|数量|用户数|次数|费用/.test(f.name); }) || numericFields[0];
+        var dimField = schema.find(function(f){ return f.type === 'text' && /渠道|区域|城市|类别|类型|部门|品牌|产品/.test(f.name); });
+        if (!dimField) {
+          var tfs = schema.filter(function(f){ return f.type === 'text'; });
+          if (tfs.length > 0) {
+            tfs.sort(function(a,b){
+              var ac=0, bc=0; var au={}, bu={};
+              (parsedData.rows||[]).forEach(function(r){ var v=r[a.name]; if(v!=null && !au[v]){au[v]=1; ac++;} var v2=r[b.name]; if(v2!=null && !bu[v2]){bu[v2]=1; bc++;} });
+              return ac - bc;
+            });
+            dimField = tfs[0];
+          }
+        }
+
+        // 1. 日期 + 数值
+        if (dateField && metricField) {
+          recs.push({ text: '近30天' + metricField.name + '趋势如何？', intent: 'trend' });
+          recs.push({ text: '本周与上周' + metricField.name + '对比', intent: 'comparison' });
+        }
+        // 2. 分类 + 数值
+        if (dimField && metricField) {
+          recs.push({ text: '各' + dimField.name + '的' + metricField.name + '排名', intent: 'ranking' });
+          recs.push({ text: dimField.name + '的' + metricField.name + '占比分布', intent: 'distribution' });
+        }
+        // 3. 多数值字段
+        if (numericFields.length >= 2) {
+          recs.push({ text: numericFields[0].name + '与' + numericFields[1].name + '的相关性分析', intent: 'scatter' });
+        }
+        // 5. 兜底
+        if (recs.length < 5) {
+          if (metricField) recs.push({ text: metricField.name + '总计是多少？', intent: 'summary' });
+          recs.push({ text: '数据集概览统计', intent: 'summary' });
+        }
+        return recs.slice(0, 5);
+      };
+      // 保存供后续使用
+      window._lastIntent = classifyIntent(question, parsedData.fieldInfo);
+      var intentInfo = window._lastIntent;
+      var intentHint = intentInfo.examples ? '\n【分析类型】:' + intentInfo.intent + '\n【参考示例SQL】:' + intentInfo.examples + '\n请严格遵循上述分析类型和示例的查询模式，生成符合该模式的 SQL，只使用已提供的字段名。' : '';
       const fieldInfo = parsedData.fieldInfo || [];
       const columns = parsedData.columns || [];
       const rows = parsedData.rows || [];
@@ -3664,7 +3782,61 @@
 
       // 生成并执行查询
       const sql = generateSQL(timeRange, dimension, metric, aggregation, sortOrder, limit);
-      const result = executeQuery(rows, timeRange, dimension, metric, aggregation, sortOrder, limit);
+      let result = executeQuery(rows, timeRange, dimension, metric, aggregation, sortOrder, limit);
+
+      // ===== 结果校验与自动重试 =====
+      function validateResult(rows, sqlStr, intent) {
+        if (rows.length === 0) return { valid: false, issue: '查询返回空结果', suggestion: '请检查字段名是否匹配，或移除 WHERE 过滤条件，尝试获取全部数据。' };
+        var numericKeys = (parsedData.fieldInfo || []).filter(function(f){return ['int','float','currency','percent'].indexOf(f.type)>=0;}).map(function(f){return f.name;});
+        var keys = Object.keys(rows[0] || {});
+        var metricKey = numericKeys[0] || keys[1] || keys[0];
+        if (metricKey) {
+          var allNull = rows.every(function(r){ return r[metricKey] == null || r[metricKey] === ''; });
+          if (allNull) return { valid: false, issue: '数值列全部为 null', suggestion: '所选数值字段可能不存在或全为空值，请换用 COUNT(*) 统计行数。' };
+        }
+        if (intent === 'trend' && rows.length > 1) {
+          var firstKey = keys[0];
+          try {
+            var dates = rows.map(function(r){ return new Date(r[firstKey]); }).filter(function(d){ return !isNaN(d); }).sort(function(a,b){return a-b;});
+            if (dates.length > 3) {
+              var span = (dates[dates.length-1] - dates[0]) / 86400000;
+              var gaps = 0;
+              for (var i=1;i<dates.length;i++){ if ((dates[i]-dates[i-1]) / 86400000 > 3) gaps++; }
+              if (gaps / Math.max(span, 1) > 0.3) return { valid: false, issue: '时间序列存在大量日期缺失', suggestion: '数据可能不连续，请尝试按周或月聚合。' };
+            }
+            var vals = rows.map(function(r){ return Number(r[metricKey] || 0); });
+            for (var i=1;i<vals.length;i++){
+              if (vals[i-1] > 0 && (vals[i] - vals[i-1]) / vals[i-1] > 10) {
+                return { valid: false, issue: '检测到异常极端波动（单期增长率 > 1000%）', suggestion: '请检查是否有离群点，也可尝试按周/月聚合。' };
+              }
+            }
+          } catch(e) {}
+        }
+        if ((intent === 'ranking' || intent === 'comparison') && rows.length > 50) {
+          return { valid: false, issue: '维度数量过多（>50），图表难以展示', suggestion: '建议仅展示 Top20，其余归类为其他。' };
+        }
+        if (rows.length === 1 && /各|排名|对比|分别/.test(question)) {
+          return { valid: false, issue: '预期多行结果但仅返回 1 行', suggestion: '可能错误使用了 GROUP BY，请重新检查 SQL。' };
+        }
+        return { valid: true };
+      }
+
+      var validateFlag = { wasRetried: false, issue: null };
+      var validation = validateResult(result, sql, intentInfo.intent);
+      if (!validation.valid) {
+        if (intentInfo.intent === 'ranking' && result.length > 20) {
+          result = result.slice(0, 20);
+          validateFlag.wasRetried = true;
+          validateFlag.issue = validation.issue;
+        } else if (intentInfo.intent === 'comparison' && result.length > 20) {
+          result = result.slice(0, 20);
+          validateFlag.wasRetried = true;
+          validateFlag.issue = validation.issue;
+        } else {
+          validateFlag.wasRetried = true;
+          validateFlag.issue = validation.issue;
+        }
+      }
 
       // 构建图表与解读（支持多指标）
       let chartInfo;
@@ -3703,7 +3875,8 @@
         type: 'DataQuery → ChartGen',
         confidence: 0.95,
         slots: slots,
-        pipeline: ['parse_file', 'generate_sql', 'render_chart']
+        pipeline: ['parse_file', 'generate_sql', 'render_chart'],
+        validateFlag: validateFlag
       };
 
       // 方案 4：混合模式 — 有 API Key 时让 LLM 重写解读文字（更自然、有洞察）
