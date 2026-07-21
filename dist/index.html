@@ -1961,23 +1961,49 @@
     function saveEdgeStore(s) {
       try { localStorage.setItem(EDGE_LEARN_KEY, JSON.stringify(s)); } catch {}
     }
+
+    // ===== 边缘学习自动沉淀 =====
+    // 用户点赞：当前问答的 SQL 是正确的，把 (question 关键词 → 字段名) 沉淀下来
+    function recordLike(question, dimension, metric) {
+      var store = loadEdgeStore();
+      if (!store.learnedDims) store.learnedDims = {};
+      if (!store.learnedMetrics) store.learnedMetrics = {};
+      if (dimension) store.learnedDims[question.slice(0, 30)] = dimension;
+      if (metric) store.learnedMetrics[question.slice(0, 30)] = metric;
+      saveEdgeStore(store);
+      console.log('[边缘学习] 点赞沉淀:', dimension, metric);
+    }
+
+    // 用户点踩：从飞书收到反馈后，自动把正确映射写入
+    function recordCorrectMapping(question, dimension, metric) {
+      recordLike(question, dimension, metric);
+    }
     function adaptiveFindDim(q, dimensionFields) {
       var store = loadEdgeStore(), learned = store.learnedDims || {};
-      for (var name in learned) {
-        if (q.includes(name)) { var m = dimensionFields.find(function(f){return f===name||f.includes(name)}); if(m) return m; }
+      // 先匹配用户历史问过的相似问题
+      for (var histQ in learned) {
+        if (q.indexOf(histQ) >= 0 || histQ.indexOf(q.slice(0, 10)) >= 0) {
+          var learnedDim = learned[histQ];
+          var m = dimensionFields.find(function(f){return f === learnedDim || f.indexOf(learnedDim) >= 0 || learnedDim.indexOf(f) >= 0; });
+          if (m) return m;
+        }
       }
       for (var i=0; i<dimensionFields.length; i++) {
-        if (q.includes(dimensionFields[i])) return dimensionFields[i];
+        if (q.indexOf(dimensionFields[i]) >= 0) return dimensionFields[i];
       }
       return null;
     }
     function adaptiveFindMetric(q, numericFields, columns) {
       var store = loadEdgeStore(), learned = store.learnedMetrics || {};
-      for (var name in learned) {
-        if (q.includes(name)) { var m = numericFields.find(function(f){return f===name||f.includes(name)}); if(m) return m; }
+      for (var histQ in learned) {
+        if (q.indexOf(histQ) >= 0 || histQ.indexOf(q.slice(0, 10)) >= 0) {
+          var learnedMet = learned[histQ];
+          var m = numericFields.find(function(f){return f === learnedMet || f.indexOf(learnedMet) >= 0 || learnedMet.indexOf(f) >= 0; });
+          if (m) return m;
+        }
       }
       for (var i=0; i<numericFields.length; i++) {
-        if (q.includes(numericFields[i])) return numericFields[i];
+        if (q.indexOf(numericFields[i]) >= 0) return numericFields[i];
       }
       return null;
     }
@@ -6924,6 +6950,12 @@ ${convData.sqls.join('\n')}
         var now = new Date().toLocaleString('zh-CN', { hour12: false });
         var text = '👍 用户点赞\n🕐 ' + now + '\n🙋 问题：' + q.slice(0, 200) + '\n📋 原因：' + finalReason;
         _pushToFeishu({ text: text, label: '点赞记录' });
+        // 边缘学习沉淀：点赞的问答映射存到 localStorage
+        if (q) {
+          var dim = (window._lastIntent && window._lastIntent.dim) || '';
+          var met = (window._lastIntent && window._lastIntent.metric) || '';
+          recordLike(q, dim, met);
+        }
         var panel = document.getElementById('like-panel-' + aiId);
         if (panel) panel.innerHTML = '<p style="font-size:11px;color:var(--color-accent);text-align:center;margin:0;">✅ 反馈已提交，感谢！</p>';
         _msgLikeReasons = [];
