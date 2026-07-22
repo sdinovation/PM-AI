@@ -3499,10 +3499,16 @@
           } else {
             aiMessage.classList.remove('typing-cursor');
             var mainHtml = highlightKeywordsInText(responseText, keywords, extractDataValues(analysis));
-            // 自动修正提示已隐藏，不向用户展示
             aiMessage.innerHTML = mainHtml;
             document.getElementById(aiId).dataset.intent = analysis.intent?.type || analysis.type || '';
-            addIntentBadge(aiId, analysis.intent, analysis.pipeline || ['parse_file', 'generate_sql', 'render_chart']);
+
+            // 判断是否需要渲染图表
+            var noChartTypes = { Chat:1, Unclear:1, ReportGen:1, recommendation:1, list:1, fallback:1 };
+            var shouldRenderChart = !noChartTypes[analysis.intent?.type || analysis.type];
+            var pipeline = ['parse_file', 'generate_sql'];
+            if (shouldRenderChart) pipeline.push('render_chart');
+            addIntentBadge(aiId, analysis.intent, pipeline);
+
             // 始终确保有 chartType 和 chartData（兜底）
             const ct = analysis.chartType || (analysis.intent?.type === 'summary' ? 'number' : 'bar');
             let cd = analysis.chartData;
@@ -3522,7 +3528,9 @@
                 cd = { categories: ['暂无数据'], values: [0] };
               }
             }
-            addChartToMessage(aiId, ct, cd, analysis.title || '分析结果', rr);
+            if (shouldRenderChart) {
+              addChartToMessage(aiId, ct, cd, analysis.title || '分析结果', rr);
+            }
             // 维度候选提示（如果 LLM 返回了多个候选）
             if (window._lastCandidates && window._lastCandidates.length > 1) {
               addDimensionCandidates(aiId, window._lastCandidates);
