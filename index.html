@@ -4129,6 +4129,31 @@
         window._lastExtraWhere = null;
       }
 
+      // 字段匹配校验：用户提到的字段是否被引擎选中
+      function checkFieldMatch(question, pickedDim, pickedMetric, allCols) {
+        var words = question.match(/[一-鿿a-zA-Z]{2,10}/g) || [];
+        var mismatches = [];
+        words.forEach(function(w) {
+          var lw = w.toLowerCase();
+          // 跳过停用词
+          if (/数据|文件|表格|可以|什么|怎么|多少|帮我|一下|那个|这个|哪个|最大|最小|最高|最低|排名|趋势|对比|占比|前几|top/i.test(lw)) return;
+          // 检查是否可能是字段名
+          var isFieldLike = allCols.some(function(c){ return c === w || c.indexOf(w) >= 0 || w.indexOf(c) >= 0; });
+          if (!isFieldLike) return; // 不是字段名，跳过
+          // 检查是否被选中
+          var isPicked = (pickedDim && (pickedDim === w || pickedDim.indexOf(w) >= 0 || w.indexOf(pickedDim) >= 0)) ||
+                         (pickedMetric && pickedMetric.field && (pickedMetric.field === w || pickedMetric.field.indexOf(w) >= 0 || w.indexOf(pickedMetric.field) >= 0));
+          if (!isPicked) mismatches.push(w);
+        });
+        return mismatches;
+      }
+      var fieldMismatches = checkFieldMatch(question, dimension, metric, columns);
+      if (fieldMismatches.length > 0) {
+        window._fieldMismatch = fieldMismatches[0];
+      } else {
+        window._fieldMismatch = null;
+      }
+
       // 三层匹配：关键词 → 边缘学习 → LLM识别
       // 1. 关键词匹配（parseDimension/parseMetric 已做）
       // 2. 边缘学习：查localStorage中之前LLM学到的映射
@@ -4158,7 +4183,7 @@
         return words.some(function(w){ return /销量|销售|营收|收入|利润|成本|价格|单价/.test(w) && allCols.indexOf(w) === -1; });
       })();
       var lowConf = (window._lastIntent && window._lastIntent.confidence < 0.6);
-      const needLLMCheck = (dimMismatch || metricMismatch || semanticGap || bizWordNoMatch || lowConf) && getApiKeyConfig();
+      const needLLMCheck = (dimMismatch || metricMismatch || semanticGap || bizWordNoMatch || lowConf || !!window._fieldMismatch) && getApiKeyConfig();
 
       if (dimMismatch) console.log('[LLM降级] 维度不匹配: 用户提到' + userMentionedDim.join(',') + ', 引擎返回' + dimension);
       if (metricMismatch) console.log('[LLM降级] 指标不匹配: 用户提到' + userMentionedMetric.join(',') + ', 引擎返回' + metric.field);
