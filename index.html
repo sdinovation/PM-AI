@@ -3498,13 +3498,20 @@
             document.getElementById(aiId).dataset.intent = analysis.intent?.type || analysis.type || '';
             addIntentBadge(aiId, analysis.intent, analysis.pipeline || ['parse_file', 'generate_sql', 'render_chart']);
             // 始终确保有 chartType 和 chartData（兜底）
-            const ct = analysis.chartType || 'bar';
+            const ct = analysis.chartType || (analysis.intent?.type === 'summary' ? 'number' : 'bar');
             let cd = analysis.chartData;
             const rr = analysis.rawResult || [];
             if (!cd || !cd.categories || cd.categories.length === 0) {
               if (rr.length > 0) {
                 const keys = Object.keys(rr[0]);
-                cd = { categories: rr.slice(0, 20).map(r => String(r[keys[0]] || '')), values: rr.slice(0, 20).map(r => { const v = r[keys[1]]; const n = typeof v === 'number' ? v : Number(String(v).replace(/[^\d.-]/g, '')); return isNaN(n) ? 0 : n; }), dimension: keys[0], metric: keys[1] };
+                // summary + 单行 → 数字卡片
+                if (ct === 'number' || rr.length === 1) {
+                  const obj = rr[0];
+                  const value = obj[keys[1] || keys[0]] || 0;
+                  cd = { categories: [String(value)], values: [Number(value)], display: 'number', dimension: keys[0], metric: keys[1] };
+                } else {
+                  cd = { categories: rr.slice(0, 20).map(r => String(r[keys[0]] || '')), values: rr.slice(0, 20).map(r => { const v = r[keys[1]]; const n = typeof v === 'number' ? v : Number(String(v).replace(/[^\d.-]/g, '')); return isNaN(n) ? 0 : n; }), dimension: keys[0], metric: keys[1] };
+                }
               } else {
                 cd = { categories: ['暂无数据'], values: [0] };
               }
@@ -3846,9 +3853,11 @@
       const isVague = vaguePatterns.test(question.trim()) && !specificKeywords.test(question);
 
       // 闲聊识别
-      const chatKeywords = /^(你好|您好|hi|hello|hey|嗨|早上好|下午好|晚上好|嗨喽|在吗|谢谢|感谢|thanks|thx|再见|拜拜|bye|88|好的|明白了|收到|哦|嗯|ok|OK|知道了|了解)$/i;
+      const chatKeywords = /^(你好|您好|hi|hello|hey|嗨|早上好|下午好|晚上好|嗨喽|在吗|谢谢|感谢|thanks|thx|再见|拜拜|bye|88|好的|明白了|收到|哦|嗯|ok|OK|知道了|了解|我|你|谁|啥|什么|请问|求教|帮忙|谢谢|3q|哈哈|233|666|emm)/i;
       var qTrimmed = question.trim();
-      if (chatKeywords.test(qTrimmed) || (qTrimmed.length <= 3 && /^[a-zA-Z一-龥]+$/.test(qTrimmed) && !/销售|订单|金额|数据|分析|趋势|排名|统计/.test(qTrimmed))) {
+      // 强闲聊：完全匹配 + 短促（<5字）+ 无分析关键词
+      var isAnalytical = /(销售|订单|金额|数据|分析|趋势|排名|统计|人数|占比|对比|课程|费率|会员|产品|客户)/.test(qTrimmed);
+      if (chatKeywords.test(qTrimmed) || (qTrimmed.length <= 3 && !isAnalytical)) {
         const chatReplies = [
           '你好！我是数分精灵，可以帮你分析数据。试试上传一个 CSV/Excel 文件，然后告诉我你想看什么～',
           '嗨！今天想分析什么数据？',
