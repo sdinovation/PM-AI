@@ -4,6 +4,12 @@ FEISHU_APP_ID = os.environ.get('FEISHU_APP_ID', '')
 FEISHU_APP_SECRET = os.environ.get('FEISHU_APP_SECRET', '')
 FEISHU_CHAT_ID = os.environ.get('FEISHU_CHAT_ID', 'oc_b7fdf031892ffce3314c0b46303be25d')
 FEISHU_WEBHOOK_URL = os.environ.get('FEISHU_WEBHOOK_URL', '')
+# 多群路由：每类消息可推不同群，不填则推默认群
+FEISHU_CHAT_TRAINING = os.environ.get('FEISHU_CHAT_TRAINING', '')  # #待训练
+FEISHU_CHAT_ERROR = os.environ.get('FEISHU_CHAT_ERROR', '')        # 错误告警
+FEISHU_CHAT_REPORT = os.environ.get('FEISHU_CHAT_REPORT', '')        # 报告导出
+FEISHU_CHAT_FEEDBACK = os.environ.get('FEISHU_CHAT_FEEDBACK', '')    # 点踩/点赞
+FEISHU_CHAT_DAILY = os.environ.get('FEISHU_CHAT_DAILY', '')          # 日汇总
 LLM_PROVIDER = os.environ.get('LLM_PROVIDER', 'deepseek')
 LLM_KEY = os.environ.get('LLM_KEY', '')
 LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.deepseek.com')
@@ -34,10 +40,67 @@ def feishu_token():
         return _token['t']
     return None
     
+def send_to_feishu_by_route(text, route=''):
+    """按路由推送到不同群：
+       training → #待训练群
+       error    → 错误告警群
+       report   → 报告群
+       feedback → 点踩/点赞群
+       daily    → 日汇总群
+       其他     → 默认群
+       支持 chat_id (oc_xxx) 或 webhook URL 两种格式
+    """
+    chat_id_map = {
+        'training': FEISHU_CHAT_TRAINING,
+        'error':    FEISHU_CHAT_ERROR,
+        'report':   FEISHU_CHAT_REPORT,
+        'feedback': FEISHU_CHAT_FEEDBACK,
+        'daily':    FEISHU_CHAT_DAILY,
+    }
+    target_chat = chat_id_map.get(route) or FEISHU_CHAT_ID
+    return send_to_feishu_text(text, target_chat)
+
+def send_to_feishu_text(text, target_chat):
+    # 判断是 chat_id (oc_xxx) 还是 webhook URL
+    if target_chat.startswith('http'):
+        # 用 webhook 直接发
+        inner = json.dumps({'text': text}, ensure_ascii=False)
+        data = inner.encode('utf-8')
+        u = urllib.parse.urlparse(target_chat)
+        conn = http.client.HTTPSConnection(u.hostname, timeout=30)
+        try:
+            conn.request('POST', u.path, body=data, headers={'Content-Type': 'application/json; charset=utf-8', 'Content-Length': str(len(data))})
+            resp = conn.getresponse()
+            if resp.status == 200: return True, 'webhook_ok'
+            return False, f'webhook_{resp.status}_{resp.read().decode(errors="ignore")[:200]}'
+        except Exception as ex:
+            return False, str(ex)[:200]
+        finally:
+            conn.close()
+    elif target_chat.startswith('oc_'):
+        # 用 token + chat_id
+        t = feishu_token()
+        if t:
+            inner = json.dumps({'text': text}, ensure_ascii=False)
+            outer = json.dumps({'receive_id': target_chat, 'msg_type': 'text', 'content': inner}, ensure_ascii=False)
+            data = outer.encode('utf-8')
+            u = urllib.parse.urlparse('https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id')
+            conn = http.client.HTTPSConnection(u.hostname, timeout=30)
+            try:
+                conn.request('POST', u.path + '?' + u.query, body=data, headers={'Authorization': f'Bearer {t}', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': str(len(data))})
+                resp = conn.getresponse()
+                if resp.status == 200: return True, 'ok'
+                return False, f'api_{resp.status}_{resp.read().decode(errors="ignore")[:200]}'
+            except Exception as ex:
+                return False, str(ex)[:200]
+            finally:
+                conn.close()
+    return False, 'no_route'
+
 def send_to_feishu(text):
+    """默认推主群"""
     t = feishu_token()
     if t:
-        # 手动拼 JSON，用 http.client 直接发，确保编码不丢失
         inner = json.dumps({'text': text}, ensure_ascii=False)
         outer = json.dumps({'receive_id': FEISHU_CHAT_ID, 'msg_type': 'text', 'content': inner}, ensure_ascii=False)
         data = outer.encode('utf-8')
@@ -52,22 +115,6 @@ def send_to_feishu(text):
             resp = conn.getresponse()
             if resp.status == 200: return True, 'ok'
             return False, f'api_{resp.status}_{resp.read().decode(errors="ignore")[:200]}'
-        except Exception as ex:
-            return False, str(ex)[:200]
-        finally:
-            conn.close()
-    if FEISHU_WEBHOOK_URL:
-        outer = json.dumps({'msg_type': 'text', 'content': {'text': text}}, ensure_ascii=True)
-        data = outer.encode('ascii')
-        u = urllib.parse.urlparse(FEISHU_WEBHOOK_URL)
-        conn = http.client.HTTPSConnection(u.hostname, timeout=30)
-        try:
-            conn.request('POST', u.path, body=data, headers={
-                'Content-Type': 'application/json; charset=utf-8',
-                'Content-Length': str(len(data))
-            })
-            resp = conn.getresponse()
-            return True, 'ok'
         except Exception as ex:
             return False, str(ex)[:200]
         finally:
