@@ -61,20 +61,9 @@ def send_to_feishu_text(text, target_chat):
     target_chat = target_chat.strip()
     # 判断是 chat_id (oc_xxx) 还是 webhook URL
     if target_chat.startswith('http'):
-        # 飞书 webhook：用 ensure_ascii=True 避免乱码
+        # 临时调试：返回 payload 前 300 字符，看中文编码
         payload = json.dumps({'msg_type': 'text', 'content': {'text': text}}, ensure_ascii=True)
-        data = payload.encode('ascii')
-        u = urllib.parse.urlparse(target_chat)
-        conn = http.client.HTTPSConnection(u.hostname, timeout=30)
-        try:
-            conn.request('POST', u.path, body=data, headers={'Content-Type': 'application/json; charset=utf-8', 'Content-Length': str(len(data))})
-            resp = conn.getresponse()
-            if resp.status == 200: return True, 'webhook_ok'
-            return False, f'webhook_{resp.status}_{resp.read().decode(errors="ignore")[:200]}'
-        except Exception as ex:
-            return False, str(ex)[:200]
-        finally:
-            conn.close()
+        return True, 'debug_payload:' + payload[:300]
     elif target_chat.startswith('oc_'):
         # 用 token + chat_id
         t = feishu_token()
