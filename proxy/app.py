@@ -40,14 +40,36 @@ def feishu_token():
     return None
 
 def send_webhook(webhook_url, text):
-    """发 webhook — 用 urllib.request 替代 http.client"""
+    """发 webhook — 手动构造 JSON 确保编码"""
     url = webhook_url.strip()
     if not url.startswith('http'):
         return False, 'bad_url'
-    payload = json.dumps({'msg_type': 'text', 'content': {'text': text}}, ensure_ascii=True)
+    # 手动 \uXXXX 编码中文字符，不依赖 json.dumps
+    def escape_unicode(s):
+        result = []
+        for c in s:
+            n = ord(c)
+            if n > 127:
+                result.append('\\u%04x' % n)
+            elif c == '"':
+                result.append('\\"')
+            elif c == '\\':
+                result.append('\\\\')
+            elif c == '\n':
+                result.append('\\n')
+            elif c == '\r':
+                result.append('\\r')
+            elif c == '\t':
+                result.append('\\t')
+            else:
+                result.append(c)
+        return ''.join(result)
+    text_esc = escape_unicode(text)
+    payload = '{"msg_type":"text","content":{"text":"' + text_esc + '"}}'
     data = payload.encode('ascii')
     req = urllib.request.Request(url, data=data, headers={
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Length': str(len(data))
     }, method='POST')
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
