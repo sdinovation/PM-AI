@@ -2745,7 +2745,9 @@
       document.getElementById('fileMeta').textContent = `${sizeText} · ${rowCount.toLocaleString()} 行数据`;
       document.getElementById('exportDataSource').textContent = fileName;
       document.getElementById('fileName').textContent = fileName;
-      // 飞书埋点：文件上传（已关闭，减少噪音）
+      // 飞书埋点：文件上传
+      var colCount = (parsedData && parsedData.columns) ? parsedData.columns.length : 0;
+      var cols = (parsedData && parsedData.columns) ? parsedData.columns : [];
       pushFileUploadLog(fileName, fileSize, rowCount, colCount, cols);
       // updateDataSourceDisplay 移到数据 push 之后调用
       // 如果尚无对话（初次使用），自动创建
