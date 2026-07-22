@@ -6677,10 +6677,17 @@ ${convData.sqls.join('\n')}
           },
           formatter: function(params) {
             if (Array.isArray(params)) {
-              return params.filter(p => p.value !== null && p.value !== undefined).map(p => (p.seriesName || p.name) + '：<b>' + Number(p.value).toLocaleString() + '</b>').join('<br/>') || '';
+              // 横轴 + 各系列值
+              var xLabel = params[0] ? '<div style="margin-bottom:4px;font-weight:600">' + (params[0].axisValueLabel || params[0].name) + '</div>' : '';
+              var items = params.filter(function(p){ return p.value !== null && p.value !== undefined; }).map(function(p){
+                return (p.marker || '') + ' ' + (p.seriesName || '') + '：<b>' + Number(p.value).toLocaleString() + '</b>';
+              }).join('<br/>');
+              return xLabel + (items || '');
             }
             if (params.value === null || params.value === undefined) return '';
-            return (params.seriesName || params.name) + '：<b>' + Number(params.value).toLocaleString() + '</b>';
+            // 饼图：显示名称+数值+百分比
+            var pct = params.percent != null ? ' (' + params.percent + '%)' : '';
+            return (params.seriesName || params.name) + '：<b>' + Number(params.value).toLocaleString() + '</b>' + pct;
           },
           extraCssText: 'box-shadow: 0 8px 24px -8px rgba(13,148,136,0.25); border-radius: 8px;'
         },
