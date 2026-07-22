@@ -40,26 +40,22 @@ def feishu_token():
     return None
 
 def send_webhook(webhook_url, text):
-    """直接发 webhook，已测试确保中文正常"""
+    """发 webhook — 用 urllib.request 替代 http.client"""
     url = webhook_url.strip()
     if not url.startswith('http'):
         return False, 'bad_url'
     payload = json.dumps({'msg_type': 'text', 'content': {'text': text}}, ensure_ascii=True)
     data = payload.encode('ascii')
-    u = urllib.parse.urlparse(url)
-    conn = http.client.HTTPSConnection(u.hostname, timeout=30)
+    req = urllib.request.Request(url, data=data, headers={
+        'Content-Type': 'application/json; charset=utf-8'
+    }, method='POST')
     try:
-        conn.request('POST', u.path, body=data, headers={
-            'Content-Type': 'application/json; charset=utf-8',
-            'Content-Length': str(len(data))
-        })
-        resp = conn.getresponse()
-        body = resp.read().decode(errors='ignore')
-        return resp.status == 200, f'wh_{resp.status}' if resp.status != 200 else 'wh_ok'
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return resp.status == 200, 'wh_ok'
+    except urllib.error.HTTPError as e:
+        return False, f'wh_{e.code}'
     except Exception as ex:
         return False, str(ex)[:100]
-    finally:
-        conn.close()
 
 def ok(data, status=200):
     return {'statusCode': status,
@@ -107,8 +103,6 @@ def handler(event, context=None):
     route = body.get('route', '')
     if not text:
         return ok({'code': 400, 'msg': 'no text'}, 400)
-    # 临时：返回 text 的 repr 看源头是否已乱码
-    return ok({'debug_text_repr': repr(text[:200]), 'debug_text': text[:100], 'route': route})
 
     # 路由表
     route_map = {
