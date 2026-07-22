@@ -7180,8 +7180,7 @@ ${convData.sqls.join('\n')}
       document.getElementById('pauseBtn').classList.add('hidden');
       if (generationTimeout) clearTimeout(generationTimeout);
       saveCurrentConversation();
-      // 分析完成日志已关闭（只保留 点踩/待训练/报错/报告导出）
-      // setTimeout(sendFeishuLog, 500);
+      setTimeout(sendFeishuLog, 500);
     }
 
     // ===== 飞书日志推送（增强版 v2）=====
