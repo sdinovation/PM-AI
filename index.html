@@ -3725,6 +3725,25 @@
         var cumulativeMarker = /总量|累计|累积|总计|总额|总值|总共|整体|总体|全部|汇总/.test(q);
         var trendMarker = /趋势|走势|变化|增长|下降|最近|近.+天|环比|同比|每日|每月/.test(q);
 
+        // 0. 差值检测："X 和 Y 的差值/差/差距/差异/相差/减去"
+        var diffField1 = null, diffField2 = null;
+        var diffMatch = q.match(/(.+)(?:和|与|跟)(.+)(?:的)?(?:差值|差|差距|差异|相差|减去)/);
+        if (diffMatch) {
+          var cand1 = diffMatch[1].trim(), cand2 = diffMatch[2].trim();
+          // 在数值字段中匹配
+          var nfs = (parsedData.fieldInfo || []).filter(function(f){ return ['int','float','currency','percent'].indexOf(f.type)>=0; }).map(function(f){return f.name;});
+          var textFields = (parsedData.fieldInfo || []).filter(function(f){ return f.type==='text'; }).map(function(f){return f.name;});
+          // 尝试精确匹配数值字段
+          diffField1 = nfs.find(function(f){ return f===cand1 || f.indexOf(cand1)>=0 || cand1.indexOf(f)>=0; }) || null;
+          diffField2 = nfs.find(function(f){ return f===cand2 || f.indexOf(cand2)>=0 || cand2.indexOf(f)>=0; }) || null;
+          // 如果数值字段没匹配到，尝试文本字段
+          if (!diffField1) diffField1 = textFields.find(function(f){ return f===cand1 || f.indexOf(cand1)>=0 || cand1.indexOf(f)>=0; }) || null;
+          if (!diffField2) diffField2 = textFields.find(function(f){ return f===cand2 || f.indexOf(cand2)>=0 || cand2.indexOf(f)>=0; }) || null;
+          if (diffField1 && diffField2) {
+            window._diffFields = [diffField1, diffField2];
+          }
+        }
+
         // 2. trend（累计标记 + 趋势标记 → 走窗口函数，不走普通趋势）
         if (trendMarker && dateCol && !cumulativeMarker) {
           intent = 'trend'; confidence = 0.9;
@@ -4342,6 +4361,10 @@
       }
       if (numericFields.length === 0) return null;
 
+      // 差值模式
+      if (window._diffFields && window._diffFields.length === 2) {
+        return { field: '__DIFF__', label: window._diffFields[0] + '-' + window._diffFields[1] };
+      }
       // COUNT 模式：无数值字段时，用 COUNT 作为指标
       if (numericFields.length === 1 && numericFields[0] === '__COUNT__') {
         return { field: '__COUNT__', label: '计数' };
@@ -4436,6 +4459,23 @@
     }
     
     function generateSQL(timeRange, dimension, metric, aggregation, sortOrder, limit) {
+      // 差值模式：field1 - field2
+      if (metric.field === '__DIFF__' && window._diffFields) {
+        var df = window._diffFields;
+        var conv2 = conversations.find(c => c.id === currentConversationId);
+        var active2 = getActiveData(conv2);
+        var tn2 = active2 && active2.fileName ? active2.fileName.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_一-鿿]/g, '_') : 'data';
+        var sql2 = 'SELECT ';
+        if (dimension) sql2 += dimension + ', ';
+        sql2 += 'SUM(' + df[0] + ' - ' + df[1] + ') AS 差值';
+        sql2 += '\nFROM ' + tn2;
+        if (timeRange) sql2 += '\nWHERE ' + timeRange.field + " >= '" + formatDate(timeRange.minDate) + "' AND " + timeRange.field + " <= '" + formatDate(timeRange.maxDate) + "'";
+        if (dimension) sql2 += '\nGROUP BY ' + dimension;
+        if (sortOrder) sql2 += '\nORDER BY 差值 ' + sortOrder.toUpperCase();
+        if (limit) sql2 += '\nLIMIT ' + limit;
+        window._diffFields = null;
+        return sql2;
+      }
       // 窗口函数：直接展示 LLM 生成的 SQL
       if (metric.field === '__WINDOW__') {
         return window._windowSql || '-- 窗口函数 SQL';
@@ -4552,8 +4592,30 @@
       var ratioCond = window._ratioCond || null;
 
       // COUNT 模式
+      // 差值模式
+      var isDiffMode = metric.field === '__DIFF__';
+      if (isDiffMode && window._diffFields) {
+        var dfFields = window._diffFields;
+        if (!dimension) {
+          var sumDiff = filtered.reduce(function(s, r){ return s + (Number(r[dfFields[0]]||0) - Number(r[dfFields[1]]||0)); }, 0);
+          return [{ '差值': sumDiff }];
+        }
+        var diffGroups = {};
+        filtered.forEach(function(r){
+          var k = String(r[dimension] || '未知');
+          if (!diffGroups[k]) diffGroups[k] = 0;
+          diffGroups[k] += Number(r[dfFields[0]]||0) - Number(r[dfFields[1]]||0);
+        });
+        var result = Object.entries(diffGroups).map(function(e){
+          var obj = {}; obj[dimension] = e[0]; obj['差值'] = e[1]; return obj;
+        });
+        if (sortOrder) result.sort(function(a,b){ return sortOrder==='desc' ? b['差值']-a['差值'] : a['差值']-b['差值']; });
+        if (limit) result = result.slice(0, limit);
+        return result;
+      }
+
       var isCountMode = metric.field === '__COUNT__';
-      var metricKey = isCountMode ? '计数' : (isRatio ? 'ratio_pct' : metric.field);
+      var metricKey = isCountMode ? '计数' : (isRatio ? 'ratio_pct' : (isDiffMode ? '差值' : metric.field));
 
       if (!dimension) {
         if (isRatio && ratioCond) {
