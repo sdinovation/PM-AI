@@ -2084,6 +2084,36 @@
       '达标': ['达标率','达标','target'],
       '同比': ['同比','yoy','去年同期'],
       '环比': ['环比','mom','上月'],
+      // ===== 通用英文数据集映射（Plotly / UCI / Gapminder 等）=====
+      '小费': ['小费','tip','tips','tip_amount','gratuity'],
+      '账单': ['账单','总账单','total_bill','bill','bill_amount','check'],
+      '用餐人数': ['用餐人数','用餐','size','party_size','guests'],
+      '气缸': ['气缸','气缸数','cylinders','cylinder','cyl'],
+      '马力': ['马力','horsepower','hp','power'],
+      '油耗': ['油耗','每加仑英里数','mpg','miles_per_gallon','fuel_economy'],
+      '重量': ['重量','weight','车重','curb_weight'],
+      '加速': ['加速','加速时间','acceleration'],
+      '排量': ['排量','displacement','engine_size'],
+      '花瓣': ['花瓣','petal','petal_length','petal_width','花瓣长度','花瓣宽度'],
+      '萼片': ['萼片','sepal','sepal_length','sepal_width','萼片长度','萼片宽度'],
+      '品种': ['品种','species','variety','type','name','品种名','名称'],
+      '预期寿命': ['预期寿命','寿命','life_expectancy','life_exp','lifeExp','lifespan'],
+      '人口': ['人口','人口数量','pop','population','人口数'],
+      '人均GDP': ['人均GDP','人均gdp','gdpPercap','gdp_per_capita','per_capita_gdp'],
+      '大洲': ['大洲','洲','continent','区域'],
+      '国家': ['国家','country','nation','地区'],
+      '年份': ['年份','生产年份','year','model_year','model-year'],
+      '股价': ['股价','收盘价','开盘价','最高价','最低价','close','open','high','low','AAPL','stock_price'],
+      '收盘价': ['收盘价','close','closing_price','adj_close','adjusted'],
+      '开盘价': ['开盘价','open','opening_price'],
+      '最高价': ['最高价','high','highest','max_price'],
+      '最低价': ['最低价','low','lowest','min_price'],
+      '成交量': ['成交量','volume','trading_volume','vol','交易量'],
+      '涨跌幅': ['涨跌幅','change','pct_change','change_percent'],
+      '趋势方向': ['趋势方向','direction','trend'],
+      '均线': ['均线','mavg','moving_avg','moving_average'],
+      '居住面积': ['居住面积','人均gdp','gdppercap'],
+      '日期': ['日期','时间','date','time','日期时间','Date'],
       // ===== 日期/时间别名 =====
       '月份': ['月份','月','month'],
       '季度': ['季度','quarter'],
@@ -2116,20 +2146,51 @@
       return null;
     }
 
+    // 将 camelCase / snake_case 拆分为单词数组
+    function splitFieldName(name) {
+      return name.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_\-\s]+/g, ' ').toLowerCase().split(' ').filter(function(w){return w.length > 1;});
+    }
+    // 模糊语义匹配：支持中文子串 + 英文 camelCase/snake_case 拆分词匹配
+    function fuzzyMatchField(q, field) {
+      var fl = field.toLowerCase();
+      var ql = q.toLowerCase();
+      // 直接子串匹配
+      if (fl.indexOf(ql) >= 0 || ql.indexOf(fl) >= 0) return 3;
+      // camelCase/snake_case 拆分后逐词匹配
+      var words = splitFieldName(field);
+      for (var i = 0; i < words.length; i++) {
+        if (ql.indexOf(words[i]) >= 0 || words[i].indexOf(ql) >= 0) return 2;
+      }
+      // 中文查询词与英文字段：用别名表做桥接（在调用前已做，这里是兜底）
+      return 0;
+    }
+    // 从字段列表中模糊匹配最佳字段
+    function bestFuzzyMatch(q, fields) {
+      var best = null, bestScore = 0;
+      for (var i = 0; i < fields.length; i++) {
+        var score = fuzzyMatchField(q, fields[i]);
+        if (score > bestScore) { bestScore = score; best = fields[i]; }
+      }
+      return bestScore >= 2 ? best : null;
+    }
+
     function adaptiveFindDim(q, dimensionFields) {
       var store = loadEdgeStore(), learned = store.learnedDims || {};
       // 先匹配用户历史问过的相似问题
       for (var histQ in learned) {
         if (q.indexOf(histQ) >= 0 || histQ.indexOf(q.slice(0, 10)) >= 0) {
           var learnedDim = learned[histQ];
-          var m = dimensionFields.find(function(f){return f === learnedDim || f.indexOf(learnedDim) >= 0 || learnedDim.indexOf(f) >= 0; });
+          var m = dimensionFields.find(function(f){return f === learnedDim || f.toLowerCase().indexOf(learnedDim.toLowerCase()) >= 0 || learnedDim.toLowerCase().indexOf(f.toLowerCase()) >= 0; });
           if (m) return m;
         }
       }
       // 1. 别名表匹配
       var aliasHit = resolveFieldAlias(q, dimensionFields);
       if (aliasHit) return aliasHit;
-      // 2. 字段名直接匹配
+      // 2. 字段名直接匹配（含 camelCase 拆分）
+      var directHit = bestFuzzyMatch(q, dimensionFields);
+      if (directHit) return directHit;
+      // 3. 字段名直接包含
       for (var i=0; i<dimensionFields.length; i++) {
         if (q.indexOf(dimensionFields[i]) >= 0) return dimensionFields[i];
       }
@@ -2140,14 +2201,17 @@
       for (var histQ in learned) {
         if (q.indexOf(histQ) >= 0 || histQ.indexOf(q.slice(0, 10)) >= 0) {
           var learnedMet = learned[histQ];
-          var m = numericFields.find(function(f){return f === learnedMet || f.indexOf(learnedMet) >= 0 || learnedMet.indexOf(f) >= 0; });
+          var m = numericFields.find(function(f){return f === learnedMet || f.toLowerCase().indexOf(learnedMet.toLowerCase()) >= 0 || learnedMet.toLowerCase().indexOf(f.toLowerCase()) >= 0; });
           if (m) return m;
         }
       }
       // 1. 别名表匹配
       var aliasHit = resolveFieldAlias(q, numericFields);
       if (aliasHit) return aliasHit;
-      // 2. 字段名直接匹配
+      // 2. 模糊匹配（含 camelCase 拆分）
+      var fuzzyHit = bestFuzzyMatch(q, numericFields);
+      if (fuzzyHit) return fuzzyHit;
+      // 3. 字段名直接匹配
       for (var i=0; i<numericFields.length; i++) {
         if (q.indexOf(numericFields[i]) >= 0) return numericFields[i];
       }
@@ -3788,13 +3852,13 @@
       function getNumericFieldName() {
         var nfs = (parsedData.fieldInfo || []).filter(function(f) { return ['int','float','currency','percent'].indexOf(f.type) >= 0; });
         if (nfs.length === 0) return null;
-        var preferred = nfs.find(function(f) { return /额|金额|收入|成本|利润|销量|数量|用户数|次数|费用/.test(f.name); });
+        var preferred = nfs.find(function(f) { return /额|金额|收入|成本|利润|销量|数量|用户数|次数|费用|sales|revenue|price|amount|volume|gdp|population|expectancy|mpg|horsepower|weight|tip|bill/.test(f.name.toLowerCase()); });
         return preferred ? preferred.name : nfs[0].name;
       }
       function getDimensionFieldName() {
         var tfs = (parsedData.fieldInfo || []).filter(function(f) { return f.type === 'text'; });
         if (tfs.length === 0) return null;
-        var preferred = tfs.find(function(f) { return /渠道|区域|城市|类别|类型|名称|部门|品牌|产品/.test(f.name); });
+        var preferred = tfs.find(function(f) { return /渠道|区域|城市|类别|类型|名称|部门|品牌|产品|channel|region|city|category|type|name|department|brand|product|species|continent|country|state|direction|origin|day|sex|smoker/.test(f.name.toLowerCase()); });
         if (preferred) return preferred.name;
         var small = tfs.filter(function(f) { var u = {}; var cnt = 0; (parsedData.rows||[]).forEach(function(r){ var v=r[f.name]; if(v!=null && !u[v]){u[v]=1; cnt++;}}); return cnt >= 1 && cnt <= 50; }).sort(function(a,b){return a.name.length-b.name.length;})[0];
         return small ? small.name : tfs[0].name;
@@ -3821,7 +3885,8 @@
         var isCumulative = /总量|累计|累积|总计|总额|总值|总共|整体|总体|全部|汇总/.test(q);
         var isTrend = /趋势|走势|增长|下降|最近|近.+天|每日|每月|每天/.test(q);
         var hasDate = !!dateCol;
-        var isCompare = /对比|比较|vs|分别|各|不同|按/.test(q) && !/占比|比例|分布|构成|百分比|份额/.test(q);
+        var isCompare = /对比|比较|vs|分别/.test(q) && !/占比|比例|分布|构成|百分比|份额/.test(q);
+        var isGroupCount = /各|每|不同|按/.test(q) && /数量|个数|多少|几|计数|count/.test(q);
         var isDist = /占比|比例|分布|构成|百分比|份额/.test(q);
         var isSummary = /总计|总共|总和|一共|汇总|统计|总共多少|一共多少/.test(q);
         var isScalar = /是多少|多少|什么|几|值/.test(q) || (q.length < 25 && !/各|每|排名|Top|对比|比较|分布|占比|趋势|走势|按|分组/.test(q));
@@ -3911,7 +3976,14 @@
           window._windowSql=examples;
         }
 
-        // 8️⃣ 占比分布
+        // 8️⃣ 分组计数（"各X数量"/"各X有几个"）
+        else if (isGroupCount) {
+          intent='distribution'; confidence=0.9;
+          examples='SELECT '+dim+', COUNT(*) as count FROM '+table+' GROUP BY '+dim+' ORDER BY count DESC';
+          window._isScalar=false;
+        }
+
+        // 9️⃣ 占比分布
         else if (isDist) {
           intent='distribution'; confidence=0.9;
           examples='SELECT '+dim+', SUM('+metric+') as total, ROUND(SUM('+metric+')*100.0/(SELECT SUM('+metric+') FROM '+table+'),2) as pct FROM '+table+' GROUP BY '+dim;
@@ -3924,8 +3996,8 @@
           examples='SELECT SUM('+metric+') as total, AVG('+metric+') as avg_value FROM '+table;
         }
 
-        // 🔟 对比
-        else if (isCompare) {
+        // 🔟1️⃣ 对比（"各X的Y"/"不同X的Y"/"按X看Y" 等，不含"数量"的分组聚合）
+        else if (isCompare || (/各|每|不同|按/.test(q) && !/数量|个数|计数|count/.test(q))) {
           intent='comparison'; confidence=0.85;
           examples='SELECT '+dim+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dim+' ORDER BY total DESC';
         }
@@ -3934,6 +4006,56 @@
         else if (isSummary || isCumulative) {
           intent='summary'; confidence=0.9;
           examples='SELECT SUM('+metric+') as total, AVG('+metric+') as avg_value FROM '+table;
+        }
+
+        // ============================================================
+        // 动态字段提取：用 adaptiveFindMetric / adaptiveFindDim 从问题中提取字段
+        // ============================================================
+        var allColumns = parsedData.columns || [];
+        var numericCols = (parsedData.fieldInfo || []).filter(function(f){return ['int','float','currency','percent'].indexOf(f.type)>=0;}).map(function(f){return f.name;});
+        var textCols = (parsedData.fieldInfo || []).filter(function(f){return f.type === 'text';}).map(function(f){return f.name;});
+
+        // 从用户问题中动态提取更精确的 metric
+        var dynMetric = adaptiveFindMetric(q, numericCols, allColumns);
+        if (dynMetric) metric = dynMetric;
+
+        // 从用户问题中动态提取更精确的 dimension（"各X"/"按X"/"不同X"模式）
+        var dimMatch = q.match(/(?:各|每|按|不同|各个)(.{1,10}?)(?:的|数量|分布|对比|排名|趋势|变化|总额|总计|总和|平均|最高|最低)?$/);
+        if (dimMatch) {
+          var dimText = dimMatch[1].trim();
+          var dynDim = adaptiveFindDim(dimText, textCols);
+          if (!dynDim) {
+            // 尝试在所有列中查找（某些维度可能是数值型，如"各年份"）
+            var dynDimAll = adaptiveFindDim(dimText, allColumns);
+            if (dynDimAll) dynDim = dynDimAll;
+          }
+          if (dynDim) dim = dynDim;
+        }
+
+        // "X和Y对比"/"X与Y的关系" → 双指标提取
+        var dualMatch = q.match(/(.{1,12}?)(?:和|与|跟)(.{1,12}?)(?:的)?(?:对比|比较|关系|差别|差异)/);
+        if (dualMatch && intent === 'comparison') {
+          var c1 = adaptiveFindMetric(dualMatch[1].trim(), numericCols, allColumns) || adaptiveFindDim(dualMatch[1].trim(), textCols);
+          var c2 = adaptiveFindMetric(dualMatch[2].trim(), numericCols, allColumns) || adaptiveFindDim(dualMatch[2].trim(), textCols);
+          if (c1 && c2) window._diffFields = [c1, c2];
+        }
+
+        // 重新生成 examples（用动态提取的 metric/dim）
+        if (metric !== getNumericFieldName() || dim !== getDimensionFieldName()) {
+          if (intent === 'comparison' || intent === 'distribution') {
+            examples = 'SELECT '+dim+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dim+' ORDER BY total DESC';
+          } else if (intent === 'ranking') {
+            var lim = 10;
+            if (/最高|最大|最多|最低|最小|最少/.test(q) && !/前|Top|排名/.test(q)) lim = 1;
+            else if (/前\s*([一二三四五六七八九十\d]+)/.test(q)) {
+              var cnNum = q.match(/前\s*([一二三四五六七八九十\d]+)/)[1];
+              var cnMap = {一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9,十:10};
+              lim = cnMap[cnNum] || parseInt(cnNum) || 10;
+            }
+            examples = 'SELECT '+dim+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dim+' ORDER BY total DESC LIMIT '+lim;
+          } else if (intent === 'trend' && dateCol) {
+            examples = 'SELECT '+dateCol+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dateCol+' ORDER BY '+dateCol;
+          }
         }
 
         return { intent: intent||'fallback', confidence:confidence, examples:examples, metric:metric, dim:dim, dateCol:dateCol };
@@ -4365,12 +4487,12 @@
         aggregation: aggregationName(aggregation)
       };
 
+      // 置信度校准
+      var slotScore = window._fieldMismatch ? 0.35 : (dimMismatch || metricMismatch ? 0.55 : 0.92);
+      var calibratedConf = Math.round((intentInfo.confidence || 0.85) * slotScore * 100) / 100;
+      window._slotScore = slotScore;
       const intent = {
         type: 'DataQuery → ChartGen',
-        // 置信度校准：槽位匹配度 × 意图置信度
-        var slotScore = window._fieldMismatch ? 0.35 : (dimMismatch || metricMismatch ? 0.55 : 0.92);
-        var calibratedConf = Math.round((intentInfo.confidence || 0.85) * slotScore * 100) / 100;
-        window._slotScore = slotScore;
         confidence: calibratedConf,
         slots: slots,
         pipeline: ['parse_file', 'generate_sql', 'render_chart'],
@@ -4394,7 +4516,7 @@
 
       return {
         type: 'DataQuery',
-        confidence: 0.95,
+        confidence: calibratedConf,
         intent: intent,
         pipeline: ['parse_file', 'generate_sql', 'render_chart', 'llm_enrich'],
         sql, interpretation, queryUnderstanding,
