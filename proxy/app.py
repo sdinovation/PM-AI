@@ -107,6 +107,8 @@ def handler(event, context=None):
     route = body.get('route', '')
     if not text:
         return ok({'code': 400, 'msg': 'no text'}, 400)
+    # 临时：返回 text 的 repr 看源头是否已乱码
+    return ok({'debug_text_repr': repr(text[:200]), 'debug_text': text[:100], 'route': route})
 
     # 路由表
     route_map = {
