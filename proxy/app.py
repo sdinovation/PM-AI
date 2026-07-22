@@ -5,11 +5,15 @@ FEISHU_APP_SECRET = os.environ.get('FEISHU_APP_SECRET', '')
 FEISHU_CHAT_ID = os.environ.get('FEISHU_CHAT_ID', 'oc_b7fdf031892ffce3314c0b46303be25d')
 FEISHU_WEBHOOK_URL = os.environ.get('FEISHU_WEBHOOK_URL', '')
 # 多群路由：每类消息可推不同群，不填则推默认群
-FEISHU_CHAT_TRAINING = os.environ.get('FEISHU_CHAT_TRAINING', '')  # #待训练
-FEISHU_CHAT_ERROR = os.environ.get('FEISHU_CHAT_ERROR', '')        # 错误告警
-FEISHU_CHAT_REPORT = os.environ.get('FEISHU_CHAT_REPORT', '')        # 报告导出
-FEISHU_CHAT_FEEDBACK = os.environ.get('FEISHU_CHAT_FEEDBACK', '')    # 点踩/点赞
-FEISHU_CHAT_DAILY = os.environ.get('FEISHU_CHAT_DAILY', '')          # 日汇总
+# 阿里云 FC 环境变量命名限制：字母开头 + 字母数字下划线（部分版本不允许连续下划线）
+# 改用短前缀避免命名冲突
+FC = os.environ.get('FC', '')  # 兼容老变量名，也可忽略
+# 5 个群的环境变量（短前缀）
+CHAT_TRAIN = os.environ.get('CHAT_TRAIN', '')     # #待训练
+CHAT_ERR = os.environ.get('CHAT_ERR', '')         # 错误告警
+CHAT_REPORT = os.environ.get('CHAT_REPORT', '')   # 报告导出
+CHAT_FB = os.environ.get('CHAT_FB', '')           # 点踩/点赞
+CHAT_DAILY = os.environ.get('CHAT_DAILY', '')     # 日汇总
 LLM_PROVIDER = os.environ.get('LLM_PROVIDER', 'deepseek')
 LLM_KEY = os.environ.get('LLM_KEY', '')
 LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.deepseek.com')
@@ -51,11 +55,11 @@ def send_to_feishu_by_route(text, route=''):
        支持 chat_id (oc_xxx) 或 webhook URL 两种格式
     """
     chat_id_map = {
-        'training': FEISHU_CHAT_TRAINING,
-        'error':    FEISHU_CHAT_ERROR,
-        'report':   FEISHU_CHAT_REPORT,
-        'feedback': FEISHU_CHAT_FEEDBACK,
-        'daily':    FEISHU_CHAT_DAILY,
+        'training': CHAT_TRAIN,
+        'error':    CHAT_ERR,
+        'report':   CHAT_REPORT,
+        'feedback': CHAT_FB,
+        'daily':    CHAT_DAILY,
     }
     target_chat = chat_id_map.get(route) or FEISHU_CHAT_ID
     return send_to_feishu_text(text, target_chat)
