@@ -203,7 +203,10 @@ def handler(event, context=None):
 
     elif action == 'feishu_log' or '/api/feishu/log' in path or '/feishu/log' in path:
         text = fmt(body) if body.get('event_type') else body.get('text', '')
-        if text: send_to_feishu(text); return ok({'code': 0})
+        route = body.get('route', '')
+        if text:
+            ok_flag, detail = send_to_feishu_by_route(text, route)
+            return ok({'code': 0, 'feishu_ok': ok_flag, 'feishu_detail': detail, 'route': route})
         return ok({'code': 400, 'msg': 'no text'}, 400)
 
     else:
@@ -212,7 +215,8 @@ def handler(event, context=None):
             res = do_llm_proxy(body)
             return ok(res, 200 if 'text' in res else 503)
         text = body.get('text', '')
+        route = body.get('route', '')
         if text:
-            ok_flag, detail = send_to_feishu(text)
-            return ok({'code': 0, 'feishu_ok': ok_flag, 'feishu_detail': detail})
+            ok_flag, detail = send_to_feishu_by_route(text, route)
+            return ok({'code': 0, 'feishu_ok': ok_flag, 'feishu_detail': detail, 'route': route})
         return ok({'code': 400, 'msg': 'no text'}, 400)
