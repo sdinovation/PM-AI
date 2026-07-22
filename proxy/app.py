@@ -45,15 +45,7 @@ def feishu_token():
     return None
     
 def send_to_feishu_by_route(text, route=''):
-    """按路由推送到不同群：
-       training → #待训练群
-       error    → 错误告警群
-       report   → 报告群
-       feedback → 点踩/点赞群
-       daily    → 日汇总群
-       其他     → 默认群
-       支持 chat_id (oc_xxx) 或 webhook URL 两种格式
-    """
+    """按路由推送到不同群"""
     chat_id_map = {
         'training': CHAT_TRAIN,
         'error':    CHAT_ERR,
