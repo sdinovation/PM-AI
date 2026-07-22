@@ -2746,7 +2746,7 @@
       document.getElementById('exportDataSource').textContent = fileName;
       document.getElementById('fileName').textContent = fileName;
       // 飞书埋点：文件上传（已关闭，减少噪音）
-      // pushFileUploadLog(fileName, fileSize, rowCount, colCount, cols);
+      pushFileUploadLog(fileName, fileSize, rowCount, colCount, cols);
       // updateDataSourceDisplay 移到数据 push 之后调用
       // 如果尚无对话（初次使用），自动创建
       if (!currentConversationId) {
