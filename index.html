@@ -2406,23 +2406,27 @@
       typeDistribution: []
     };
     
-    // 示例数据 CSV 内容（用于"试用示例数据"）
+// 示例数据 CSV 内容（用于"试用示例数据"）——人力资源员工管理
     function generateDemoCSV() {
-      const channels = ['App 自然搜索', '信息流广告', '社交媒体', '线下活动', '邮件营销'];
-      const cities = ['北京', '上海', '广州', '深圳', '杭州', '成都'];
+      const departments = ['研发部', '市场部', '销售部', '人事部', '财务部', '运营部'];
+      const cities = ['北京', '上海', '深圳', '广州', '杭州', '成都', '武汉'];
+      const genders = ['男', '女'];
       const rows = [];
-      rows.push(['日期', '渠道', '城市', '注册用户数', '订单数', '销售额', '转化率']);
-      
-      for (let i = 0; i < 120; i++) {
-        const date = new Date(2026, 6, 1 + Math.floor(i / 5));
-        const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-        const channel = channels[i % channels.length];
-        const city = cities[i % cities.length];
-        const newUsers = 300 + Math.floor(Math.random() * 800) + (i % 5) * 200;
-        const orders = Math.floor(newUsers * (0.15 + Math.random() * 0.2));
-        const revenue = Math.floor(orders * (80 + Math.random() * 200));
-        const conversionRate = parseFloat(((orders / newUsers) * 100).toFixed(1));
-        rows.push([dateStr, channel, city, newUsers, orders, revenue, conversionRate]);
+      rows.push(['入职日期', '员工ID', '部门', '城市', '性别', '年龄', '薪资', '绩效分数']);
+      // 生成 200 条员工数据
+      for (let i = 0; i < 200; i++) {
+        const year = 2022 + Math.floor(Math.random() * 4);
+        const month = 1 + Math.floor(Math.random() * 12);
+        const day = 1 + Math.floor(Math.random() * 28);
+        const dateStr = year + '-' + String(month).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+        const empId = 'E' + String(10000 + i).padStart(5,'0');
+        const dept = departments[i % departments.length];
+        const city = cities[Math.floor(Math.random() * cities.length)];
+        const gender = genders[i % 2];
+        const age = 22 + Math.floor(Math.random() * 35);
+        const salary = 8000 + Math.floor(Math.random() * 30000) + (dept === '研发部' ? 8000 : 0) + (city === '北京' || city === '上海' ? 5000 : 0);
+        const perf = (60 + Math.random() * 40).toFixed(1);
+        rows.push([dateStr, empId, dept, city, gender, age, salary, perf]);
       }
       return rows.map(r => r.join(',')).join('\n');
     }
@@ -2835,7 +2839,7 @@
     
     function loadDemoData() {
       const csvText = generateDemoCSV();
-      parseCSVString(csvText, '示例销售数据.csv', '8.2 KB');
+      parseCSVString(csvText, '示例员工数据.csv', '8.5 KB');
     }
     
     function resetUpload(e) {
@@ -5504,13 +5508,10 @@ ${convData.sqls.join('\n')}
     function sendReportFeedbackToFeishu(type, reason) {
       try {
         const title = document.getElementById('reportTitleInput')?.value || '数据分析报告';
-        const now = new Date().toLocaleString('zh-CN');
-        const text = '📋 数分报告反馈\n🕐 ' + now + '\n📄 报告：' + title + '\n📊 反馈：' + type + (reason ? ' · ' + reason : '');
-        fetch('https://return-feishu-pdflputxym.cn-hangzhou.fcapp.run', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: 'oc_b7fdf031892ffce3314c0b46303be25d', text: text })
-        }).catch(() => {});
+        var text = formatPushMessage('📋 报告反馈', title, [
+          { label: '👍 反馈', value: type + (reason ? ' · ' + reason : '') }
+        ]);
+        _pushToFeishu({ text: text, label: '报告点踩', route: 'feedback' });
       } catch(e) {}
     }
 
@@ -7090,12 +7091,14 @@ ${convData.sqls.join('\n')}
       if (btn) { btn.style.background = '#ef4444'; btn.style.color = '#fff'; }
       const extra = document.getElementById('dislike-extra-' + aiId);
       const extraText = extra ? extra.value.trim() : '';
-      const finalReason = extraText ? reason + '(' + extraText + ')' : reason;
+      const finalReason = extraText ? reason + '（' + extraText + '）' : reason;
       const el = document.getElementById(aiId);
       const q = el ? (el.dataset.question || '') : '';
-      const now = new Date().toLocaleString('zh-CN');
-      const text = '👎 点踩反馈\n🕐 ' + now + '\n🙋 原问题：' + q.slice(0, 100) + '\n📋 原因：' + finalReason;
-      try { fetch('https://return-feishu-pdflputxym.cn-hangzhou.fcapp.run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: 'oc_b7fdf031892ffce3314c0b46303be25d', text: text }) }).catch(() => {}); } catch(e) {}
+      const text = formatPushMessage('👎 点踩', '用户反馈', [
+        { label: '🙋 原问题', value: q.slice(0, 200) },
+        { label: '📋 原因', value: finalReason }
+      ]);
+      _pushToFeishu({ text: text, label: '点踩反馈', route: 'feedback' });
       const panel = document.getElementById('dislike-panel-' + aiId);
       if (panel) panel.innerHTML = '<p style="font-size:11px;color:var(--color-accent);text-align:center;margin:0;">✅ 反馈已提交，系统正在自动学习修正…</p>';
 
@@ -7212,15 +7215,38 @@ ${convData.sqls.join('\n')}
     }
 
     // 核心发送函数
+    // 标准化推送消息格式
+    function formatPushMessage(category, title, fields) {
+      var now = new Date().toLocaleString('zh-CN', { hour12: false });
+      var user = getUserFingerprint().slice(0, 10);
+      var sess = getSessionId().slice(0, 8);
+
+      var body = fields.map(function(f){
+        return '├ ' + f.label + '：' + f.value;
+      }).join('\n');
+
+      return [
+        '【' + category + '】' + title,
+        '⏰ 时间：' + now,
+        body,
+        '└ 👤 用户：`' + user + '` · 会话 #' + sess + ' · v' + (APP_VERSION || '?')
+      ].join('\n');
+    }
+
     async function _pushToFeishu(payload) {
       try {
         var text = payload.text;
         // 统一加上用户和版本标记
         var footer = '\n\n---\n👤 `' + getUserFingerprint().slice(0, 10) + '` · 会话 #' + getSessionId().slice(0, 8) + ' · v' + (APP_VERSION || '?');
+        var route = payload.route || '';
+        var body = { text: text + footer };
+        if (route) body.route = route;
+        // 兼容旧接口：直接发到主群也支持
+        if (!route) body.chat_id = FEISHU_CHAT_ID;
         var resp = await fetch(FEISHU_PROXY_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: FEISHU_CHAT_ID, text: text + footer })
+          body: JSON.stringify(body)
         });
         var result = await resp.json();
         console.log('[飞书] ' + (payload.label || '推送') + ' →', result.code || 'OK');
@@ -7287,113 +7313,79 @@ ${convData.sqls.join('\n')}
 
     // ② 文件上传
     function pushFileUploadLog(fileName, fileSize, rowCount, colCount, columns) {
-      var now = new Date().toLocaleString('zh-CN', { hour12: false });
-      var sizeKB = fileSize ? Math.round(fileSize / 1024) : 0;
       var sizeMB = fileSize ? (fileSize / (1024 * 1024)).toFixed(2) : '0';
-      var colsPreview = (columns || []).slice(0, 10).join('、');
+      var colsPreview = (columns || []).slice(0, 8).join('、');
+      if (colCount > 8) colsPreview += ' 等';
 
-      var text = [
-        '📁 **数分精灵 · 文件上传**',
-        '',
-        '🕐 **时间**：' + now,
-        '📄 **文件名**：' + (fileName || '未知'),
-        '📏 **大小**：' + sizeMB + ' MB（' + sizeKB.toLocaleString() + ' KB）',
-        '📊 **数据量**：' + (rowCount || 0).toLocaleString() + ' 行 × ' + (colCount || 0) + ' 列',
-        '🏷️ **字段**：' + (colsPreview || '无'),
-        (colCount > 10 ? '（共 ' + colCount + ' 列，以上仅展示前 10 列）' : '')
-      ].join('\n');
+      var text = formatPushMessage('📁 文件上传', fileName, [
+        { label: '📏 大小', value: sizeMB + ' MB' },
+        { label: '📊 数据量', value: (rowCount || 0) + ' 行 × ' + (colCount || 0) + ' 列' },
+        { label: '🏷️ 字段', value: colsPreview || '无' }
+      ]);
 
-      _pushToFeishu({ text: text, label: '文件上传' });
+      _pushToFeishu({ text: text, label: '文件上传', route: 'daily' });
     }
 
     // ③ 报告导出
     function pushReportExportLog(format, title, chartCount, hasLLM) {
-      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var formatLabel = { html: 'HTML 网页', doc: 'Word 文档', pdf: 'PDF 文件' }[format] || format;
       var llmLabel = hasLLM ? 'LLM 智能填充' : '本地模板生成';
 
-      var text = [
-        '📄 **数分精灵 · 报告导出**',
-        '',
-        '🕐 **时间**：' + now,
-        '📝 **标题**：' + (title || '数据分析报告'),
-        '📦 **格式**：' + formatLabel,
-        '📈 **图表数**：' + (chartCount || 0) + ' 张',
-        '🤖 **生成方式**：' + llmLabel
-      ].join('\n');
+      var text = formatPushMessage('📄 报告导出', title || '数据分析报告', [
+        { label: '📦 格式', value: formatLabel },
+        { label: '📈 图表数', value: (chartCount || 0) + ' 张' },
+        { label: '🤖 生成方式', value: llmLabel }
+      ]);
 
-      _pushToFeishu({ text: text, label: '报告导出' });
+      _pushToFeishu({ text: text, label: '报告导出', route: 'report' });
     }
 
     // ④ 错误告警
     function pushErrorLog(errorType, errorMsg, context) {
-      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var ds = document.getElementById('fileName')?.textContent || '未知';
       var roundIdx = getRoundIndex();
 
-      var text = [
-        '🚨 **数分精灵 · 错误告警**',
-        '',
-        '🕐 **时间**：' + now,
-        '📂 **当前数据**：' + ds,
-        '🔄 **对话轮次**：第 ' + roundIdx + ' 轮',
-        '🏷️ **错误类型**：' + (errorType || '未知'),
-        '📝 **错误详情**：',
-        (errorMsg || '未知错误').slice(0, 500),
-        '',
-        '📋 **上下文**：',
-        (context || '无').slice(0, 300)
-      ].join('\n');
+      var text = formatPushMessage('🚨 错误', errorType || '未知错误', [
+        { label: '📂 数据', value: ds },
+        { label: '🔄 轮次', value: '第 ' + roundIdx + ' 轮' },
+        { label: '📝 详情', value: (errorMsg || '未知').slice(0, 300) },
+        { label: '📋 上下文', value: (context || '无').slice(0, 200) }
+      ]);
 
-      _pushToFeishu({ text: text, label: '错误告警' });
+      _pushToFeishu({ text: text, label: '错误告警', route: 'error' });
     }
 
     // ⑤ 页面会话开始（首次加载时调用一次）
     function pushSessionStartLog() {
-      // 用 sessionStorage 标记，同一标签页只发一次
       if (sessionStorage.getItem('shufen-session-sent')) return;
       sessionStorage.setItem('shufen-session-sent', '1');
 
-      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var hasKey = hasUserApiKey();
       var darkMode = document.documentElement.classList.contains('dark');
+      var text = formatPushMessage('🟢 新用户', '会话开始', [
+        { label: '📱 屏幕', value: window.innerWidth + ' × ' + window.innerHeight },
+        { label: '🌓 主题', value: darkMode ? '深色模式' : '浅色模式' },
+        { label: '🔑 已配 Key', value: hasKey ? '是' : '否' },
+        { label: '🌐 语言', value: navigator.language || '未知' },
+        { label: '🔗 来源', value: document.referrer || '直接访问' }
+      ]);
 
-      var text = [
-        '🟢 **数分精灵 · 新会话**',
-        '',
-        '🕐 **时间**：' + now,
-        '📱 **屏幕**：' + window.innerWidth + ' × ' + window.innerHeight,
-        '🌓 **主题**：' + (darkMode ? '深色模式' : '浅色模式'),
-        '🔑 **已配 Key**：' + (hasKey ? '是' : '否'),
-        '🌐 **语言**：' + (navigator.language || '未知'),
-        '🔗 **来源**：' + (document.referrer || '直接访问')
-      ].join('\n');
-
-      _pushToFeishu({ text: text, label: '会话开始' });
+      _pushToFeishu({ text: text, label: '会话开始', route: 'daily' });
     }
 
     // ⑥ 未识别问题记录（训练用）
     function pushUntrainedLog(userQuestion) {
-      var now = new Date().toLocaleString('zh-CN', { hour12: false });
       var ds = document.getElementById('fileName')?.textContent || '未知';
-      var fields = (parsedData && parsedData.fieldInfo) ? parsedData.fieldInfo.map(function(f) { return f.name + '(' + f.type + ')'; }).join('、') : '无';
+      var fields = (parsedData && parsedData.fieldInfo) ? parsedData.fieldInfo.slice(0, 6).map(function(f) { return f.name + '(' + f.type + ')'; }).join('、') : '无';
 
-      var text = [
-        '#待训练',
-        '',
-        '🚩 **数分精灵 · 未识别问题**',
-        '',
-        '🕐 **时间**：' + now,
-        '📂 **数据源**：' + ds,
-        '🏷️ **字段列表**：' + fields,
-        '',
-        '🙋 **用户问题**：',
-        (userQuestion || '').slice(0, 500),
-        '',
-        '⚠️ **状态**：系统无法识别意图，需要人工补充训练数据'
-      ].join('\n');
+      var text = '#待训练\n\n' + formatPushMessage('🚩 未识别', '意图待训练', [
+        { label: '📂 数据', value: ds },
+        { label: '🏷️ 字段', value: fields },
+        { label: '🙋 问题', value: (userQuestion || '').slice(0, 200) },
+        { label: '⚠️ 状态', value: '需人工补充训练数据' }
+      ]);
 
-      _pushToFeishu({ text: text, label: '未识别记录' });
+      _pushToFeishu({ text: text, label: '未识别记录', route: 'training' });
     }
 
     // ⑦ 点赞记录（细分原因）
@@ -7422,9 +7414,11 @@ ${convData.sqls.join('\n')}
         var finalReason = _msgLikeReasons.join('、') + (extraText ? '(' + extraText + ')' : '');
         var el = document.getElementById(aiId);
         var q = el ? (el.dataset.question || '') : '';
-        var now = new Date().toLocaleString('zh-CN', { hour12: false });
-        var text = '👍 用户点赞\n🕐 ' + now + '\n🙋 问题：' + q.slice(0, 200) + '\n📋 原因：' + finalReason;
-        _pushToFeishu({ text: text, label: '点赞记录' });
+        var text = formatPushMessage('👍 点赞', '用户反馈', [
+          { label: '🙋 问题', value: q.slice(0, 200) },
+          { label: '📋 原因', value: finalReason }
+        ]);
+        _pushToFeishu({ text: text, label: '点赞记录', route: 'feedback' });
         // 边缘学习沉淀：点赞的问答映射存到 localStorage
         if (q) {
           var dim = (window._lastIntent && window._lastIntent.dim) || '';
