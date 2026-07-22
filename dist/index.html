@@ -3724,6 +3724,13 @@
         }
         var cumulativeMarker = /总量|累计|累积|总计|总额|总值|总共|整体|总体|全部|汇总/.test(q);
         var trendMarker = /趋势|走势|变化|增长|下降|最近|近.+天|环比|同比|每日|每月/.test(q);
+        // 标量检测："xxx的销售量"、"转化率是多少"、"总订单数"等直接出数字
+        var groupMarkers = /各|每|排名|Top|对比|比较|分布|占比|趋势|走势|按|分组/.test(q);
+        if (!groupMarkers && q.length < 30) {
+          window._isScalar = true;
+        } else {
+          window._isScalar = false;
+        }
 
         // 0. 差值检测："X 和 Y 的差值/差/差距/差异/相差/减去"
         var diffField1 = null, diffField2 = null;
