@@ -2443,7 +2443,7 @@
       initConversationScrollCollapse();
       initSmartScroll();
       // 飞书埋点：新会话（已关闭，减少噪音）
-      // setTimeout(pushSessionStartLog, 1000);
+      setTimeout(pushSessionStartLog, 1000);
       // 页面加载时同步文件信息条
       if (currentConversationId) updateDataSourceDisplay();
       // 清空旧版 localStorage（旧布局会导致头像位置不一致）
