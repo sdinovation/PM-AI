@@ -3504,7 +3504,9 @@
 
             // 判断是否需要渲染图表
             var noChartTypes = { Chat:1, Unclear:1, ReportGen:1, recommendation:1, list:1, fallback:1 };
-            var shouldRenderChart = !noChartTypes[analysis.intent?.type || analysis.type];
+            var rrLen = (analysis.rawResult || []).length;
+            var askedForChart = /图|画|绘|图表|柱状图|饼图|折线图|趋势图|可视化/.test(question);
+            var shouldRenderChart = !noChartTypes[analysis.intent?.type || analysis.type] && (rrLen > 2 || askedForChart);
             var pipeline = ['parse_file', 'generate_sql'];
             if (shouldRenderChart) pipeline.push('render_chart');
             addIntentBadge(aiId, analysis.intent, pipeline);
@@ -4756,9 +4758,14 @@
         });
       }
 
-      // 应用 LIMIT
+      // 应用 LIMIT（含并列处理）
       if (limit && limit > 0 && result.length > limit) {
-        result = result.slice(0, limit);
+        var cutoffVal = result[limit - 1][metricKey];
+        var endIdx = limit;
+        while (endIdx < result.length && result[endIdx][metricKey] === cutoffVal) {
+          endIdx++;
+        }
+        result = result.slice(0, endIdx);
       }
 
       return result;
