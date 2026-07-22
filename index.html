@@ -1980,33 +1980,76 @@
     }
     // 业务术语别名表：用户口语 → 数据字段名
     var FIELD_ALIASES = {
-      // 指标别名
-      'gmv': ['销售额','收入','金额','revenue','gmv'],
-      '客单价': ['订单金额','单价','avg_order'],
-      'dau': ['日活用户','日活','daily_active'],
-      'mau': ['月活用户','月活','monthly_active'],
-      '转化率': ['转化率','转化','conversion_rate'],
-      '留存率': ['留存','retention'],
-      'arpu': ['人均收入','人均','arpu'],
-      'roi': ['投资回报','回报率','roi'],
+      // ===== 电商/零售 =====
+      'gmv': ['销售额','收入','金额','revenue','gmv','总销售额'],
+      '客单价': ['订单金额','单价','avg_order','平均订单金额'],
+      '客单': ['订单金额','单价'],
+      '下单数': ['订单数','订单量','order_count','下单量'],
+      '下单': ['订单数','订单量'],
+      '销量': ['销售量','销售数量','销量','sales_qty','sold'],
+      '销售额': ['销售额','营收','revenue','sales_amount','总收入'],
+      '转化率': ['转化率','转化','conversion_rate','成交率'],
+      '复购率': ['复购','repurchase_rate','回头客'],
+      '退款率': ['退款','refund_rate','退货率'],
+      '毛利率': ['毛利','利润率','margin'],
+      '库存': ['库存量','库存','stock','inventory'],
+      // ===== 用户/流量 =====
+      'dau': ['日活用户','日活','daily_active','日活跃'],
+      'mau': ['月活用户','月活','monthly_active','月活跃'],
+      '留存率': ['留存','retention','次留','次日留存'],
+      'arpu': ['人均收入','人均','arpu','客均收入'],
       'ctr': ['点击率','ctr','click_rate'],
-      'cvr': ['转化','cvr'],
-      '复购率': ['复购','repurchase_rate'],
-      '退款率': ['退款','refund_rate'],
-      '跳失率': ['跳失','bounce_rate'],
-      '下单数': ['订单数','订单量','order_count'],
-      '销售额': ['销售额','营收','revenue'],
-      // 维度别名
-      '渠道': ['渠道','channel','来源','source'],
-      '城市': ['城市','地区','city','region','province'],
-      '品类': ['品类','类别','category','产品类目'],
-      '部门': ['部门','组织','department'],
+      'cvr': ['转化','cvr','成交转化'],
+      '跳失率': ['跳失','bounce_rate','跳出率'],
+      '新用户': ['新注册用户','新增用户','new_user'],
+      '活跃用户': ['活跃用户','active_user','日活用户'],
+      // ===== 财务 =====
+      'roi': ['投资回报','回报率','roi','投入产出比'],
+      '成本': ['成本','cost','花费','支出','费用'],
+      '收入': ['收入','营收','revenue','入账'],
+      '利润': ['利润','profit','净利','净利润'],
+      '净利润': ['净利润','利润','profit','net_profit'],
+      '预算': ['预算','budget','预估'],
+      // ===== HR/人事 =====
+      '薪资': ['月薪','工资','薪水','salary','薪酬'],
+      '绩效': ['绩效评分','绩效','performance','考核'],
+      '入职': ['入职日期','入职','hire_date'],
+      '离职': ['离职','是否离职','turnover'],
+      '工龄': ['工龄','工作年限','tenure','入职年限'],
+      // ===== 教育 =====
+      '成绩': ['分数','成绩','score','考试成绩'],
+      '及格率': ['及格率','通过率','pass_rate'],
+      // ===== 医疗 =====
+      '就诊': ['就诊次数','就诊','visit'],
+      '诊断': ['诊断','diagnosis'],
+      // ===== 物流 =====
+      '发货': ['发货日期','发货','ship_date'],
+      '准时率': ['准时率','准时','on_time_rate'],
+      // ===== 健身房 =====
+      '到店': ['到店次数','到店','visit_count'],
+      '续费': ['续费金额','续费','renewal'],
+      '续费率': ['续费率','renewal_rate'],
+      // ===== 充电桩 =====
+      '充电': ['充电电量','充电','charge'],
+      '充电量': ['充电电量','充电','charge_energy'],
+      // ===== 维度别名 =====
+      '渠道': ['渠道','channel','来源','source','推广渠道'],
+      '城市': ['城市','地区','city','region','province','所在城市'],
+      '省份': ['省份','省','province','所在省份'],
+      '品类': ['品类','类别','category','产品类目','产品类别','商品类别'],
+      '产品': ['产品名称','产品','product','商品'],
+      '部门': ['部门','组织','department','所属部门'],
       '品牌': ['品牌','brand'],
-      '客户': ['客户','customer','用户'],
-      '会员等级': ['会员等级','会员','member_level','vip_level'],
+      '客户': ['客户','customer','用户','买家'],
+      '会员等级': ['会员等级','会员','member_level','vip_level','等级'],
       '性别': ['性别','gender','sex'],
-      '年龄段': ['年龄段','年龄','age_group'],
-      '状态': ['状态','status','订单状态']
+      '年龄段': ['年龄段','年龄','age_group','年龄组'],
+      '状态': ['状态','status','订单状态','是否'],
+      '日期': ['日期','时间','date','日期时间'],
+      '门店': ['门店','店铺','store','健身房名称','站点'],
+      '卡类型': ['卡类型','会员卡','card_type','卡种'],
+      '员工': ['员工姓名','员工','姓名','employee'],
+      '产品线': ['产品线','产品类别','product_line'],
     };
 
     function resolveFieldAlias(q, fields) {
@@ -4001,6 +4044,28 @@
       const timeRange = parseTimeRange(q, dateField, rows);
       let dimension = parseDimension(q, dimensionFields, columns);
       let metric = parseMetric(q, numericFields, columns);
+
+      // 字段缺失检测：用户提到的字段不在数据中，提示替代字段
+      function detectMissingFields(question, allCols) {
+        // 提取用户可能提到的字段名（中文2-4字词）
+        var words = question.match(/[一-鿿]{2,4}/g) || [];
+        var missing = [];
+        words.forEach(function(w) {
+          if (w === '数据' || w === '文件' || w === '表格' || w === '可以' || w === '什么' || w === '怎么' || w === '多少' || w === '帮我' || w === '一下') return;
+          var found = allCols.some(function(c){ return c === w || c.indexOf(w) >= 0 || w.indexOf(c) >= 0; });
+          if (!found && missing.indexOf(w) === -1) missing.push(w);
+        });
+        return missing;
+      }
+      var missingFields = detectMissingFields(question, columns);
+      if (missingFields.length > 0) {
+        var numCols = numericFields.slice(0, 4).join('、');
+        var txtCols = dimensionFields.slice(0, 4).join('、');
+        var suggestion = '数据中没有「' + missingFields[0] + '」字段。可用的数值字段：' + (numCols || '无') + '；维度字段：' + (txtCols || '无');
+        window._fieldSuggestion = suggestion;
+      } else {
+        window._fieldSuggestion = null;
+      }
 
       // 单值筛选："抖音的销售额" → dimension='渠道', extraWhere={渠道:'抖音'}
       var singleFilter = parseSingleValueFilter(q, dimensionFields);
