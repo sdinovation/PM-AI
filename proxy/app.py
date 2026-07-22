@@ -57,6 +57,8 @@ def send_to_feishu_by_route(text, route=''):
     return send_to_feishu_text(text, target_chat)
 
 def send_to_feishu_text(text, target_chat):
+    # 去除可能的空格或不可见字符
+    target_chat = target_chat.strip()
     # 判断是 chat_id (oc_xxx) 还是 webhook URL
     if target_chat.startswith('http'):
         # 用 webhook 直接发
