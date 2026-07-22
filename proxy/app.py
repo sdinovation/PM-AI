@@ -61,9 +61,9 @@ def send_to_feishu_text(text, target_chat):
     target_chat = target_chat.strip()
     # 判断是 chat_id (oc_xxx) 还是 webhook URL
     if target_chat.startswith('http'):
-        # 飞书 webhook 必须用完整格式：{msg_type, content: {text}}
-        payload = json.dumps({'msg_type': 'text', 'content': {'text': text}}, ensure_ascii=False)
-        data = payload.encode('utf-8')
+        # 飞书 webhook：用 ensure_ascii=True 避免乱码
+        payload = json.dumps({'msg_type': 'text', 'content': {'text': text}}, ensure_ascii=True)
+        data = payload.encode('ascii')
         u = urllib.parse.urlparse(target_chat)
         conn = http.client.HTTPSConnection(u.hostname, timeout=30)
         try:
