@@ -40,16 +40,21 @@ def feishu_token():
     return None
 
 def send_webhook(webhook_url, text):
-    """发 webhook — 手动构造 JSON 确保编码"""
+    """发 webhook — \uXXXX 编码，正确处理 emoji（代理对）"""
     url = webhook_url.strip()
     if not url.startswith('http'):
         return False, 'bad_url'
-    # 手动 \uXXXX 编码中文字符，不依赖 json.dumps
     def escape_unicode(s):
         result = []
         for c in s:
             n = ord(c)
-            if n > 127:
+            if n > 0xFFFF:
+                # emoji 等 >U+FFFF 用代理对
+                n -= 0x10000
+                hi = 0xD800 | (n >> 10)
+                lo = 0xDC00 | (n & 0x3FF)
+                result.append('\\u%04x\\u%04x' % (hi, lo))
+            elif n > 127:
                 result.append('\\u%04x' % n)
             elif c == '"':
                 result.append('\\"')
