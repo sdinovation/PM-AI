@@ -3722,8 +3722,11 @@
           var lim = extractNumber(q, /(\d+)/) || 10;
           examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total FROM ' + table + ' GROUP BY ' + dim + ' ORDER BY total DESC LIMIT ' + lim;
         }
-        // 2. trend（但排除"总量趋势"，走累计窗口函数）
-        else if (/趋势|走势|变化|增长|下降|最近|近.+天|环比|同比|每日|每月/.test(q) && dateCol && !/总量|累计|累积/.test(q)) {
+        var cumulativeMarker = /总量|累计|累积|总计|总额|总值|总共|整体|总体|全部|汇总/.test(q);
+        var trendMarker = /趋势|走势|变化|增长|下降|最近|近.+天|环比|同比|每日|每月/.test(q);
+
+        // 2. trend（累计标记 + 趋势标记 → 走窗口函数，不走普通趋势）
+        if (trendMarker && dateCol && !cumulativeMarker) {
           intent = 'trend'; confidence = 0.9;
           var days = extractNumber(q, /近?(\d+)\s*天/) || 30;
           examples = 'SELECT DATE(' + dateCol + ') as period, SUM(' + metric + ') as total FROM ' + table + " WHERE " + dateCol + " >= CURRENT_DATE - INTERVAL '" + days + " day' GROUP BY period ORDER BY period";
@@ -3743,8 +3746,8 @@
           intent = 'summary'; confidence = 0.9;
           examples = 'SELECT SUM(' + metric + ') as total, AVG(' + metric + ') as avg_value FROM ' + table;
         }
-        // 7. 窗口函数（总量趋势/累计/环比/同比）
-        else if (/总量|累计|累积|环比|同比|累计值|逐月|逐周|累计增长/.test(q)) {
+        // 7. 窗口函数（累计标记+趋势标记，或环比/同比）
+        else if (cumulativeMarker || /环比|同比|累计值|逐月|逐周|累计增长/.test(q)) {
           intent = 'window_function'; confidence = 0.85;
           if (dateCol) {
             examples = 'SELECT ' + dateCol + ', SUM(' + metric + ') as period_total, SUM(SUM(' + metric + ')) OVER (ORDER BY ' + dateCol + ') AS cumulative FROM ' + table + ' GROUP BY ' + dateCol + ' ORDER BY ' + dateCol;
