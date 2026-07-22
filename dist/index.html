@@ -3716,73 +3716,112 @@
         var dateCol = getDateFieldName() || 'date_col';
         var table = (parsedData.fileName || 'data').replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_一-鿿]/g, '_');
 
-        // 1. ranking
-        if (/Top|排名|前几|最多|最少|最大|最小|最高|最低/.test(q)) {
-          intent = 'ranking'; confidence = 0.9;
-          var lim = extractNumber(q, /(\d+)/) || 10;
-          examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total FROM ' + table + ' GROUP BY ' + dim + ' ORDER BY total DESC LIMIT ' + lim;
-        }
-        var cumulativeMarker = /总量|累计|累积|总计|总额|总值|总共|整体|总体|全部|汇总/.test(q);
-        var trendMarker = /趋势|走势|变化|增长|下降|最近|近.+天|环比|同比|每日|每月/.test(q);
-        // 标量检测："xxx的销售量"、"转化率是多少"、"总订单数"等直接出数字
-        var groupMarkers = /各|每|排名|Top|对比|比较|分布|占比|趋势|走势|按|分组/.test(q);
-        if (!groupMarkers && q.length < 30) {
-          window._isScalar = true;
-        } else {
-          window._isScalar = false;
-        }
+        // 语义标记
+        var isRanking = /Top|排名|前几|哪个(?:渠道|城市|类别|产品|部门|店|品牌)最高|哪个(?:渠道|城市|类别|产品|部门|店|品牌)最低|哪个(?:渠道|城市|类别|产品|部门|店|品牌)最多|哪个(?:渠道|城市|类别|产品|部门|店|品牌)最少/.test(q);
+        var isCumulative = /总量|累计|累积|总计|总额|总值|总共|整体|总体|全部|汇总/.test(q);
+        var isTrend = /趋势|走势|增长|下降|最近|近.+天|每日|每月|每天/.test(q);
+        var hasDate = !!dateCol;
+        var isCompare = /对比|比较|vs|分别|各|不同|按/.test(q) && !/占比|比例|分布|构成|百分比|份额/.test(q);
+        var isDist = /占比|比例|分布|构成|百分比|份额/.test(q);
+        var isSummary = /总计|总共|总和|一共|汇总|统计|总共多少|一共多少/.test(q);
+        var isScalar = /是多少|多少|什么|几|值/.test(q) || (q.length < 25 && !/各|每|排名|Top|对比|比较|分布|占比|趋势|走势|按|分组/.test(q));
+        var isRec = /怎么提升|如何提高|建议|怎么办|推荐|策略|方案/.test(q);
+        var isList = /有哪些|有什么|哪些|什么产品|什么渠道/.test(q);
+        var isFilter = /(?:只看|只看|仅仅|仅|特定|唯独)(.+)/.test(q) || /^(?:(.+)(?:的))(?:销售额|订单|收入|利润|数量|人数).*/.test(q);
+        var isWhich = /哪个|哪一个|哪种/.test(q);
 
-        // 0. 差值检测："X 和 Y 的差值/差/差距/差异/相差/减去"
-        var diffField1 = null, diffField2 = null;
+        window._diffFields = null;
+        window._isScalar = false;
+        window._windowSql = null;
+
+        // ========================================
+        // 优先级从最高到最低排列
+        // ========================================
+
+        // 0️⃣ 差值："X和Y的差"
         var diffMatch = q.match(/(.+)(?:和|与|跟)(.+)(?:的)?(?:差值|差|差距|差异|相差|减去)/);
         if (diffMatch) {
-          var cand1 = diffMatch[1].trim(), cand2 = diffMatch[2].trim();
-          // 在数值字段中匹配
-          var nfs = (parsedData.fieldInfo || []).filter(function(f){ return ['int','float','currency','percent'].indexOf(f.type)>=0; }).map(function(f){return f.name;});
-          var textFields = (parsedData.fieldInfo || []).filter(function(f){ return f.type==='text'; }).map(function(f){return f.name;});
-          // 尝试精确匹配数值字段
-          diffField1 = nfs.find(function(f){ return f===cand1 || f.indexOf(cand1)>=0 || cand1.indexOf(f)>=0; }) || null;
-          diffField2 = nfs.find(function(f){ return f===cand2 || f.indexOf(cand2)>=0 || cand2.indexOf(f)>=0; }) || null;
-          // 如果数值字段没匹配到，尝试文本字段
-          if (!diffField1) diffField1 = textFields.find(function(f){ return f===cand1 || f.indexOf(cand1)>=0 || cand1.indexOf(f)>=0; }) || null;
-          if (!diffField2) diffField2 = textFields.find(function(f){ return f===cand2 || f.indexOf(cand2)>=0 || cand2.indexOf(f)>=0; }) || null;
-          if (diffField1 && diffField2) {
-            window._diffFields = [diffField1, diffField2];
-          }
+          var c1 = diffMatch[1].trim(), c2 = diffMatch[2].trim();
+          var nfs = (parsedData.fieldInfo||[]).filter(function(f){return ['int','float','currency','percent'].indexOf(f.type)>=0;}).map(function(f){return f.name;});
+          var f1 = nfs.find(function(f){return f===c1||f.indexOf(c1)>=0||c1.indexOf(f)>=0;})||c1;
+          var f2 = nfs.find(function(f){return f===c2||f.indexOf(c2)>=0||c2.indexOf(f)>=0;})||c2;
+          window._diffFields = [f1, f2];
+          intent='diff'; confidence=0.92;
+          examples='SELECT '+(dim?(dim+', '):'')+'SUM('+f1+' - '+f2+') AS 差值 FROM '+table+(dim?' GROUP BY '+dim:'');
         }
 
-        // 2. trend（累计标记 + 趋势标记 → 走窗口函数，不走普通趋势）
-        if (trendMarker && dateCol && !cumulativeMarker) {
-          intent = 'trend'; confidence = 0.9;
+        // 1️⃣ 建议/策略
+        else if (isRec) {
+          intent='recommendation'; confidence=0.88;
+          examples='-- 建议类问题走 LLM 生成回复';
+        }
+
+        // 2️⃣ 列清单
+        else if (isList) {
+          intent='list'; confidence=0.9;
+          examples='SELECT DISTINCT '+dim+' FROM '+table;
+        }
+
+        // 3️⃣ 带"哪个"的标量（"哪个渠道销售额最高"）
+        else if (isWhich && isScalar) {
+          intent='ranking'; confidence=0.85;
+          examples='SELECT '+dim+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dim+' ORDER BY total DESC LIMIT 1';
+        }
+
+        // 4️⃣ 排名
+        else if (isRanking) {
+          intent='ranking'; confidence=0.9;
+          var lim = extractNumber(q, /(\d+)/) || 10;
+          examples='SELECT '+dim+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dim+' ORDER BY total DESC LIMIT '+lim;
+        }
+
+        // 5️⃣ 累计趋势（总量+趋势）
+        else if (isCumulative && isTrend && hasDate) {
+          intent='window_function'; confidence=0.9;
+          examples='SELECT '+dateCol+', SUM('+metric+') as period_total, SUM(SUM('+metric+')) OVER (ORDER BY '+dateCol+') AS cumulative FROM '+table+' GROUP BY '+dateCol+' ORDER BY '+dateCol;
+          window._windowSql=examples;
+        }
+
+        // 6️⃣ 普通趋势
+        else if (isTrend && hasDate && !isCumulative) {
+          intent='trend'; confidence=0.9;
           var days = extractNumber(q, /近?(\d+)\s*天/) || 30;
-          examples = 'SELECT DATE(' + dateCol + ') as period, SUM(' + metric + ') as total FROM ' + table + " WHERE " + dateCol + " >= CURRENT_DATE - INTERVAL '" + days + " day' GROUP BY period ORDER BY period";
+          examples='SELECT DATE('+dateCol+') as period, SUM('+metric+') as total FROM '+table+" WHERE "+dateCol+" >= CURRENT_DATE - INTERVAL '"+days+" day' GROUP BY period ORDER BY period";
         }
-        // 3. comparison
-        else if (/对比|比较|vs|和.+相比|差异|差距|相差|分别|各|不同|每个|按/.test(q)) {
-          intent = 'comparison'; confidence = 0.85;
-          examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total FROM ' + table + ' GROUP BY ' + dim + ' ORDER BY total DESC';
+
+        // 7️⃣ 环比/同比窗口函数
+        else if (/环比|同比|逐月|逐周/.test(q)) {
+          intent='window_function'; confidence=0.88;
+          examples='SELECT '+dateCol+', SUM('+metric+') as period_total, LAG(SUM('+metric+'),1) OVER (ORDER BY '+dateCol+') as prev, ROUND((SUM('+metric+')-LAG(SUM('+metric+'),1) OVER (ORDER BY '+dateCol+'))*100.0/LAG(SUM('+metric+'),1) OVER (ORDER BY '+dateCol+'),2) as growth_pct FROM '+table+' GROUP BY '+dateCol+' ORDER BY '+dateCol;
+          window._windowSql=examples;
         }
-        // 4. distribution
-        else if (/占比|比例|分布|构成|百分比|份额/.test(q)) {
-          intent = 'distribution'; confidence = 0.9;
-          examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total, ROUND(SUM(' + metric + ') * 100.0 / (SELECT SUM(' + metric + ') FROM ' + table + '), 2) as pct FROM ' + table + ' GROUP BY ' + dim;
+
+        // 8️⃣ 占比分布
+        else if (isDist) {
+          intent='distribution'; confidence=0.9;
+          examples='SELECT '+dim+', SUM('+metric+') as total, ROUND(SUM('+metric+')*100.0/(SELECT SUM('+metric+') FROM '+table+'),2) as pct FROM '+table+' GROUP BY '+dim;
         }
-        // 5. summary
-        else if (/总计|总共|平均|均值|总和|一共|汇总|统计/.test(q)) {
-          intent = 'summary'; confidence = 0.9;
-          examples = 'SELECT SUM(' + metric + ') as total, AVG(' + metric + ') as avg_value FROM ' + table;
+
+        // 9️⃣ 标量（单值/过滤后汇总）
+        else if (isScalar || isFilter) {
+          intent='summary'; confidence=0.85;
+          window._isScalar=true;
+          examples='SELECT SUM('+metric+') as total, AVG('+metric+') as avg_value FROM '+table;
         }
-        // 7. 窗口函数（累计标记+趋势标记，或环比/同比）
-        else if (cumulativeMarker || /环比|同比|累计值|逐月|逐周|累计增长/.test(q)) {
-          intent = 'window_function'; confidence = 0.85;
-          if (dateCol) {
-            examples = 'SELECT ' + dateCol + ', SUM(' + metric + ') as period_total, SUM(SUM(' + metric + ')) OVER (ORDER BY ' + dateCol + ') AS cumulative FROM ' + table + ' GROUP BY ' + dateCol + ' ORDER BY ' + dateCol;
-          } else {
-            examples = 'SELECT ' + dim + ', SUM(' + metric + ') as total, RANK() OVER (ORDER BY SUM(' + metric + ') DESC) AS rank_num FROM ' + table + ' GROUP BY ' + dim;
-          }
-          window._windowSql = examples;
+
+        // 🔟 对比
+        else if (isCompare) {
+          intent='comparison'; confidence=0.85;
+          examples='SELECT '+dim+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dim+' ORDER BY total DESC';
         }
-        return { intent: intent || 'fallback', confidence: confidence, examples: examples, metric: metric, dim: dim, dateCol: dateCol };
+
+        // 1️⃣1️⃣ 汇总
+        else if (isSummary || isCumulative) {
+          intent='summary'; confidence=0.9;
+          examples='SELECT SUM('+metric+') as total, AVG('+metric+') as avg_value FROM '+table;
+        }
+
+        return { intent: intent||'fallback', confidence:confidence, examples:examples, metric:metric, dim:dim, dateCol:dateCol };
       }
 
       // ===== 智能推荐问句 =====
@@ -3973,12 +4012,20 @@
       const dimMismatch = userMentionedDim.length > 0 && !userMentionedDim.includes(dimension);
       const metricMismatch = userMentionedMetric.length > 0 && !userMentionedMetric.includes(metric.field);
       // 放宽触发：语义自然语言也走 LLM
-      var semanticGap = /率|占比|百分比|人数|会员数|订单数|数量|条数|电量|时长|金额|人均|客单|复购|转化|对比|比较|不同|每个|分别|各.*的|哪个|汇总|总计|总共|平均.*是/.test(q);
+      var semanticGap = /率|占比|百分比|人数|会员数|订单数|数量|条数|电量|时长|金额|人均|客单|复购|转化|对比|比较|不同|每个|分别|各.*的|哪个|汇总|总计|总共|平均.*是|销量|销售|营收|收入|利润|成本|价格|单价|评分|满意度|留存|活跃|新增|流失/.test(q);
+      // 用户提到了业务指标词，但数据列里一个都对不上 → 本地引擎必然猜错，必走 LLM
+      var bizWords = /销量|销售|营收|收入|利润|成本|价格|单价|评分|满意度|留存|活跃|新增|流失|退货|复购|转化/i;
+      var allCols = columns.join(' ');
+      var bizWordNoMatch = bizWords.test(q) && /[一-龥]{2,}/.test(q) && (function(){
+        var words = q.match(/[一-龥]{2,}/g) || [];
+        return words.some(function(w){ return /销量|销售|营收|收入|利润|成本|价格|单价/.test(w) && allCols.indexOf(w) === -1; });
+      })();
       var lowConf = (window._lastIntent && window._lastIntent.confidence < 0.6);
-      const needLLMCheck = (dimMismatch || metricMismatch || semanticGap || lowConf) && getApiKeyConfig();
+      const needLLMCheck = (dimMismatch || metricMismatch || semanticGap || bizWordNoMatch || lowConf) && getApiKeyConfig();
 
       if (dimMismatch) console.log('[LLM降级] 维度不匹配: 用户提到' + userMentionedDim.join(',') + ', 引擎返回' + dimension);
       if (metricMismatch) console.log('[LLM降级] 指标不匹配: 用户提到' + userMentionedMetric.join(',') + ', 引擎返回' + metric.field);
+      if (bizWordNoMatch) console.log('[LLM降级] 业务词无列名匹配，调用LLM识别');
 
       // 未配Key时检测到不匹配 → 推荐配置
       if ((dimMismatch || metricMismatch) && !getApiKeyConfig()) {
@@ -4368,6 +4415,10 @@
       }
       if (numericFields.length === 0) return null;
 
+      // 建议/清单类 — 不执行 SQL，纯 LLM 回复
+      if (window._lastIntent && (window._lastIntent.intent === 'recommendation' || window._lastIntent.intent === 'list')) {
+        return { field: '__NOOP__', label: '文本回复' };
+      }
       // 差值模式
       if (window._diffFields && window._diffFields.length === 2) {
         return { field: '__DIFF__', label: window._diffFields[0] + '-' + window._diffFields[1] };
@@ -4466,6 +4517,8 @@
     }
     
     function generateSQL(timeRange, dimension, metric, aggregation, sortOrder, limit) {
+      // 建议/清单：不生成 SQL
+      if (metric.field === '__NOOP__') { return '-- 文本回复，无需 SQL'; }
       // 差值模式：field1 - field2
       if (metric.field === '__DIFF__' && window._diffFields) {
         var df = window._diffFields;
