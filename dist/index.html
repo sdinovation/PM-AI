@@ -6630,6 +6630,10 @@ ${convData.sqls.join('\n')}
         try { chart.setOption(option); } catch(e) { console.warn('[图表] setOption异常:', e.message); }
       }
       chartInstances[chartId].chart = chart;
+      // 自动收集到报告
+      if (!exportedCharts.find(function(c){ return c.id === chartId; })) {
+        exportedCharts.push({ id: chartId, title: title, type: chartType, data: data });
+      }
       } catch(e) { console.warn('[图表] 渲染异常:', chartId, e.message); dom.innerHTML = '<div style="text-align:center;padding:40px;color:var(--color-text-tertiary);">⚠️ 图表渲染失败<br><small>' + e.message + '</small></div>'; }
 
       // 双击图表打开独立查看（带遮罩的弹窗）
