@@ -3598,7 +3598,9 @@
             var noChartTypes = { Chat:1, Unclear:1, ReportGen:1, recommendation:1, list:1, fallback:1 };
             var rrLen = (analysis.rawResult || []).length;
             var askedForChart = /图|画|绘|图表|柱状图|饼图|折线图|趋势图|可视化/.test(question);
-            var shouldRenderChart = !noChartTypes[analysis.intent?.type || analysis.type] && (rrLen > 2 || askedForChart);
+            // 排名/对比 && ≤2条 && 没要求画图 → 不画；其他类型都画
+            var smallRank = rrLen <= 2 && (analysis.intent?.type === 'ranking' || analysis.intent?.type === 'comparison');
+            var shouldRenderChart = !noChartTypes[analysis.intent?.type || analysis.type] && (!smallRank || askedForChart);
             var pipeline = ['parse_file', 'generate_sql'];
             if (shouldRenderChart) pipeline.push('render_chart');
             addIntentBadge(aiId, analysis.intent, pipeline);
