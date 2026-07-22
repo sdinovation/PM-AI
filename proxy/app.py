@@ -40,7 +40,7 @@ def feishu_token():
     return None
 
 def send_webhook(webhook_url, text):
-    """发 webhook — \uXXXX 编码，正确处理 emoji（代理对）"""
+    # 发 webhook，手动 unicode 编码 + emoji 代理对
     url = webhook_url.strip()
     if not url.startswith('http'):
         return False, 'bad_url'
