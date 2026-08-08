@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" class="light">
 <head>
   <meta charset="UTF-8">
@@ -2072,7 +2072,7 @@
       '保单': ['保单数','保单','policy'],
       // ===== 餐饮 =====
       '翻台率': ['翻台率','翻台','turnover_rate'],
-      '菜品': ['菜品','dish','menu_item'],
+      '菜品': ['菜品名称','菜品','菜名','dish','menu_item','food'],
       // ===== 交通/物流补充 =====
       '拥堵指数': ['拥堵指数','拥堵','congestion_index','traffic_index'],
       '车流量': ['车流量','流量','traffic_flow','vehicle_count'],
@@ -4871,6 +4871,10 @@
         // 1️⃣1️⃣ 汇总
         else if (isSummary || isCumulative) {
           intent='summary'; confidence=0.9;
+          // Fix: isSummary 且无分组关键词时，标记为标量查询（避免错误添加 GROUP BY）
+          if (!/各|按|分别|每个|每组|各个|各类|不同|对比|比较|排名|分布|趋势/.test(q)) {
+            window._isScalar = true;
+          }
           examples='SELECT SUM('+metric+') as total, AVG('+metric+') as avg_value FROM '+table;
         }
 
@@ -4893,9 +4897,9 @@
         for (var _di = 0; _di < _sortedTextCols.length; _di++) {
           if (q.indexOf(_sortedTextCols[_di]) >= 0) { dynDim = _sortedTextCols[_di]; break; }
         }
-        // 2. 如果文本列没找到，在所有列中查找
+        // 2. 如果文本列没找到，在所有列中查找（Fix: 只搜文本列，避免数值列被误选为维度）
         if (!dynDim) {
-          var _sortedAllCols = allColumns.slice().sort(function(a, b) { return b.length - a.length; });
+          var _sortedAllCols = textCols.slice().sort(function(a, b) { return b.length - a.length; });
           for (var _di2 = 0; _di2 < _sortedAllCols.length; _di2++) {
             var _colBase = _sortedAllCols[_di2].replace(/[（(].*$/, '').replace(/\[.*$/, '').trim();
             if (_colBase.length >= 2 && q.indexOf(_colBase) >= 0) { dynDim = _sortedAllCols[_di2]; break; }
@@ -5432,6 +5436,12 @@
       if (!metric) {
         metric = { field: numericFields[0] || '__COUNT__', label: numericFields[0] || '计数' };
       }
+      // Fix: COUNT 标量问题安全网 — "统计...的用户数量总和" 等问题应为标量COUNT，强制无维度
+      if (metric && metric.field === '__COUNT__' && dimension && !/各|按|分别|每个|每组|各个|各类|不同|对比|比较|排名|分布|趋势|走势/.test(q)) {
+        console.log('[Fix-CountScalar] COUNT问题检测到维度 ' + dimension + '，但无分组关键词，强制设为标量');
+        dimension = null;
+        window._isScalar = true;
+      }
 
       // “查找 X 是多少 / 印度 2024 电商同比增长率是多少 / 2024 年中国 X 为 Y” → 单值查找
       // 自动修正 dimension：用户问题里出现了某列的具体值，优先选该列
@@ -5625,9 +5635,18 @@
           // 使用 parseAggregation 正确识别"平均"等聚合关键词
           var _parsedAgg = parseAggregation(question, metric.field);
           const agg = (metric.aggregation) || _parsedAgg || (/率|ratio|percent|rate/i.test(metric.field) ? 'avg' : 'sum');
-          const numKey = metric.field === '__COUNT__' ? '计数' : metric.field;
+          // Fix: 从问题中提取被计数的实体名称
+          var _scalarEntity = extractCountEntity(question, effectiveDimension);
+          // Fix: 从问题中提取被计数的实体名称（用于图表标题和解读）
+          var _chartEntity = _scalarEntity;
+          const numKey = metric.field === '__COUNT__' ? (_chartEntity + '数量') : (metric.field === '__COUNT_DISTINCT__' ? ('去重' + _chartEntity + '数量') : metric.field);
           let value = 0;
-          if (agg === 'sum') value = scoped.reduce((s, r) => s + (Number(r[numKey]) || 0), 0);
+          if (metric.field === '__COUNT_DISTINCT__' && metric.countField) {
+            var _distinctVals = new Set(scoped.map(r => String(r[metric.countField] || '').trim()).filter(v => v));
+            value = _distinctVals.size;
+          } else if (metric.field === '__COUNT__') {
+            value = scoped.length;
+          } else if (agg === 'sum') value = scoped.reduce((s, r) => s + (Number(r[numKey]) || 0), 0);
           else if (agg === 'avg') value = scoped.reduce((s, r) => s + (Number(r[numKey]) || 0), 0) / scoped.length;
           else if (agg === 'max') value = Math.max(...scoped.map(r => Number(r[numKey]) || -Infinity));
           else if (agg === 'min') value = Math.min(...scoped.filter(r => r[numKey] != null).map(r => Number(r[numKey]) || Infinity));
@@ -5635,7 +5654,18 @@
           else value = scoped.reduce((s, r) => s + (Number(r[numKey]) || 0), 0) / scoped.length;
           const titleFilter = (timeRange ? `${timeRange.label || ''} ` : '') + (effectiveDimension && (allDimValues2.length > 0 || targetValue) ? effectiveDimension + ' = ' + (allDimValues2.join(' / ') || targetValue) : '整体');
           console.log('[ScalarLookup] returning: titleFilter=' + titleFilter + ' value=' + formatNumber(value) + ' scoped.length=' + scoped.length);
-          var _scalarSQL = `SELECT ${agg === 'count' ? 'COUNT(*)' : agg.toUpperCase() + '(' + numKey + ')'} AS ${aggregationName(agg)}\nFROM ${(parsedData.fileName||'data').replace(/\.[^.]+$/, '')}${(allDimValues2.length > 0 || targetValue) ? '\nWHERE ' + effectiveDimension + ' = ' + (allDimValues2.length > 0 ? "'" + allDimValues2[0] + "'" : (targetValue ? "'" + targetValue + "'" : '')) : ''}${timeRange ? '\nAND ' + timeRange.field + ' BETWEEN ...' : ''}`;
+          var _scalarSQL;
+          var _whereClause = (allDimValues2.length > 0 || targetValue) ? '\nWHERE ' + effectiveDimension + ' = ' + (allDimValues2.length > 0 ? "'" + allDimValues2[0] + "'" : (targetValue ? "'" + targetValue + "'" : '')) : '';
+          if (timeRange) _whereClause += (_whereClause ? ' AND ' : '\nWHERE ') + timeRange.field + ' BETWEEN ...';
+          if (metric.field === '__COUNT_DISTINCT__') {
+            _scalarSQL = `SELECT COUNT(DISTINCT ${metric.countField}) AS 去重计数\nFROM ${(parsedData.fileName||'data').replace(/\.[^.]+$/, '')}${_whereClause}`;
+          } else if (metric.field === '__COUNT__' || agg === 'count') {
+            _scalarSQL = `SELECT COUNT(*) AS 计数\nFROM ${(parsedData.fileName||'data').replace(/\.[^.]+$/, '')}${_whereClause}`;
+          } else {
+            _scalarSQL = `SELECT ${agg.toUpperCase()}(${numKey}) AS ${aggregationName(agg)}\nFROM ${(parsedData.fileName||'data').replace(/\.[^.]+$/, '')}${_whereClause}`;
+          }
+          // Fix: 使用已提取的实体名称
+          // (_scalarEntity 已在上面通过 extractCountEntity 提取)
           // Fix: 存储 SQL 到 window._lastSQL 供测试脚本备用检测
           window._lastSQL = _scalarSQL;
           window._lastIntent = { type: 'ScalarLookup', confidence: 0.9 };
@@ -5644,8 +5674,8 @@
             confidence: 0.9,
             intent: { type: 'ScalarLookup', confidence: 0.9 },
             sql: _scalarSQL,
-            interpretation: `${(allDimValues2.length > 0 || targetValue) ? titleFilter + ' 的 ' : ''}${numKey}${aggregationName(agg)} = ${formatNumber(value)}`,
-            queryUnderstanding: `${(allDimValues2.length > 0 || targetValue) ? '查询 ' + titleFilter + ' 的 ' : '整体查询 '}${numKey}${aggregationName(agg)}`,
+            interpretation: metric.field === '__COUNT__' ? `${(allDimValues2.length > 0 || targetValue) ? titleFilter + ' 的 ' : ''}总${_scalarEntity}数为 ${formatNumber(value)}` : (metric.field === '__COUNT_DISTINCT__' ? `${(allDimValues2.length > 0 || targetValue) ? titleFilter + ' 的 ' : ''}去重${_scalarEntity}数为 ${formatNumber(value)}` : `${(allDimValues2.length > 0 || targetValue) ? titleFilter + ' 的 ' : ''}${numKey}${aggregationName(agg)} = ${formatNumber(value)}`),
+            queryUnderstanding: metric.field === '__COUNT__' ? `${(allDimValues2.length > 0 || targetValue) ? '查询 ' + titleFilter + ' 的 ' : '整体查询 '}总${_scalarEntity}数` : (metric.field === '__COUNT_DISTINCT__' ? `${(allDimValues2.length > 0 || targetValue) ? '查询 ' + titleFilter + ' 的 ' : '整体查询 '}去重${_scalarEntity}数` : `${(allDimValues2.length > 0 || targetValue) ? '查询 ' + titleFilter + ' 的 ' : '整体查询 '}${numKey}${aggregationName(agg)}`),
             chartType: 'number',
             chartData: { categories: [titleFilter], values: [value], dimension: effectiveDimension, metric: numKey, display: 'number' },
             title: `${numKey} · ${titleFilter}`,
@@ -6168,7 +6198,10 @@
       const userMentionedMetric = numericFields.filter(function(f) { return q.includes(f) && f !== dimension && f !== (dimension || '').replace(/[\(\)（）]/g, ''); });
       // P1-3: COUNT_DISTINCT 模式下，用户提到的维度字段是用来计数的，不是分组维度，不算不匹配
       var _isCountDistinctQ = metric && metric.field === '__COUNT_DISTINCT__';
-      const dimMismatch = !_isCountDistinctQ && userMentionedDim.length > 0 && !userMentionedDim.includes(dimension);
+      // Fix: 如果用户提到的维度已被用作单值筛选条件（如"部门为技术部"），不算维度不匹配
+      var _filterDims = window._lastExtraWhere ? Object.keys(window._lastExtraWhere) : [];
+      const dimMismatch = !_isCountDistinctQ && userMentionedDim.length > 0 && !userMentionedDim.includes(dimension)
+        && !userMentionedDim.some(function(d) { return _filterDims.indexOf(d) >= 0; });
       const metricMismatch = metric && metric.field !== '__COUNT__' && metric.field !== '__COUNT_DISTINCT__' && userMentionedMetric.length > 0 && !userMentionedMetric.includes(metric.field);
       // 放宽触发：语义自然语言也走 LLM
       var semanticGap = /率|占比|百分比|人数|会员数|订单数|数量|条数|电量|时长|金额|人均|客单|复购|转化|对比|比较|不同|每个|分别|各.*的|哪个|汇总|总计|总共|平均.*是|销量|销售|营收|收入|利润|成本|价格|单价|评分|满意度|留存|活跃|新增|流失/.test(q);
@@ -6291,7 +6324,9 @@
       }
 
       // 本地规则引擎兜底：AI未返回时走原有逻辑
-      var shouldCallLLM = !_llmFullResult && (needLLMCheck || (!dimension && dimensionFields.length > 1) || (!metric && numericFields.length > 0));
+      // Fix: COUNT标量查询（有筛选条件）不应触发LLM降级 — null维度是故意的
+      var _isCountScalarWithFilter = (metric && (metric.field === '__COUNT__' || metric.field === '__COUNT_DISTINCT__') && !dimension && window._lastExtraWhere && Object.keys(window._lastExtraWhere).length > 0);
+      var shouldCallLLM = !_llmFullResult && (needLLMCheck || (!dimension && dimensionFields.length > 1 && !_isCountScalarWithFilter) || (!metric && numericFields.length > 0));
       if (shouldCallLLM) {
         console.log('[LLM降级] 字段识别模糊，调用LLM...');
         try {
@@ -6626,7 +6661,7 @@
         });
         interpretation = '按' + dimension + '统计：' + _topCat + ' 最高（' + _mmParts.join('，') + '）。共' + multiMetricResults[0].result.length + '个' + dimension + '。';
       } else {
-        interpretation = buildInterpretation(result, dimension, metric, aggregation, timeRange, chartInfo, limit);
+        interpretation = buildInterpretation(result, dimension, metric, aggregation, timeRange, chartInfo, limit, question);
       }
       const followUps = buildFollowUps(dimension, metric, dateField, dimensionFields, numericFields);
 
@@ -6635,7 +6670,7 @@
         query_text: question,
         metric: metric ? metric.field : null,
         dimension: dimension || null,
-        time_range: timeRange ? `近 ${timeRange.days} 天` : '全部时间',
+        time_range: timeRange ? (timeRange.days ? `近 ${timeRange.days} 天` : (timeRange.label || '指定时间段')) : '全部时间',
         aggregation: aggregationName(aggregation)
       };
 
@@ -6685,7 +6720,7 @@
         window._tieMsg = null;
       }
 
-      var queryUnderstanding = window._aiQueryUnderstanding || buildQueryUnderstanding(dimension, metric, aggregation, timeRange, sortOrder, limit, dimensionFields, numericFields);
+      var queryUnderstanding = window._aiQueryUnderstanding || buildQueryUnderstanding(dimension, metric, aggregation, timeRange, sortOrder, limit, dimensionFields, numericFields, question);
       window._aiQueryUnderstanding = null; // 消费后清空
 
       return {
@@ -7383,6 +7418,18 @@
     
     function parseTimeRange(q, dateField, rows) {
       if (!dateField) return null;
+      // Fix: 显式年月 — "2026年5月份" / "2026年5月" / "2026年 5月"（优先于纯年份匹配）
+      const ymMonthMatch = q.match(/(\d{4})\s*年\s*(\d{1,2})\s*月(?:份)?/);
+      if (ymMonthMatch) {
+        const _y = parseInt(ymMonthMatch[1], 10);
+        const _m = parseInt(ymMonthMatch[2], 10) - 1;
+        if (!isNaN(_y) && _m >= 0 && _m <= 11) {
+          const _lastDay = new Date(_y, _m + 1, 0).getDate();
+          const _minD = new Date(_y, _m, 1);
+          const _maxD = new Date(_y, _m, _lastDay);
+          return { field: dateField, minDate: _minD, maxDate: _maxD, days: null, label: _y + '年' + (_m + 1) + '月' };
+        }
+      }
       // 显式年份 / 年份段（优先匹配，不依赖数据中是否有日期列）
       const yearMatch = q.match(/(?:^|[^0-9])(\d{4})\s*年(?:\s*第?[一二三四四季]|Q[1-4]|上半年|下半年|[\-至到~至到]+\s*(\d{4})\s*年?)?/);
       if (yearMatch) {
@@ -7477,7 +7524,8 @@
         return null;
       }
       // Fix Q3/Q8: COUNT 问题（多少员工/有多少人）且没有分组关键词时，不设维度（标量COUNT）
-      if (/多少名?(?:员工|人|条|个|记录)|有(?:多少|几)(?:名|个)?(?:员工|人|条|记录)?|共有多少|人数/.test(q) && !/各|按|分别|每个|每组|各个|各类|部门|城市|性别/.test(q)) {
+      // Fix: 添加 "用户数量" "数量总和" "统计...数量" 模式 — "统计...的用户数量总和" 应为标量COUNT
+      if (/多少名?(?:员工|人|条|个|记录)|有(?:多少|几)(?:名|个)?(?:员工|人|条|记录)?|共有多少|人数|用户数量|数量总和/.test(q) && !/各|按|分别|每个|每组|各个|各类|部门|城市|性别/.test(q)) {
         return null;
       }
       
@@ -7539,6 +7587,7 @@
         { keywords: ['卡类型','会员卡','卡'], field: findFieldByKeywords(dimensionFields, ['卡类型','会员卡','card_type']) },
         { keywords: ['性别'], field: findFieldByKeywords(dimensionFields, ['性别','gender','sex']) },
         { keywords: ['发货城市','收货城市'], field: findFieldByKeywords(dimensionFields, ['发货城市','收货城市','发货','收货']) },
+        { keywords: ['菜品','菜名','菜式','菜单'], field: findFieldByKeywords(dimensionFields, ['菜品名称','菜名','dish','food','菜单']) },
       ];
       
       for (const item of dimensionKeywords) {
@@ -7765,6 +7814,52 @@
     function parseSingleValueFilter(q, dimensionFields) {
       // Fix 13: 增强 — 先从数据中反查实体值
       var rows = parsedData.rows || [];
+
+      // Fix: "X为Y" / "X是Y" 模式优先 — "配置为mac pro 32G 1T" / "品牌是苹果"
+      // 先尝试匹配维度字段名 + "为/是/等于" + 值
+      for (var psvfFi = 0; psvfFi < dimensionFields.length; psvfFi++) {
+        var _psvfField = dimensionFields[psvfFi];
+        var _psvfBase = _psvfField.replace(/[（(].*$/, '').replace(/\[.*$/, '').trim();
+        var _psvfBaseLower = _psvfBase.toLowerCase();
+        // 在问题中查找 "字段名 + 为/是/等于" 模式
+        var _psvfPattern = new RegExp(_psvfBaseLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*(?:为|是|等于|=)\\s*(.+?)(?:的|用户|客户|记录|数据|人|员|数量|总和|统计|，|,|。|？|\\?|$)');
+        var _psvfMatch = q.match(_psvfPattern);
+        if (_psvfMatch) {
+          var _psvfVal = _psvfMatch[1].trim();
+          if (_psvfVal && _psvfVal.length >= 2) {
+            // 在数据中查找匹配的值（大小写不敏感）
+            var _psvfMatchedVal = null;
+            var _psvfSeen = {};
+            for (var psvfRi = 0; psvfRi < rows.length && psvfRi < 200; psvfRi++) {
+              var _psvfDv = String(rows[psvfRi][_psvfField] || '').trim();
+              if (_psvfDv && !_psvfSeen[_psvfDv]) {
+                _psvfSeen[_psvfDv] = 1;
+                if (_psvfDv.toLowerCase() === _psvfVal.toLowerCase()) {
+                  _psvfMatchedVal = _psvfDv; // 使用数据中的原始大小写
+                  break;
+                }
+              }
+            }
+            // 如果精确匹配失败，尝试包含匹配（数据值包含问题中的值，或反过来）
+            if (!_psvfMatchedVal) {
+              var _psvfSeen2 = {};
+              for (var psvfRi2 = 0; psvfRi2 < rows.length && psvfRi2 < 200; psvfRi2++) {
+                var _psvfDv2 = String(rows[psvfRi2][_psvfField] || '').trim();
+                if (_psvfDv2 && !_psvfSeen2[_psvfDv2]) {
+                  _psvfSeen2[_psvfDv2] = 1;
+                  var _dv2Lower = _psvfDv2.toLowerCase();
+                  if (_dv2Lower.indexOf(_psvfVal.toLowerCase()) >= 0 || _psvfVal.toLowerCase().indexOf(_dv2Lower) >= 0) {
+                    _psvfMatchedVal = _psvfDv2;
+                    break;
+                  }
+                }
+              }
+            }
+            return { field: _psvfField, value: _psvfMatchedVal || _psvfVal };
+          }
+        }
+      }
+
       // 收集每个维度列的唯一值，检查哪些出现在问题里
       for (var di = 0; di < dimensionFields.length; di++) {
         var _dimF = dimensionFields[di];
@@ -7777,7 +7872,8 @@
         // 按长度降序匹配（优先长名）
         _uniqVals.sort(function(a,b){ return b.length - a.length; });
         for (var du = 0; du < _uniqVals.length; du++) {
-          if (_uniqVals[du].length >= 2 && q.indexOf(_uniqVals[du]) >= 0) {
+          // Fix: 大小写不敏感匹配 — q 已被 toLowerCase，数据值可能含大写（如 "Mac Pro 32G 1T"）
+          if (_uniqVals[du].length >= 2 && q.indexOf(_uniqVals[du].toLowerCase()) >= 0) {
             return { field: _dimF, value: _uniqVals[du] };
           }
         }
@@ -8901,8 +8997,12 @@
           return Object.keys(extraWhere).every(function(k){
             var want = extraWhere[k];
             var cell = String(r[k] || '');
-            if (Array.isArray(want)) return want.indexOf(cell) !== -1;
-            return cell === want;
+            if (Array.isArray(want)) {
+              // Fix: 数组匹配也支持大小写不敏感
+              return want.indexOf(cell) !== -1 || want.some(function(w){ return String(w).toLowerCase() === cell.toLowerCase(); });
+            }
+            // Fix: 大小写不敏感匹配 — 数据值可能含大写（如 "Mac Pro 32G 1T"）
+            return cell === want || (typeof want === 'string' && cell.toLowerCase() === want.toLowerCase());
           });
         });
       }
@@ -9328,23 +9428,30 @@
     }
     
     function buildChartData(result, dimension, metric, aggregation, timeRange) {
-      // 将 __COUNT__ 替换为可读的"计数"
-      const _mf = metric.field === '__COUNT__' ? '计数' : metric.field;
+      // Fix: 从问题中提取被计数的实体名称
+      var _bdEntity = extractCountEntity(window._lastQuery || '', dimension);
+      // 数据访问键（与SQL结果一致）：COUNT→"计数"，COUNT_DISTINCT→"去重计数"
+      const _mfDataKey = metric.field === '__COUNT__' ? '计数' : (metric.field === '__COUNT_DISTINCT__' ? (metric.label || '去重计数') : metric.field);
+      // 显示标签（用户友好）：用实体名称替代"计数"
+      const _mf = metric.field === '__COUNT__' ? (_bdEntity + '数量') : (metric.field === '__COUNT_DISTINCT__' ? ('去重' + _bdEntity + '数量') : metric.field);
       // Fix: ratio 无 ratioCond 时 — 分组占比模式，结果列名为"占比百分比"
       var _isRatioPctChart = (aggregation === 'ratio') && !window._ratioCond && metric.field !== '__COUNT__' && metric.field !== '__COUNT_DISTINCT__' && metric.field !== '__NOOP__';
+      // 数据访问键（用于从 result 中取值）
+      var _chartDataKey = _isRatioPctChart ? '占比百分比' : _mfDataKey;
+      // 显示标签（用于图表 metric 名称）
       var _chartMetricKey = _isRatioPctChart ? '占比百分比' : _mf;
       // Fix Q12: "占比" + COUNT + dimension → 饼图
       var _question = window._lastQuery || '';
       if (metric.field === '__COUNT__' && dimension && /占比|比例|百分比|分布/.test(_question)) {
-        return { chartType: 'pie', userSpecified: true, chartData: { categories: result.map(r => r[dimension]), values: result.map(r => Number(r[_chartMetricKey]) || 0), metric: _chartMetricKey } };
+        return { chartType: 'pie', userSpecified: true, chartData: { categories: result.map(r => r[dimension]), values: result.map(r => Number(r[_chartDataKey]) || 0), metric: _chartMetricKey } };
       }
       if (_isRatioPctChart && dimension && /占比|比例|百分比/.test(_question)) {
-        return { chartType: 'pie', userSpecified: true, chartData: { categories: result.map(r => r[dimension]), values: result.map(r => Number(r[_chartMetricKey]) || 0), metric: _chartMetricKey } };
+        return { chartType: 'pie', userSpecified: true, chartData: { categories: result.map(r => r[dimension]), values: result.map(r => Number(r[_chartDataKey]) || 0), metric: _chartMetricKey } };
       }
       if (!dimension) {
         return {
           chartType: 'bar',
-          chartData: { categories: ['整体'], values: [result[0][_chartMetricKey]], zeroIndices: result[0][_chartMetricKey] === 0 ? [0] : [] },
+          chartData: { categories: ['整体'], values: [result[0][_chartDataKey]], zeroIndices: result[0][_chartDataKey] === 0 ? [0] : [] },
           title: `${_chartMetricKey} 整体${aggregationName(aggregation)}`,
           kpiCards: buildKpiCards(result, dimension, metric, aggregation)
         };
@@ -9364,11 +9471,11 @@
           return String(va).localeCompare(String(vb), 'zh');
         });
       } else {
-        result.sort((a, b) => b[_chartMetricKey] - a[_chartMetricKey]);
+        result.sort((a, b) => b[_chartDataKey] - a[_chartDataKey]);
       }
 
       const categories = result.map(r => r[dimension]);
-      const values = result.map(r => r[_chartMetricKey]);
+      const values = result.map(r => r[_chartDataKey]);
       const zeroIndices = [];
       const zeroNames = [];
       values.forEach((v, i) => { if (v === 0 || v === null || v === undefined) { zeroIndices.push(i); zeroNames.push(categories[i]); } });
@@ -9397,7 +9504,12 @@
     // 构建 KPI 卡片：最大 / 最小 / 排名 / TopN / 总计 / 平均
     function buildKpiCards(result, dimension, metric, aggregation) {
       if (!result || result.length === 0) return [];
-      const numericKey = metric.field === '__COUNT__' ? '计数' : metric.field;
+      // Fix: 从问题中提取被计数的实体名称
+      var _kpiEntity = extractCountEntity(window._lastQuery || '', dimension);
+      // 数据访问键（与SQL结果一致）
+      const numericKey = metric.field === '__COUNT__' ? '计数' : (metric.field === '__COUNT_DISTINCT__' ? (metric.label || '去重计数') : metric.field);
+      // 显示标签（用户友好）
+      const numericLabel = metric.field === '__COUNT__' ? (_kpiEntity + '数量') : (metric.field === '__COUNT_DISTINCT__' ? ('去重' + _kpiEntity + '数量') : metric.field);
       const cards = [];
       const limit = window._lastIntent && window._lastIntent.rankingLimit;
       const lastQuery = (window._lastQuery || '').toString();
@@ -9410,7 +9522,7 @@
             rank: idx + 1,
             label: String(row[dimension] || '-'),
             value: row[numericKey],
-            metric: numericKey,
+            metric: numericLabel,
             aggregation: aggregation,
             isTop: idx === 0,
             icon: idx === 0 ? 'trophy' : (idx === 1 ? 'medal' : 'award')
@@ -9421,13 +9533,13 @@
         const avg = result.length ? total / result.length : 0;
         const maxRow = sortedDesc[0];
         const minRow = sortedDesc[sortedDesc.length - 1];
-        cards.push({ label: aggregationName(aggregation), value: total, metric: numericKey, icon: 'sigma', aggregation: aggregation });
-        cards.push({ label: '均值', value: avg, metric: numericKey, icon: 'bar-chart-2', aggregation: 'avg' });
-        if (maxRow) cards.push({ label: '最大：' + (maxRow[dimension] || '-'), value: maxRow[numericKey], metric: numericKey, icon: 'trending-up', isTop: true, aggregation: 'max' });
-        if (minRow && minRow !== maxRow) cards.push({ label: '最小：' + (minRow[dimension] || '-'), value: minRow[numericKey], metric: numericKey, icon: 'trending-down', aggregation: 'min' });
+        cards.push({ label: aggregationName(aggregation), value: total, metric: numericLabel, icon: 'sigma', aggregation: aggregation });
+        cards.push({ label: '均值', value: avg, metric: numericLabel, icon: 'bar-chart-2', aggregation: 'avg' });
+        if (maxRow) cards.push({ label: '最大：' + (maxRow[dimension] || '-'), value: maxRow[numericKey], metric: numericLabel, icon: 'trending-up', isTop: true, aggregation: 'max' });
+        if (minRow && minRow !== maxRow) cards.push({ label: '最小：' + (minRow[dimension] || '-'), value: minRow[numericKey], metric: numericLabel, icon: 'trending-down', aggregation: 'min' });
       } else {
         const total = result.reduce((s, r) => s + (Number(r[numericKey]) || 0), 0);
-        cards.push({ label: aggregationName(aggregation), value: total, metric: numericKey, aggregation: aggregation, icon: 'sigma', isTop: true });
+        cards.push({ label: aggregationName(aggregation), value: total, metric: numericLabel, aggregation: aggregation, icon: 'sigma', isTop: true });
       }
       return cards;
     }
@@ -9460,6 +9572,46 @@
     }
 
     
+    // Fix: 从问题中提取被计数的实体名称（如"各部门有多少员工"→"员工"）
+    function extractCountEntity(question, dimension) {
+      var _countEntity = '记录';
+      if (question) {
+        var _q = question.toLowerCase();
+        var _dimWords = ['部门', '城市', '性别', '地区', '国家', '类型', '类别', '分类', '等级', '级别', '品类'];
+        var entity = null;
+        // 1. "统计...的 XX 数量"
+        var _m4 = _q.match(/统计.*?的\s*([\u4e00-\u9fa5]{1,3})\s*(?:数量|总数)/);
+        if (_m4) entity = _m4[1];
+        // 2. "统计 XX 数量"
+        if (!entity) { var _m5 = _q.match(/统计\s*([\u4e00-\u9fa5]{1,3})\s*(?:数量|总数)/); if (_m5) entity = _m5[1]; }
+        // 3. "多少名/个/条/位 XX"
+        if (!entity) { var _m1 = _q.match(/多少[名个条位家只]\s*([\u4e00-\u9fa5]{1,4})(?:[，。？\s]|$)/); if (_m1) entity = _m1[1]; }
+        // 4. "有多少 XX" / "有几 XX"
+        if (!entity) { var _m2 = _q.match(/有(?:多少|几)\s*([\u4e00-\u9fa5]{1,3})(?:[，。？\s]|$)/); if (_m2) entity = _m2[1]; }
+        // 5. "XX 数量/总数/个数"
+        if (!entity) { var _m3 = _q.match(/([\u4e00-\u9fa5]{1,3})\s*(?:数量|总数|总人数|个数)/); if (_m3) entity = _m3[1]; }
+        // 6. "XX 人数"
+        if (!entity) {
+          var _m6 = _q.match(/([\u4e00-\u9fa5]{1,2})\s*人数/);
+          if (_m6) {
+            if (['统计', '查询', '查看', '计算', '分析'].indexOf(_m6[1]) >= 0) entity = '人';
+            else entity = _m6[1];
+          }
+        }
+        if (entity) {
+          if (entity.startsWith('的')) entity = entity.slice(1);
+          if (entity.length > 2 && entity.endsWith('记录')) entity = entity.slice(0, -2);
+          if (['名', '个', '条', '位', '家', '只'].indexOf(entity[0]) >= 0 && entity.length > 1) entity = entity.slice(1);
+          _countEntity = entity;
+        }
+        if (_dimWords.indexOf(_countEntity) >= 0) _countEntity = '记录';
+        if (dimension && (_countEntity === dimension || _countEntity.indexOf(dimension) >= 0 || dimension.indexOf(_countEntity) >= 0)) _countEntity = '记录';
+        if (['各', '所有', '每个', '每', '各部', '的', '别', '统计'].indexOf(_countEntity) >= 0) _countEntity = '记录';
+        if (!_countEntity || _countEntity.length === 0) _countEntity = '记录';
+      }
+      return _countEntity;
+    }
+
     function aggregationName(method) {
       return {
         sum: '总和',
@@ -9472,6 +9624,7 @@
         variance: '方差',
         range: '极差',
         distinct_count: '去重计数',
+        count_distinct: '去重计数',
         unique_count: '唯一值数',
         q1: '第一四分位数',
         q3: '第三四分位数',
@@ -9480,19 +9633,27 @@
       }[method] || method;
     }
     
-    function buildInterpretation(result, dimension, metric, aggregation, timeRange, chartInfo, limit) {
-      const timeText = timeRange ? `近 ${timeRange.days} 天` : '全部时间';
+    function buildInterpretation(result, dimension, metric, aggregation, timeRange, chartInfo, limit, question) {
+      // Fix: 从问题中提取被计数的实体名称
+      var _countEntity = extractCountEntity(question, dimension);
+
+      // Fix: timeRange.days 可能为 null（年月模式），使用 label 作为回退
+      const timeText = timeRange ? (timeRange.days ? `近 ${timeRange.days} 天` : (timeRange.label || '指定时间段')) : '全部时间';
       const aggText = aggregationName(aggregation);
       // Fix: ratio 无 ratioCond 时 — 分组占比模式，结果列名为"占比百分比"
       var _isRatioPctInterp = (aggregation === 'ratio') && !window._ratioCond && metric.field !== '__COUNT__' && metric.field !== '__COUNT_DISTINCT__' && metric.field !== '__NOOP__';
-      const _mf = metric.field === '__COUNT__' ? '计数' : (_isRatioPctInterp ? '占比百分比' : metric.field);
+      const _mf = metric.field === '__COUNT__' ? '计数' : (metric.field === '__COUNT_DISTINCT__' ? (metric.label || '去重计数') : (_isRatioPctInterp ? '占比百分比' : metric.field));
       const _isCountMode = metric.field === '__COUNT__' && aggregation === 'count';
+      const _isCountDistinctMode = metric.field === '__COUNT_DISTINCT__';
 
       // === 无维度：标量/汇总查询 — 附加统计摘要 ===
       if (!dimension) {
         const value = formatNumber(result[0][_mf]);
         if (_isCountMode) {
-          return `${timeText}内，总记录数为 ${value}。`;
+          return `${timeText}内，总${_countEntity}数为 ${value}。`;
+        }
+        if (_isCountDistinctMode) {
+          return `${timeText}内，去重${_countEntity}数为 ${value}。`;
         }
         if (_isRatioPctInterp) {
           return `${timeText}内，整体占比为 ${value}%。`;
@@ -9508,7 +9669,7 @@
       if (dimension === dateFieldName || dimension === '_年份') {
         var _dimLabel = dimension === '_年份' ? '年份' : dimension;
         var _unitText = dimension === '_年份' ? '个年份' : '天';
-        var _trendMetric = _isCountMode ? '数量' : (_mf + aggText);
+        var _trendMetric = _isCountMode ? (_countEntity + '数量') : (_mf + aggText);
 
         // 提取数值序列和标签序列
         var _trendValues = result.map(function(r) { return Number(r[_mf]) || 0; });
@@ -9554,7 +9715,7 @@
       if (_isRatioPctInterp) {
         _statPhrase = `按 ${_dimDisplay} 统计占比分布${limitHint}：`;
       } else if (_isCountMode) {
-        _statPhrase = `按 ${_dimDisplay} 统计数量${limitHint}：`;
+        _statPhrase = `按 ${_dimDisplay} 统计${_countEntity}数量${limitHint}：`;
       } else {
         _statPhrase = `按 ${_dimDisplay} 统计 ${_mf} 的${aggText}${limitHint}：`;
       }
@@ -9635,11 +9796,15 @@
     }
 
     // 将解析出的槽位用自然语言回显（如 "我理解你想查询：近7天各渠道销售额总和，降序，取前10个"）
-    function buildQueryUnderstanding(dimension, metric, aggregation, timeRange, sortOrder, limit, dimensionFields, numericFields) {
+    function buildQueryUnderstanding(dimension, metric, aggregation, timeRange, sortOrder, limit, dimensionFields, numericFields, question) {
+      // Fix: 从问题中提取被计数的实体名称
+      var _quEntity = extractCountEntity(question, dimension);
       const parts = [];
       // 时间范围
       if (timeRange && timeRange.days) {
         parts.push(`近 ${timeRange.days} 天`);
+      } else if (timeRange && timeRange.label) {
+        parts.push(timeRange.label);
       }
       // 维度
       if (dimension) {
@@ -9650,7 +9815,7 @@
       }
       // 指标
       if (metric && metric.field) {
-        var _mfU = metric.field === '__COUNT__' ? '计数' : metric.field;
+        var _mfU = metric.field === '__COUNT__' ? (_quEntity + '数量') : (metric.field === '__COUNT_DISTINCT__' ? ('去重' + _quEntity + '数量') : metric.field);
         parts.push(`统计<strong>「${_mfU}」</strong>`);
       }
       // 聚合方式
@@ -11823,8 +11988,10 @@ ${convData.sqls.join('\n')}
     
     function buildFollowUps(dimension, metric, dateField, dimensionFields, numericFields) {
       const ups = [];
+      // Fix: 从问题中提取被计数的实体名称
+      var _fuEntity = extractCountEntity(window._lastQuery || '', dimension);
       // 将 __COUNT__ 等内部占位符替换为用户可读文字
-      const _mf = metric ? (metric.field === '__COUNT__' ? '计数' : metric.field) : null;
+      const _mf = metric ? (metric.field === '__COUNT__' ? (_fuEntity + '数量') : (metric.field === '__COUNT_DISTINCT__' ? ('去重' + _fuEntity + '数量') : metric.field)) : null;
       if (dateField && metric && dimension) ups.push(`按时间看 ${_mf} 趋势`);
       if (dimensionFields.length > 1 && metric) {
         const other = dimensionFields.find(d => d !== dimension);
@@ -11959,7 +12126,39 @@ ${convData.sqls.join('\n')}
       console.log('[图表] renderChart被调用:', chartId, chartType, '数据:', (data?.categories||[]).length, '项');
       const dom = document.getElementById(chartId);
       if (!dom) { console.warn('[图表] DOM未找到:', chartId); dom.textContent = '图表容器未找到'; return; }
+
+      // Fix: 'number' 类型 — 渲染美观的数字卡片，不用 ECharts
+      if (chartType === 'number' || (data && data.display === 'number')) {
+        var _numVal = (data.values && data.values.length > 0) ? data.values[0] : 0;
+        var _numLabel = data.dimension || '';
+        var _numMetric = data.metric || '';
+        var _numFormatted = formatNumber(_numVal);
+        var _isDarkNum = document.documentElement.classList.contains('dark');
+        // 隐藏图表切换按钮（数字卡片不需要切换类型）
+        var _card2 = dom.closest('.chart-card');
+        if (_card2) {
+          var _btns2 = _card2.querySelectorAll('.chart-type-btn');
+          _btns2.forEach(function(b) { b.style.display = 'none'; });
+        }
+        dom.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;min-height:280px;padding:2rem;">
+            <div style="text-align:center;width:100%;max-width:360px;border-radius:16px;padding:2.5rem 2rem;background:${_isDarkNum ? 'linear-gradient(135deg, rgba(13,148,136,0.12), rgba(99,102,241,0.08))' : 'linear-gradient(135deg, rgba(13,148,136,0.06), rgba(99,102,241,0.04))'};border:1px solid var(--color-border);">
+              <div style="font-size:0.75rem;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">${escapeHtml(_numMetric || '统计结果')}</div>
+              <div style="font-size:3rem;font-weight:800;color:var(--color-accent);line-height:1.2;letter-spacing:-0.02em;">${_numFormatted}</div>
+              <div style="font-size:0.875rem;color:var(--color-text-secondary);margin-top:0.75rem;">${escapeHtml(_numLabel || title || '')}</div>
+            </div>
+          </div>
+        `;
+        delete (window._lazyCharts || {})[chartId];
+        return;
+      }
+
       if (typeof echarts === 'undefined') { dom.innerHTML = '<div style="text-align:center;padding:60px;color:var(--color-text-tertiary);">⏳ 图表库加载中，请稍候…</div>'; return; }
+      // Fix: 非 number 类型时确保图表切换按钮可见
+      var _cardRestore = dom.closest('.chart-card');
+      if (_cardRestore) {
+        _cardRestore.querySelectorAll('.chart-type-btn').forEach(function(b) { b.style.display = ''; });
+      }
       const hasData = (data.categories || []).length > 0 || (data.values || []).length > 0;
       const existing = echarts.getInstanceByDom(dom);
       if (existing) existing.dispose();
@@ -13171,13 +13370,13 @@ ${convData.sqls.join('\n')}
             ${truncated ? `
             <div class="px-4 py-2 text-xs border-t border-border flex items-center justify-between" style="background-color: var(--color-surface-2);">
               <span class="text-text-tertiary">仅显示前 ${MAX_VISIBLE} 行，共 ${rawResult.length} 行</span>
-              <button onclick="expandDataTable('${tableId}', '${aiId}', '${escapeHtml(JSON.stringify(columns))}', '${escapeHtml(JSON.stringify(rawResult))}')" class="text-accent hover:underline text-xs font-medium">展开全部</button>
+              <button onclick="expandDataTable('${tableId}', '${aiId}')" class="text-accent hover:underline text-xs font-medium">展开全部</button>
             </div>
             ` : ''}
           </div>
         </div>
       `;
-      container.dataset.fullResult = JSON.stringify(rawResult);
+      try { container.dataset.fullResult = JSON.stringify(rawResult); } catch(e) {}
       container.classList.remove('hidden');
       lucide.createIcons();
     }
@@ -13269,9 +13468,14 @@ ${convData.sqls.join('\n')}
       setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 3000);
     }
 
-    function expandDataTable(tableId, aiId, columnsJson, rawResultJson) {
-      const columns = JSON.parse(columnsJson);
-      const rawResult = JSON.parse(rawResultJson);
+    function expandDataTable(tableId, aiId) {
+      const container = document.querySelector('#' + aiId + ' .data-table-block');
+      if (!container) return;
+      let rawResult, columns;
+      try {
+        rawResult = JSON.parse(container.dataset.fullResult || '[]');
+        columns = Object.keys(rawResult[0] || {});
+      } catch(e) { return; }
       const tbody = document.getElementById(tableId + '-body');
       const wrap = document.getElementById(tableId + '-wrap');
       if (!tbody || !wrap) return;
