@@ -9887,7 +9887,10 @@
       const container = document.querySelector(`#${aiId} .query-understanding-container`);
       if (!container || !understandingText) return;
       container.innerHTML = `
-        <div class="query-understanding-card px-4 py-3 rounded-card border border-accent/30 bg-gradient-to-br from-accent/5 to-accent-blue/5">
+        <div class="query-understanding-card relative px-4 py-3 rounded-card border border-accent/30 bg-gradient-to-br from-accent/5 to-accent-blue/5 pr-9">
+          <button onclick="this.closest('.query-understanding-container').classList.add('hidden')" class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-secondary/60 transition-colors" title="隐藏">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
           <div class="flex items-start gap-2.5">
             <div class="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
               <i data-lucide="lightbulb" class="w-4 h-4 text-accent"></i>
