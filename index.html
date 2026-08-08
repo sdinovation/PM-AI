@@ -13527,11 +13527,7 @@ ${convData.sqls.join('\n')}
     function addMessageActions(aiId) {
       const container = document.querySelector('#' + aiId + ' .flex.items-center.gap-1');
       if (!container) return;
-      var conf = window._slotScore != null ? window._slotScore : 0.9;
-      var confColor = conf >= 0.8 ? '#10b981' : conf >= 0.5 ? '#f59e0b' : '#ef4444';
-      var confLabel = conf >= 0.8 ? '高置信' : conf >= 0.5 ? '待确认' : '低置信';
       container.innerHTML = `
-        <span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:${confColor};border:1px solid ${confColor}20;border-radius:6px;padding:1px 6px;margin-right:4px" title="槽位匹配度${Math.round(conf*100)}%">● ${confLabel}</span>
         <button onclick="toggleMsgLike('${aiId}')" class="msg-like-btn icon-btn w-8 h-8" title="点赞"><i data-lucide="thumbs-up" class="w-4 h-4"></i></button>
         <button onclick="toggleMsgDislike('${aiId}')" class="msg-dislike-btn icon-btn w-8 h-8" title="点踩"><i data-lucide="thumbs-down" class="w-4 h-4"></i></button>
         <button onclick="correctMessage('${aiId}')" class="icon-btn w-8 h-8" title="纠错"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
