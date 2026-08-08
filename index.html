@@ -4652,7 +4652,7 @@
         var isRanking = /Top|排名|前几|哪个(?:渠道|城市|类别|产品|部门|店|品牌|医院|科室|公司|地区|行业|楼盘|股票|路线)最高|哪个(?:渠道|城市|类别|产品|部门|店|品牌|医院|科室|公司|地区|行业|楼盘|股票|路线)最低|哪个(?:渠道|城市|类别|产品|部门|店|品牌|医院|科室|公司|地区|行业|楼盘|股票|路线)最多|哪个(?:渠道|城市|类别|产品|部门|店|品牌|医院|科室|公司|地区|行业|楼盘|股票|路线)最少|最高|最低|最大|最小|最多|最少|最长|最快|最慢|最贵|最便宜|最好|最差|最高价|最低价/.test(q);
         // Fix: 添加"所有...总"模式 — "所有X的总Y"应识别为汇总
         var isCumulative = /总量|累计|累积|总计|总额|总值|总共|整体|总体|全部|汇总/.test(q) || (/所有|全部/.test(q) && /总/.test(q));
-        var isTrend = /趋势|走势|增长|下降|最近|近.+天|每日|每月|每天|逐月|逐周|逐季|逐年|逐日|变化趋势|变化走势/.test(q);
+        var isTrend = /趋势|走势|增长|下降|最近|近[一周天月]|每日|每月|每天|逐月|逐周|逐季|逐年|逐日|变化趋势|变化走势|环比|同比|日.+变化|周.+变化|月.+变化|发电量变化|销量变化|价格变化/.test(q);
         var hasDate = !!dateCol;
         var isCompare = /对比|比较|vs|分别|不同|差异|区别/.test(q) && !/占比|比例|分布|构成|百分比|份额/.test(q);
         // Fix: 3+实体含"和"（A和B和C）或含"、"（A、B）→ comparison，即使没有"对比"关键词
@@ -4686,7 +4686,7 @@
         var _hasGroupOrComp = /各|每|按|分别|不同|对比|比较|排名|Top|分布|占比|比例|趋势|走势|增长|变化|哪些|有什么|有哪些/.test(q) || _entityAndCount >= 2 || _entityDunhaoCount >= 1;
         var isScalar = (/是多少|为多少|是多少值/.test(q) || (q.length < 25 && !/各|每|排名|Top|对比|比较|分布|占比|趋势|走势|按|分组|哪些|有什么/.test(q) && !/且|并|同时|有哪些|超过|大于|小于|低于|高于|不低于|不超过|以上|以下|分别|不同/.test(q))) && !_hasGroupOrComp;
         var isRec = /怎么提升|如何提高|建议|怎么办|推荐|策略|方案/.test(q);
-        var isList = (/有哪些|有什么|哪些|什么产品|什么渠道/.test(q) && !/超过|大于|高于|不低于/.test(q) && !/关系|相关|之间|瓶颈|趋势|变化/.test(q)) || (/(?:为|是)\s*[^\s,，。？?的]+\s*(?:的)?\s*(?:学生|同学|员工|人|记录|数据|商品|产品|订单|会员)/.test(q) && !/趋势|变化|增长/.test(q));
+        var isList = (/有哪些|有什么|哪些|什么产品|什么渠道/.test(q) && !/超过|大于|高于|不低于/.test(q) && !/关系|相关|之间|瓶颈|趋势|变化/.test(q) && !/最高|最低|最大|最小|最多|最少|最贵|最便宜|最好|最差|排名|Top/.test(q)) || (/(?:为|是)\s*[^\s,，。？?的]+\s*(?:的)?\s*(?:学生|同学|员工|人|记录|数据|商品|产品|订单|会员)/.test(q) && !/趋势|变化|增长/.test(q));
         // isFilter：扩展检测 — 条件筛选 + HAVING 条件
         // Fix: 扩展实体类型列表，增加"楼盘|学区房|房子|科室|公司|物流公司|股票|行业|地区"等；支持"在...以下"模式
         // Fix: 扩展实体类型列表，增加"学校|农场|工厂|工厂|出行|游客|产量|天气"等
@@ -4766,14 +4766,14 @@
 
         // 2.6️⃣ 条件筛选 / HAVING 条件（优先于排名 — 含条件关键词时不应返回排名）
         else if (isFilter || isHavingCond) {
-          intent='filter'; confidence=0.88;
-          if (isHavingCond) {
+          if (isHavingCond) { intent='having'; confidence=0.9;
             var _havingMatch = q.match(/(?:平均|总|总和)?([\u4e00-\u9fa5a-zA-Z_（）\(\)]+)\s*(?:超过|大于|高于|不低于)\s*(\d+(?:\.\d+)?)/);
             if (_havingMatch) {
               window._lastHavingCond = { field: _havingMatch[1].trim(), op: '>', value: parseFloat(_havingMatch[2]) };
             }
             examples='SELECT '+dim+', AVG('+metric+') as avg_val FROM '+table+' GROUP BY '+dim+' HAVING AVG('+metric+') > '+(_havingMatch?_havingMatch[2]:'0');
           } else {
+            intent='filter'; confidence=0.88;
             examples='SELECT * FROM '+table+' WHERE conditions';
           }
         }
@@ -4783,6 +4783,22 @@
           intent='ranking'; confidence=0.85;
           examples='SELECT '+dim+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dim+' ORDER BY total DESC LIMIT 1';
           window._lastIntent && (window._lastIntent.rankingLimit = 1);
+        }
+
+        // 3.4️⃣ 多指标查询（"各科目的平均分和最高分"、"不同套餐的用户数和平均月费"）
+        // Fix: 必须早于 ranking 处理，避免"最高分"被误判为 ranking
+        else if (/(各|不同).*的.*(平均|总和|总数|数量|人数).*(和|与).*(最高|最低|最大|最小|最多|最少)/.test(q) ||
+                 (/(用户数|订单数|数量|人数|个数).*(和|与).*(平均|最高|最低|最大|最小)/.test(q) && /对比|比较|分别|不同/.test(q))) {
+          intent='multi-metric'; confidence=0.9;
+          window._lastMultiMetricFields = { primary: dim, metric: metric, agg: ['AVG','MAX'] };
+          examples='SELECT '+dim+', AVG('+metric+') as avg_val, MAX('+metric+') as max_val, COUNT(*) as cnt FROM '+table+' GROUP BY '+dim+' ORDER BY avg_val DESC';
+        }
+
+        // 3.45️⃣ 分组极值（"各地区发电量最高的电源类型"）
+        // Fix: 必须早于 ranking 处理，避免"最高"被误判为 ranking
+        else if (/各.*[最高最低最大最小最多最少最贵最便宜].*的(类型|品类|品牌|套餐|渠道|电源|险种|班|班级|科目|产品|员工)/.test(q)) {
+          intent='group-extreme'; confidence=0.92;
+          examples='SELECT '+dim+', '+metric+', MAX('+metric+') OVER (PARTITION BY '+dim+') as max_val FROM '+table+' WHERE ('+dim+', '+metric+') IN (SELECT '+dim+', MAX('+metric+') FROM '+table+' GROUP BY '+dim+')';
         }
 
         // 3.5️⃣ 趋势分析（优先于排名 — 含趋势关键词时不应返回排名）
@@ -4847,6 +4863,20 @@
           intent='distribution'; confidence=0.9;
           examples='SELECT '+dim+', COUNT(*) as count FROM '+table+' GROUP BY '+dim+' ORDER BY count DESC';
           window._isScalar=false;
+        }
+
+        // 8.5️⃣ 计算率指标（妥投率/拒赔率/续约率/留存率/转化率/复购率/退订率）
+        // Fix: 自动识别计算字段并生成对应SQL
+        else if (/妥投率|拒赔率|续约率|留存率|转化率|复购率|退订率|回购率|签收率|通过率|成单率|续保率/.test(q)) {
+          intent='distribution'; confidence=0.92;
+          var _rateType = q.match(/妥投率|拒赔率|续约率|留存率|转化率|复购率|退订率|回购率|签收率|通过率|成单率|续保率/)[0];
+          var _baseField = '是否续约'; // 默认
+          var _condition = '1';
+          if (_rateType === '妥投率') { _baseField = '是否妥投'; _condition = '是否妥投=1'; }
+          else if (_rateType === '拒赔率') { _baseField = '状态'; _condition = "状态='拒赔'"; }
+          else if (_rateType === '续约率' || _rateType === '续保率' || _rateType === '留存率') { _baseField = '是否续约'; _condition = '是否续约=1'; }
+          window._computedRate = { type: _rateType, baseField: _baseField, condition: _condition };
+          examples='SELECT '+dim+', AVG(CASE WHEN '+_condition+' THEN 1.0 ELSE 0 END) as '+_rateType+' FROM '+table+' GROUP BY '+dim+' ORDER BY '+_rateType+' DESC';
         }
 
         // 9️⃣ 占比分布
