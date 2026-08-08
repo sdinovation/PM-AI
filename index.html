@@ -4774,8 +4774,11 @@
           if (_dvX) { var _dvDimHit = resolveFieldAlias(_dvX, _dvTCols) || bestFuzzyMatch(_dvX, _dvTCols); if (_dvDimHit) dim = _dvDimHit; }
           if (_dvY) { var _dvMetHit = resolveFieldAlias(_dvY, _dvNCols) || bestFuzzyMatch(_dvY, _dvNCols); if (_dvMetHit) metric = _dvMetHit; }
           intent='detail-view'; confidence=0.92;
-          examples='SELECT '+dim+', '+metric+' FROM '+table+' ORDER BY '+dim+' LIMIT 100';
-          window._lastDetailView = { dim: dim, metric: metric };
+          examples='SELECT '+dim+', '+metric+' FROM '+table+' ORDER BY '+metric+' DESC LIMIT 5';
+          window._lastDetailView = { dim: dim, metric: metric, limit: 5 };
+          // Fix: 设置 rankingLimit 为 5，限制枝图只显示前 5 条
+          if (window._lastIntent) window._lastIntent.rankingLimit = 5;
+          else window._lastIntent = { rankingLimit: 5 };
         }
 
         // 2.6️⃣ 条件筛选 / HAVING 条件（优先于排名 — 含条件关键词时不应返回排名）
