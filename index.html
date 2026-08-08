@@ -2020,6 +2020,7 @@
       '入职': ['入职日期','入职','hire_date'],
       '离职': ['离职','是否离职','turnover'],
       '工龄': ['工龄','工作年限','tenure','入职年限'],
+      '员工id': ['员工编号','员工ID','工号','编号','id','ID'],
       // ===== 教育 =====
       '成绩': ['分数','成绩','score','考试成绩'],
       '及格率': ['及格率','通过率','pass_rate'],
@@ -4764,6 +4765,19 @@
           examples='SELECT DISTINCT '+dim+' FROM '+table;
         }
 
+        // 2.55️⃣ 细节查看："按X看Y" / "X的Y"
+        // Fix: 不覆亦为"按X统计Y的总和"
+        else if (/(?:按照|按)(.{1,8}?)(?:看|查|是多少|是什么)(.{1,8}?)(?:看|查|是多少|是什么|$)/.test(q)) {
+          var _dvX = RegExp.$1.trim(); var _dvY = RegExp.$2.trim();
+          var _dvTCols = (parsedData.fieldInfo || []).filter(function(f){return f.type === 'text';}).map(function(f){return f.name;});
+          var _dvNCols = (parsedData.fieldInfo || []).filter(function(f){return ['int','float','currency','percent'].indexOf(f.type) >= 0;}).map(function(f){return f.name;});
+          if (_dvX) { var _dvDimHit = resolveFieldAlias(_dvX, _dvTCols) || bestFuzzyMatch(_dvX, _dvTCols); if (_dvDimHit) dim = _dvDimHit; }
+          if (_dvY) { var _dvMetHit = resolveFieldAlias(_dvY, _dvNCols) || bestFuzzyMatch(_dvY, _dvNCols); if (_dvMetHit) metric = _dvMetHit; }
+          intent='detail-view'; confidence=0.92;
+          examples='SELECT '+dim+', '+metric+' FROM '+table+' ORDER BY '+dim+' LIMIT 100';
+          window._lastDetailView = { dim: dim, metric: metric };
+        }
+
         // 2.6️⃣ 条件筛选 / HAVING 条件（优先于排名 — 含条件关键词时不应返回排名）
         else if (isFilter || isHavingCond) {
           if (isHavingCond) { intent='having'; confidence=0.9;
@@ -4937,7 +4951,7 @@
         }
         // 3. 如果直接查找失败，回退到正则匹配（各/按/不同 + 1~4字 + 后缀）
         if (!dynDim) {
-          var dimMatch = q.match(/(?:各|每|按|不同|各个)(.{1,4}?)(?:的|数量|个数|分布|对比|排名|趋势|变化|总额|总计|总和|平均|最高|最低|最多|最少|有几|数量分布|分别是)/);
+          var dimMatch = q.match(/(?:各|每|按照|按|不同|各个)(.{1,6}?)(?:的|数量|个数|分布|对比|排名|趋势|变化|总额|总计|总和|平均|最高|最低|最多|最少|有几|数量分布|分别是|看|查|的对应|对应)/);
           if (dimMatch) {
             var dimText = dimMatch[1].trim();
             dynDim = adaptiveFindDim(dimText, textCols);
