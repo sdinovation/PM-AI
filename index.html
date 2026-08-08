@@ -12348,7 +12348,7 @@ ${convData.sqls.join('\n')}
                 splitLine: { lineStyle: { color: isDark ? '#334155' : '#e2e8f0', type: 'dashed' } }
               },
               {
-                type: 'value', scale: true, alignTicks: true, name: data.series[1].name,
+                type: 'value', min: (_dualPref === 'bar' ? 0 : undefined), scale: _dualPref !== 'bar', alignTicks: true, name: data.series[1].name,
                 nameLocation: 'end', nameGap: 10,
                 nameTextStyle: { fontSize: 11, fontWeight: 600, color: _rightColor },
                 axisLine: { show: true, lineStyle: { color: _rightColor } },
@@ -12422,7 +12422,7 @@ ${convData.sqls.join('\n')}
             // 3+ 指标：保持分组柱状图（单Y轴）
             chartType = 'bar';
             option.yAxis = {
-              type: 'value', scale: true,
+              type: 'value', min: 0,
               axisLabel: { fontSize, color: isDark ? '#cbd5e1' : '#64748b' }
             };
             data.series.forEach((s, i) => {
@@ -12454,6 +12454,27 @@ ${convData.sqls.join('\n')}
           }
           // 分组柱状图不需要下面单指标的处理
         } else if (chartType === 'bar') {
+          // Fix: 柱状图Y轴从0开始，避免小值柱子不可见
+          // 若存在负值则不强制min:0，交给ECharts自动适配
+          var _hasNeg = values.some(function(v) { return v < 0; });
+          option.yAxis = {
+            type: 'value',
+            min: _hasNeg ? undefined : 0,
+            name: data.metric || '',
+            nameLocation: 'middle',
+            nameGap: 40,
+            nameTextStyle: { fontSize: 11, color: isDark ? '#94a3b8' : '#64748b' },
+            axisLabel: {
+              fontSize: fontSize,
+              color: isDark ? '#cbd5e1' : '#64748b',
+              formatter: function(val) {
+                if (Math.abs(val) >= 100000000) return (val / 100000000).toFixed(1).replace(/\.0$/, '') + '亿';
+                if (Math.abs(val) >= 10000) return (val / 10000).toFixed(1).replace(/\.0$/, '') + '万';
+                if (Number.isInteger(val)) return val.toLocaleString();
+                return val.toLocaleString(undefined, { maximumFractionDigits: 2 });
+              }
+            }
+          };
           // 柱状图优化 — 渐变填充 + 动态间距 + 悬浮高亮 + 大数据缩放
           var _barN = values.length;
           var _barGap = _barN <= 6 ? '40%' : (_barN <= 15 ? '25%' : (_barN <= 30 ? '15%' : '5%'));
@@ -12470,8 +12491,8 @@ ${convData.sqls.join('\n')}
             ];
             option.grid.bottom = '15%';
           }
-          // 标签：≤10 显示，≤20 隔行显示，>20 不显示
-          var _barLabelShow = _barN <= 10;
+          // 标签：≤15 显示，≤30 隔行显示，>30 不显示
+          var _barLabelShow = _barN <= 15;
           var _barLabel = {
             show: _barLabelShow,
             position: 'top',
