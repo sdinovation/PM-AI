@@ -1,0 +1,4107 @@
+{
+  "summary": {
+    "total": 172,
+    "passed": 169,
+    "partial": 3,
+    "failed": 0,
+    "passRate": 98,
+    "jsErrors": 0
+  },
+  "results": [
+    {
+      "suite": "回归-拥堵指数",
+      "file": "traffic_flow.csv",
+      "category": "回归验证",
+      "q": "平均拥堵指数是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(拥堵指数) AS 拥堵指数\nFROM traffic_flow",
+      "text": "全部时间内，拥堵指数的平均为 5.44。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「拥堵指数」，(取平均)\n              \n ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-拥堵指数",
+      "file": "traffic_flow.csv",
+      "category": "回归验证",
+      "q": "平均车流量是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(车流量(辆/h)) AS 车流量(辆/h)\nFROM traffic_flow",
+      "text": "全部时间内，车流量(辆/h)的平均为 2,800.52。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「车流量(辆/h)」，(取平均)\n    ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-拥堵指数",
+      "file": "traffic_flow.csv",
+      "category": "回归验证",
+      "q": "平均车速是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(平均车速(km/h)) AS 平均车速(km/h)\nFROM traffic_flow",
+      "text": "全部时间内，平均车速(km/h)的平均为 40.81。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「平均车速(km/h)」，(取平均)\n   ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-拥堵指数",
+      "file": "traffic_flow.csv",
+      "category": "回归验证",
+      "q": "平均温度是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(温度(℃)) AS 温度(℃)\nFROM traffic_flow",
+      "text": "全部时间内，温度(℃)的平均为 18.61。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「温度(℃)」，(取平均)\n             ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-师生比",
+      "file": "education_survey.csv",
+      "category": "回归验证",
+      "q": "平均师生比是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(师生比) AS 师生比\nFROM education_survey",
+      "text": "全部时间内，师生比的平均为 0.05。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「师生比」，(取平均)\n              \n   ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-师生比",
+      "file": "education_survey.csv",
+      "category": "回归验证",
+      "q": "平均分是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(平均分) AS 平均分\nFROM education_survey",
+      "text": "全部时间内，平均分的平均为 78.55。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「平均分」，(取平均)\n              \n  ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-师生比",
+      "file": "education_survey.csv",
+      "category": "回归验证",
+      "q": "平均及格率是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(及格率(%)) AS 及格率(%)\nFROM education_survey",
+      "text": "全部时间内，及格率(%)的平均为 78.33。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「及格率(%)」，(取平均)\n           ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-师生比",
+      "file": "education_survey.csv",
+      "category": "回归验证",
+      "q": "平均优秀率是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(优秀率(%)) AS 优秀率(%)\nFROM education_survey",
+      "text": "全部时间内，优秀率(%)的平均为 22.16。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「优秀率(%)」，(取平均)\n           ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-三实体对比",
+      "file": "financial_stocks.csv",
+      "category": "回归验证",
+      "q": "贵州茅台和五粮液和宁德时代的平均收盘价",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(收盘价) AS 收盘价\nFROM financial_stocks\nWHERE 股票名称 = '贵州茅台'",
+      "text": "全部时间内，收盘价的平均为 1,093.9。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「收盘价」，(取平均)\n              \n",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-三实体对比",
+      "file": "financial_stocks.csv",
+      "category": "回归验证",
+      "q": "贵州茅台、五粮液、宁德时代的平均成交量",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT AVG(成交量) AS 成交量\nFROM financial_stocks\nWHERE 股票名称 = '贵州茅台'",
+      "text": "全部时间内，按 股票名称 统计 成交量 的平均：贵州茅台 最高，为 5,322,381.72。共 1 个股票名称。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": "股票名称"
+    },
+    {
+      "suite": "回归-三实体对比",
+      "file": "financial_stocks.csv",
+      "category": "回归验证",
+      "q": "贵州茅台和五粮液的收盘价对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 股票名称, SUM(开盘价) AS 开盘价, SUM(收盘价) AS 收盘价\nFROM financial_stocks\nWHERE 股票名称 IN ('贵州茅台', '五粮液')\nGROUP BY 股票名称",
+      "text": "按股票名称统计：贵州茅台 最高（开盘价=94,050.48，收盘价=94,075.73）。共2个股票名称。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "股票名称"
+    },
+    {
+      "suite": "回归-过滤器",
+      "file": "telecom_users.csv",
+      "category": "回归验证",
+      "q": "客户满意度低于6分的用户",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 用户ID, SUM(客户满意度) AS 客户满意度\nFROM telecom_users\nWHERE 客户满意度 < 6\nGROUP BY 用户ID",
+      "text": "全部时间内，按 用户ID 统计 客户满意度 的总和：U20230001 最高，为 5；其次是 U20230013，为 5。第一名占比 17.9%，是末位的 1.0 倍。共 6 个用户ID。\n📊 统计摘要：均值 4.67，中位数 5，标准差 0.47，变异系数 0.10（相对集中）。\n🎯 集中度：CR1=17.9%，CR4=67.9%（中度集中）。\n            \n        \n ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "用户ID"
+    },
+    {
+      "suite": "回归-过滤器",
+      "file": "telecom_users.csv",
+      "category": "回归验证",
+      "q": "月消费超过100元的用户",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 用户等级, SUM(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users\nWHERE 月消费(元) > 100\nGROUP BY 用户等级",
+      "text": "全部时间内，按 用户等级 统计 通话时长(分钟) 的总和：普通 最高，为 11,101；其次是 银卡，为 6,627。第一名占比 45.3%，是末位的 6.4 倍。共 4 个用户等级。\n📊 统计摘要：均值 6,120.5，中位数 5,821.5，标准差 3,372.25，变异系数 0.55（中度离散）。\n🎯 集中度：CR1=45.3%，CR4=100.0%（高度集中）。\n           ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "用户等级"
+    },
+    {
+      "suite": "回归-股票",
+      "file": "financial_stocks.csv",
+      "category": "已训练问题",
+      "q": "各股票的平均收盘价排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 股票代码, SUM(开盘价) AS 开盘价, AVG(收盘价) AS 收盘价\nFROM financial_stocks\nGROUP BY 股票代码\nORDER BY 开盘价 DESC\nLIMIT 10",
+      "text": "按股票代码统计：600519 最高（开盘价=94,050.48，收盘价=1,093.9）。共5个股票代码。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "股票代码"
+    },
+    {
+      "suite": "回归-股票",
+      "file": "financial_stocks.csv",
+      "category": "已训练问题",
+      "q": "成交量最高的一天",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 股票名称, MAX(成交量) AS 成交量\nFROM financial_stocks\nGROUP BY 股票名称\nORDER BY 成交量 DESC\nLIMIT 1",
+      "text": "全部时间内，按 股票名称 统计 成交量 的最大值（取前 1 个）：贵州茅台 最高，为 9,965,719。共 1 个股票名称。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n              ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "股票名称"
+    },
+    {
+      "suite": "回归-股票",
+      "file": "financial_stocks.csv",
+      "category": "已训练问题",
+      "q": "贵州茅台的收盘价变化趋势",
+      "type": "trend",
+      "expects": {
+        "sql": true,
+        "intent": "trend"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 交易日期, SUM(收盘价) AS 收盘价\nFROM financial_stocks\nWHERE 股票名称 = '贵州茅台'\nGROUP BY 交易日期",
+      "text": "全部时间内，收盘价总和从 1,123.92（2024-01-02）上升至 1,078.9（2024-04-30）（-4.0%），共 86 天。\n📈 趋势分析：弱上升趋势（R²=0.28），平均环比下降 0.0%，波动率 2.6%。 峰值出现在 2024-04-12（1,334.33），谷值在 2024-01-29（907.1）。\n            \n        \n          \n",
+      "intent": "trend",
+      "chartType": "line",
+      "xAxisName": "交易日期"
+    },
+    {
+      "suite": "回归-股票",
+      "file": "financial_stocks.csv",
+      "category": "已训练问题",
+      "q": "贵州茅台和五粮液的收盘价对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 股票名称, SUM(开盘价) AS 开盘价, SUM(收盘价) AS 收盘价\nFROM financial_stocks\nWHERE 股票名称 IN ('贵州茅台', '五粮液')\nGROUP BY 股票名称",
+      "text": "按股票名称统计：贵州茅台 最高（开盘价=94,050.48，收盘价=94,075.73）。共2个股票名称。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "股票名称"
+    },
+    {
+      "suite": "回归-股票",
+      "file": "financial_stocks.csv",
+      "category": "已训练问题",
+      "q": "贵州茅台的平均成交量是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(成交量) AS 成交量\nFROM financial_stocks\nWHERE 股票名称 = '贵州茅台'",
+      "text": "全部时间内，成交量的平均为 5,322,381.72。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「成交量」，(取平均)\n          ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-股票",
+      "file": "financial_stocks.csv",
+      "category": "已训练问题",
+      "q": "各股票的成交量分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 股票代码, SUM(成交量) AS 成交量, SUM(成交额) AS 成交额\nFROM financial_stocks\nGROUP BY 股票代码",
+      "text": "按股票代码统计：333 最高（成交量=428,116,360，成交额=33,835,023.89）。共5个股票代码。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "股票代码"
+    },
+    {
+      "suite": "回归-股票",
+      "file": "financial_stocks.csv",
+      "category": "已训练问题",
+      "q": "收盘价和成交量有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 收盘价, 成交量 FROM financial_stocks -- 相关性分析 Pearson r=0.018",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.018（样本 n=430）\n结论：收盘价 与 成交量 之间存在极弱无明显相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.018（样本 n=430）\n结论：收盘价 与 成交量 之间存在极弱无明显相关关系。\n            \n        \n          \n            \n             ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "收盘价"
+    },
+    {
+      "suite": "回归-天气",
+      "file": "weather_climate.csv",
+      "category": "已训练问题",
+      "q": "平均气温是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(平均气温(℃)) AS 平均气温(℃)\nFROM weather_climate",
+      "text": "全部时间内，平均气温(℃)的平均为 14.72。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「平均气温(℃)」，(取平均)\n         ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-天气",
+      "file": "weather_climate.csv",
+      "category": "已训练问题",
+      "q": "各城市的平均气温排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 城市, AVG(平均气温(℃)) AS 平均气温(℃)\nFROM weather_climate\nGROUP BY 城市\nORDER BY 平均气温(℃) DESC\nLIMIT 10",
+      "text": "全部时间内，按 城市 统计 平均气温(℃) 的平均（取前 10 个）：广州 最高，为 22.43；其次是 上海，为 17.19。第一名占比 30.5%，是末位的 5.4 倍。共 5 个城市。\n📊 统计摘要：均值 14.72，中位数 16.83，标准差 6.07，变异系数 0.41（相对集中）。\n⚠️ 检测到 1 个离群值：哈尔滨，建议关注异常数据。\n🎯 集中度：CR1=30.5%，CR4=94",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "城市"
+    },
+    {
+      "suite": "回归-天气",
+      "file": "weather_climate.csv",
+      "category": "已训练问题",
+      "q": "气温变化趋势",
+      "type": "trend",
+      "expects": {
+        "sql": true,
+        "intent": "trend"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 月份, SUM(平均气温(℃)) AS 平均气温(℃)\nFROM weather_climate\nGROUP BY 月份",
+      "text": "全部时间内，按 月份 统计 平均气温(℃) 的总和：1月 最高，为 3.7；其次是 2月，为 18.1。第一名占比 0.4%，是末位的 0.3 倍。共 12 个月份。\n📊 统计摘要：均值 73.57，中位数 79，标准差 45.24，变异系数 0.61（中度离散）。\n🎯 集中度：CR1=0.4%，CR4=16.3%（相对分散）。\n            \n        \n          ",
+      "intent": "trend",
+      "chartType": "line",
+      "xAxisName": "月份"
+    },
+    {
+      "suite": "回归-天气",
+      "file": "weather_climate.csv",
+      "category": "已训练问题",
+      "q": "各天气状况的分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 城市, SUM(平均气温(℃)) AS 平均气温(℃)\nFROM weather_climate\nGROUP BY 城市",
+      "text": "全部时间内，按 城市 统计 平均气温(℃) 的总和：广州 最高，为 269.1；其次是 上海，为 206.3。第一名占比 30.5%，是末位的 5.4 倍。共 5 个城市。\n📊 统计摘要：均值 176.58，中位数 202，标准差 72.85，变异系数 0.41（相对集中）。\n⚠️ 检测到 1 个离群值：哈尔滨，建议关注异常数据。\n🎯 集中度：CR1=30.5%，CR4=94.3%（高度集中）",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-餐厅",
+      "file": "restaurant_revenue.csv",
+      "category": "已训练问题",
+      "q": "平均营业额是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(营业额(万元)) AS 营业额(万元)\nFROM restaurant_revenue",
+      "text": "全部时间内，营业额(万元)的平均为 211.47。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「营业额(万元)」，(取平均)\n        ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-餐厅",
+      "file": "restaurant_revenue.csv",
+      "category": "已训练问题",
+      "q": "各门店的营业额排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, SUM(营业额(万元)) AS 营业额(万元)\nFROM restaurant_revenue\nGROUP BY 门店名称\nORDER BY 营业额(万元) DESC\nLIMIT 10",
+      "text": "全部时间内，按 门店名称 统计 营业额(万元) 的总和（取前 10 个）：浦东中心店 最高，为 1,461；其次是 西直门店，为 1,400.9。第一名占比 16.4%，是末位的 1.4 倍。共 7 个门店名称。\n📊 统计摘要：均值 1,268.84，中位数 1,298.8，标准差 139.8，变异系数 0.11（相对集中）。\n🎯 集中度：CR1=16.4%，CR4=61.8%（中度集中）。\n",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "回归-餐厅",
+      "file": "restaurant_revenue.csv",
+      "category": "已训练问题",
+      "q": "中餐和西餐的营业额对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, SUM(营业额(万元)) AS 营业额(万元)\nFROM restaurant_revenue\nGROUP BY 门店名称",
+      "text": "全部时间内，按 门店名称 统计 营业额(万元) 的总和：浦东中心店 最高，为 1,461；其次是 西直门店，为 1,400.9。第一名占比 16.4%，是末位的 1.4 倍。共 7 个门店名称。\n📊 统计摘要：均值 1,268.84，中位数 1,298.8，标准差 139.8，变异系数 0.11（相对集中）。\n🎯 集中度：CR1=16.4%，CR4=61.8%（中度集中）。\n         ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "回归-房地产",
+      "file": "real_estate.csv",
+      "category": "已训练问题",
+      "q": "平均房价是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(单价(元/㎡)) AS 单价(元/㎡)\nFROM real_estate",
+      "text": "全部时间内，单价(元/㎡)的平均为 69,995.88。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「单价(元/㎡)」，(取平均)\n     ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "回归-房地产",
+      "file": "real_estate.csv",
+      "category": "已训练问题",
+      "q": "各城市的平均房价排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 城市, AVG(单价(元/㎡)) AS 单价(元/㎡)\nFROM real_estate\nGROUP BY 城市\nORDER BY 单价(元/㎡) DESC\nLIMIT 10",
+      "text": "全部时间内，按 城市 统计 单价(元/㎡) 的平均（取前 10 个）：深圳 最高，为 89,922.25；其次是 上海，为 73,117。第一名占比 21.9%，是末位的 1.7 倍。共 6 个城市。\n📊 统计摘要：均值 68,446.47，中位数 66,864.33，标准差 11,892.45，变异系数 0.17（相对集中）。\n🎯 集中度：CR1=21.9%，CR4=72.3%（中度集中）。",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "城市"
+    },
+    {
+      "suite": "回归-房地产",
+      "file": "real_estate.csv",
+      "category": "已训练问题",
+      "q": "房价超过500万的房子",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 楼盘名称, SUM(单价(元/㎡)) AS 单价(元/㎡)\nFROM real_estate\nGROUP BY 楼盘名称\nHAVING SUM(总价(万元)) > 5000000",
+      "text": "全部时间内，按 楼盘名称 统计 单价(元/㎡) 的总和：深圳湾壹号 最高，为 120,000；其次是 香蜜湖豪庭，为 108,966。第一名占比 6.6%，是末位的 3.4 倍。共 26 个楼盘名称。\n📊 统计摘要：均值 69,995.88，中位数 71,179.5，标准差 21,714.45，变异系数 0.31（相对集中）。\n🎯 集中度：CR1=6.6%，CR4=23.0%（相对分散）。\n ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "楼盘名称"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "平均售价是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(售价(万元)) AS 售价(万元)\nFROM electric_vehicle",
+      "text": "全部时间内，售价(万元)的平均为 29.4。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「售价(万元)」，(取平均)\n            ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "平均续航里程是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(电池容量(kWh)) AS 电池容量(kWh)\nFROM electric_vehicle",
+      "text": "全部时间内，电池容量(kWh)的平均为 78.6。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「电池容量(kWh)」，(取平均)\n      ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "平均月销量是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(月销量(辆)) AS 月销量(辆)\nFROM electric_vehicle",
+      "text": "全部时间内，月销量(辆)的平均为 7,506.9。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「月销量(辆)」，(取平均)\n         ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "平均电池容量是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(电池容量(kWh)) AS 电池容量(kWh)\nFROM electric_vehicle",
+      "text": "全部时间内，电池容量(kWh)的平均为 78.6。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「电池容量(kWh)」，(取平均)\n      ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "各品牌的月销量排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 品牌, SUM(月销量(辆)) AS 月销量(辆)\nFROM electric_vehicle\nGROUP BY 品牌\nORDER BY 月销量(辆) DESC\nLIMIT 10",
+      "text": "全部时间内，按 品牌 统计 月销量(辆) 的总和（取前 10 个）：比亚迪 最高，为 74,800；其次是 特斯拉，为 45,500。第一名占比 35.9%，是末位的 23.4 倍。共 10 个品牌。\n📊 统计摘要：均值 20,830，中位数 12,350，标准差 21,144.46，变异系数 1.02（高度离散）。\n⚠️ 检测到 2 个离群值：比亚迪、特斯拉，建议关注异常数据。\n🎯 集中度：",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "品牌"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "续航里程最高的前5个车型",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 车型, MAX(电池容量(kWh)) AS 电池容量(kWh)\nFROM electric_vehicle\nGROUP BY 车型\nORDER BY 电池容量(kWh) DESC\nLIMIT 5",
+      "text": "全部时间内，按 车型 统计 电池容量(kWh) 的最大值（取前 5 个）：蔚来ET9 最高，为 120；其次是 理想MEGA，为 102。第一名占比 16.6%，是末位的 1.2 倍。共 7 个车型。\n📊 统计摘要：均值 103.29，中位数 100，标准差 6.86，变异系数 0.07（相对集中）。\n⚠️ 检测到 1 个离群值：蔚来ET9，建议关注异常数据。\n🎯 集中度：CR1=16.6%，",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "月销量最高的前3个车型",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 车型, MAX(月销量(辆)) AS 月销量(辆)\nFROM electric_vehicle\nGROUP BY 车型\nORDER BY 月销量(辆) DESC\nLIMIT 3",
+      "text": "全部时间内，按 车型 统计 月销量(辆) 的最大值（取前 3 个）：比亚迪秦PLUS EV 最高，为 25,000；其次是 元PLUS，为 22,000。第一名占比 30.1%，是末位的 1.4 倍。共 4 个车型。\n📊 统计摘要：均值 20,750，中位数 20,000，标准差 2,947.46，变异系数 0.14（相对集中）。\n🎯 集中度：CR1=30.1%，CR4=100.0%（高度集中",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "月销量变化趋势",
+      "type": "trend",
+      "expects": {
+        "sql": true,
+        "intent": "trend"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 销售日期, SUM(月销量(辆)) AS 月销量(辆)\nFROM electric_vehicle\nGROUP BY 销售日期",
+      "text": "全部时间内，月销量(辆)总和从 12,500（2024-01-15）下降至 1,500（2024-12-01）（-88.0%），共 29 天。\n📈 趋势分析：弱下降趋势（R²=0.01），平均环比增长 51.9%，波动率 172.7%。 峰值出现在 2024-10-02（25,000），谷值在 2024-07-28（1,200）。\n            \n        \n          ",
+      "intent": "trend",
+      "chartType": "line",
+      "xAxisName": "销售日期"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "平均售价变化趋势",
+      "type": "trend",
+      "expects": {
+        "sql": true,
+        "intent": "trend"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 销售日期, AVG(售价(万元)) AS 售价(万元)\nFROM electric_vehicle\nGROUP BY 销售日期",
+      "text": "全部时间内，售价(万元)平均从 23.19（2024-01-15）上升至 78.8（2024-12-01）（+239.8%），共 29 天。\n📈 趋势分析：弱上升趋势（R²=0.13），平均环比增长 27.8%，波动率 84.9%。\n            \n        \n          \n            \n              \n            \n        ",
+      "intent": "trend",
+      "chartType": "line",
+      "xAxisName": "销售日期"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "比亚迪和特斯拉的平均售价对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(售价(万元)) AS 售价(万元)\nFROM electric_vehicle\nWHERE 品牌 IN ('比亚迪', '特斯拉')",
+      "text": "全部时间内，售价(万元)的平均为 19.68。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「售价(万元)」，(取平均)\n           ",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "轿车和SUV的平均月销量分别是多少",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 车型, AVG(月销量(辆)) AS 月销量(辆)\nFROM electric_vehicle\nGROUP BY 车型",
+      "text": "全部时间内，按 车型 统计 月销量(辆) 的平均：比亚迪秦PLUS EV 最高，为 25,000；其次是 元PLUS，为 22,000。第一名占比 11.5%，是末位的 20.8 倍。共 29 个车型。\n📊 统计摘要：均值 7,506.9，中位数 5,200，标准差 6,381.38，变异系数 0.85（中度离散）。\n⚠️ 检测到 2 个离群值：比亚迪秦PLUS EV、元PLUS，建议关注异常数",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "华东和华南的平均售价对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 销售区域, AVG(售价(万元)) AS 售价(万元)\nFROM electric_vehicle\nWHERE 销售区域 IN ('华东', '华南')\nGROUP BY 销售区域",
+      "text": "全部时间内，按 销售区域 统计 售价(万元) 的平均：华东 最高，为 39.06；其次是 华南，为 23.79。第一名占比 62.2%，是末位的 1.6 倍。共 2 个销售区域。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n   ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "销售区域"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "各品牌 用户分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 品牌, SUM(电池容量(kWh)) AS 电池容量(kWh)\nFROM electric_vehicle\nGROUP BY 品牌",
+      "text": "全部时间内，按 品牌 统计 电池容量(kWh) 的总和：蔚来 最高，为 370；其次是 小鹏，为 270。第一名占比 16.2%，是末位的 7.4 倍。共 15 个品牌。\n📊 统计摘要：均值 151.95，中位数 100，标准差 91.47，变异系数 0.60（中度离散）。\n🎯 集中度：CR1=16.2%，CR4=48.3%（相对分散）。\n            \n        \n     ",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "品牌"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "各车型类别的分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 车型, SUM(电池容量(kWh)) AS 电池容量(kWh)\nFROM electric_vehicle\nGROUP BY 车型",
+      "text": "全部时间内，按 车型 统计 电池容量(kWh) 的总和：蔚来ET9 最高，为 120；其次是 理想MEGA，为 102。第一名占比 5.3%，是末位的 2.8 倍。共 29 个车型。\n📊 统计摘要：均值 78.6，中位数 77，标准差 20.1，变异系数 0.26（相对集中）。\n🎯 集中度：CR1=5.3%，CR4=18.6%（相对分散）。\n            \n        \n    ",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "各销售区域占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 88,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 销售区域, ROUND(SUM(电池容量(kWh)) * 100.0 / (SELECT SUM(电池容量(kWh)) FROM electric_vehicle), 2) AS 占比百分比\nFROM electric_vehicle\nGROUP BY 销售区域",
+      "text": "全部时间内，按 销售区域 统计占比分布：华东 占比最高，为 38.14%；其次是 华南，占比 29.94%；华北 20.6%、西南 11.32%。共 4 个销售区域。\n📊 统计摘要：均值 25，中位数 25.27，标准差 10.04，变异系数 0.40（相对集中）。\n🎯 集中度：CR1=38.1%，CR4=100.0%（高度集中）。\n            \n        \n        ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "各品牌占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 88,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 品牌, ROUND(SUM(电池容量(kWh)) * 100.0 / (SELECT SUM(电池容量(kWh)) FROM electric_vehicle), 2) AS 占比百分比\nFROM electric_vehicle\nGROUP BY 品牌",
+      "text": "全部时间内，按 品牌 统计占比分布：特斯拉 占比最高，为 8.56%；其次是 比亚迪，占比 11.48%；蔚来 16.23%、理想 8.31%、小鹏 11.85%、问界 7.46%。共 15 个品牌。\n📊 统计摘要：均值 6.67，中位数 4.39，标准差 4.01，变异系数 0.60（中度离散）。\n🎯 集中度：CR1=8.6%，CR4=44.6%（相对分散）。\n            \n  ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "续航里程超过600km的车型",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 车型, SUM(电池容量(kWh)) AS 电池容量(kWh)\nFROM electric_vehicle\nWHERE 续航里程(km) > 600 AND 续航里程(km) = '600'\nGROUP BY 车型",
+      "text": "全部时间内，按 车型 统计 电池容量(kWh) 的总和：蔚来ET9 最高，为 120；其次是 理想MEGA，为 102。第一名占比 6.6%，是末位的 2.8 倍。共 22 个车型。\n📊 统计摘要：均值 83.13，中位数 86.5，标准差 19.53，变异系数 0.23（相对集中）。\n🎯 集中度：CR1=6.6%，CR4=23.1%（相对分散）。\n            \n        \n",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "售价低于20万的车型",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 83,
+      "status": "PARTIAL",
+      "details": [
+        "SQL:OK",
+        "Intent:MISS(summary)",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT SUM(售价(万元)) AS 售价(万元)\nFROM electric_vehicle\nWHERE 售价(万元) < 200000",
+      "text": "全部时间内，按 车型 统计 售价(万元) 的总和：蔚来ET9 最高，为 78.8；其次是 理想MEGA，为 55.98。第一名占比 9.2%，是末位的 6.7 倍。共 29 个车型。\n📊 统计摘要：均值 29.4，中位数 27.99，标准差 13.69，变异系数 0.47（相对集中）。\n⚠️ 检测到 1 个离群值：蔚来ET9，建议关注异常数据。\n🎯 集中度：CR1=9.2%，CR4=25.9%",
+      "intent": "summary",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "月销量最高的车型",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 车型, MAX(月销量(辆)) AS 月销量(辆)\nFROM electric_vehicle\nGROUP BY 车型\nORDER BY 月销量(辆) DESC\nLIMIT 1",
+      "text": "全部时间内，按 车型 统计 月销量(辆) 的最大值（取前 1 个）：比亚迪秦PLUS EV 最高，为 25,000。共 1 个车型。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n           ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "续航里程最低的车型",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 车型, MIN(电池容量(kWh)) AS 电池容量(kWh)\nFROM electric_vehicle\nGROUP BY 车型\nORDER BY 电池容量(kWh) ASC\nLIMIT 1",
+      "text": "全部时间内，按 车型 统计 电池容量(kWh) 的最小值（取前 1 个）：理想L7 最低，为 42.8。共 1 个车型。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "各品牌的平均售价和平均续航里程",
+      "type": "multi-metric",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 品牌, AVG(售价(万元)) AS 售价(万元)\nFROM electric_vehicle\nGROUP BY 品牌",
+      "text": "全部时间内，按 品牌 统计 售价(万元) 的平均：蔚来 最高，为 46.05；其次是 理想，为 45.31。第一名占比 11.3%，是末位的 3.4 倍。共 15 个品牌。\n📊 统计摘要：均值 27.26，中位数 25.78，标准差 9.95，变异系数 0.37（相对集中）。\n🎯 集中度：CR1=11.3%，CR4=39.7%（相对分散）。\n            \n        \n    ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "品牌"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "售价和续航里程之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 电池容量(kWh), 售价(万元) FROM electric_vehicle -- 相关性分析 Pearson r=0.534",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.534（样本 n=29）\n结论：电池容量(kWh) 与 售价(万元) 之间存在中等正相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.534（样本 n=29）\n结论：电池容量(kWh) 与 售价(万元) 之间存在中等正相关关系。\n            \n        \n          \n            \n ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "电池容量(kWh)"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "电池容量和续航里程的相关性",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 电池容量(kWh), 售价(万元) FROM electric_vehicle -- 相关性分析 Pearson r=0.534",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.534（样本 n=29）\n结论：电池容量(kWh) 与 售价(万元) 之间存在中等正相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.534（样本 n=29）\n结论：电池容量(kWh) 与 售价(万元) 之间存在中等正相关关系。\n            \n        \n          \n            \n ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "电池容量(kWh)"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "各品牌的平均月销量",
+      "type": "groupby",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 品牌, AVG(月销量(辆)) AS 月销量(辆)\nFROM electric_vehicle\nGROUP BY 品牌",
+      "text": "全部时间内，按 品牌 统计 月销量(辆) 的平均：比亚迪 最高，为 18,700；其次是 特斯拉，为 15,166.67。第一名占比 21.0%，是末位的 15.6 倍。共 15 个品牌。\n📊 统计摘要：均值 5,930，中位数 3,850，标准差 5,087.16，变异系数 0.86（中度离散）。\n⚠️ 检测到 2 个离群值：比亚迪、特斯拉，建议关注异常数据。\n🎯 集中度：CR1=21.0%",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "品牌"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "各销售区域的平均售价",
+      "type": "groupby",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 销售区域, AVG(售价(万元)) AS 售价(万元)\nFROM electric_vehicle\nGROUP BY 销售区域",
+      "text": "全部时间内，按 销售区域 统计 售价(万元) 的平均：华东 最高，为 39.06；其次是 西南，为 26.98。第一名占比 35.1%，是末位的 1.8 倍。共 4 个销售区域。\n📊 统计摘要：均值 27.79，中位数 25.38，标准差 6.81，变异系数 0.24（相对集中）。\n🎯 集中度：CR1=35.1%，CR4=100.0%（高度集中）。\n            \n        \n",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "销售区域"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "每个品牌有多少个车型",
+      "type": "count",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 品牌, COUNT(DISTINCT 车型) AS 去重计数\nFROM electric_vehicle\nGROUP BY 品牌",
+      "text": "全部时间内，按 品牌 统计 __COUNT_DISTINCT__ 的计数：特斯拉 最多，为 -；其次是 比亚迪，为 -。共 15 个品牌。\n📊 统计摘要：均值 0，中位数 0，标准差 0。\n            \n        \n          \n            \n              \n            \n            \n              AI ",
+      "intent": "distribution",
+      "chartType": "unknown",
+      "xAxisName": "品牌"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "比亚迪、特斯拉、蔚来的平均月销量",
+      "type": "complex",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT AVG(月销量(辆)) AS 月销量(辆)\nFROM electric_vehicle\nWHERE 品牌 = '特斯拉'",
+      "text": "全部时间内，按 品牌 统计 月销量(辆) 的平均：特斯拉 最高，为 15,166.67。共 1 个品牌。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": "品牌"
+    },
+    {
+      "suite": "new-ev",
+      "file": "electric_vehicle.csv",
+      "category": "新数据集",
+      "q": "SUV和轿车的平均售价和平均月销量",
+      "type": "complex",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 车型, AVG(售价(万元)) AS 售价(万元)\nFROM electric_vehicle\nWHERE 车型类别 = '轿车'\nGROUP BY 车型",
+      "text": "全部时间内，按 车型 统计 售价(万元) 的平均：蔚来ET9 最高，为 78.8；其次是 ZEEKR 001，为 30。第一名占比 19.8%，是末位的 6.7 倍。共 16 个车型。\n📊 统计摘要：均值 24.93，中位数 22.59，标准差 14.97，变异系数 0.60（中度离散）。\n⚠️ 检测到 1 个离群值：蔚来ET9，建议关注异常数据。\n🎯 集中度：CR1=19.8%，CR4=41",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "车型"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "平均客单价是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(客单价(元)) AS 客单价(元)\nFROM coffee_shop",
+      "text": "全部时间内，客单价(元)的平均为 24.65。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「客单价(元)」，(取平均)\n           ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "平均营业收入是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(营业收入(元)) AS 营业收入(元)\nFROM coffee_shop",
+      "text": "全部时间内，营业收入(元)的平均为 96,640。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「营业收入(元)」，(取平均)\n        ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "平均毛利率是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(毛利率(%)) AS 毛利率(%)\nFROM coffee_shop",
+      "text": "全部时间内，毛利率(%)的平均为 60。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「毛利率(%)」，(取平均)\n              ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "平均顾客评分是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(顾客评分) AS 顾客评分\nFROM coffee_shop",
+      "text": "全部时间内，顾客评分的平均为 4.27。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「顾客评分」，(取平均)\n              \n ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "各门店的营业收入排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, SUM(营业收入(元)) AS 营业收入(元)\nFROM coffee_shop\nGROUP BY 门店名称\nORDER BY 营业收入(元) DESC\nLIMIT 10",
+      "text": "全部时间内，按 门店名称 统计 营业收入(元) 的总和（取前 10 个）：星巴克三里屯店 最高，为 171,000；其次是 星巴克王府井店，为 154,800。第一名占比 12.2%，是末位的 1.4 倍。共 10 个门店名称。\n📊 统计摘要：均值 139,740，中位数 134,900，标准差 14,237.36，变异系数 0.10（相对集中）。\n🎯 集中度：CR1=12.2%，CR4=44",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "月销量最高的前5个门店",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, MAX(月销量(杯)) AS 月销量(杯)\nFROM coffee_shop\nGROUP BY 门店名称\nORDER BY 月销量(杯) DESC\nLIMIT 5",
+      "text": "全部时间内，按 门店名称 统计 月销量(杯) 的最大值（取前 5 个）：瑞幸西单店 最高，为 6,500；其次是 瑞幸国贸店，为 6,200。第一名占比 21.3%，是末位的 1.1 倍。共 5 个门店名称。\n📊 统计摘要：均值 6,100，中位数 6,100，标准差 244.95，变异系数 0.04（相对集中）。\n🎯 集中度：CR1=21.3%，CR4=81.0%（高度集中）。\n      ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "营业收入变化趋势",
+      "type": "trend",
+      "expects": {
+        "sql": true,
+        "intent": "trend"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 营业日期, SUM(营业收入(元)) AS 营业收入(元)\nFROM coffee_shop\nGROUP BY 营业日期",
+      "text": "全部时间内，营业收入(元)总和从 113,600（2024-01-05）下降至 46,000（2024-08-01）（-59.5%），共 30 天。\n📈 趋势分析：弱下降趋势（R²=0.01），平均环比增长 56.0%，波动率 157.8%。 峰值出现在 2024-01-18（171,000），谷值在 2024-04-08（27,000）。\n            \n        \n     ",
+      "intent": "trend",
+      "chartType": "line",
+      "xAxisName": "营业日期"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "月销量变化趋势",
+      "type": "trend",
+      "expects": {
+        "sql": true,
+        "intent": "trend"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 营业日期, SUM(月销量(杯)) AS 月销量(杯)\nFROM coffee_shop\nGROUP BY 营业日期",
+      "text": "全部时间内，月销量(杯)总和从 3,200（2024-01-05）下降至 2,300（2024-08-01）（-28.1%），共 30 天。\n📈 趋势分析：弱下降趋势（R²=0.00），平均环比增长 19.2%，波动率 61.1%。 峰值出现在 2024-06-08（6,500），谷值在 2024-04-08（1,800）。\n            \n        \n          \n  ",
+      "intent": "trend",
+      "chartType": "line",
+      "xAxisName": "营业日期"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "星巴克和瑞幸的平均客单价对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(客单价(元)) AS 客单价(元)\nFROM coffee_shop",
+      "text": "全部时间内，客单价(元)的平均为 24.65。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「客单价(元)」，(取平均)\n           ",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "上海和北京的平均营业收入分别是多少",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, AVG(营业收入(元)) AS 营业收入(元)\nFROM coffee_shop\nGROUP BY 门店名称",
+      "text": "全部时间内，按 门店名称 统计 营业收入(元) 的平均：星巴克三里屯店 最高，为 171,000；其次是 星巴克王府井店，为 154,800。第一名占比 5.9%，是末位的 6.3 倍。共 30 个门店名称。\n📊 统计摘要：均值 96,640，中位数 114,000，标准差 43,016.42，变异系数 0.45（相对集中）。\n🎯 集中度：CR1=5.9%，CR4=21.3%（相对分散）。\n ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "美式咖啡和拿铁的月销量对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, SUM(月销量(杯)) AS 月销量(杯)\nFROM coffee_shop\nWHERE 饮品类型 IN ('美式咖啡', '拿铁')\nGROUP BY 门店名称",
+      "text": "全部时间内，按 门店名称 统计 月销量(杯) 的总和：瑞幸西单店 最高，为 6,500；其次是 瑞幸国贸店，为 6,200。第一名占比 6.3%，是末位的 3.6 倍。共 26 个门店名称。\n📊 统计摘要：均值 3,942.31，中位数 3,750，标准差 1,549.48，变异系数 0.39（相对集中）。\n🎯 集中度：CR1=6.3%，CR4=24.1%（相对分散）。\n           ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "各饮品的月销量分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 饮品类型, SUM(月销量(杯)) AS 月销量(杯)\nFROM coffee_shop\nGROUP BY 饮品类型",
+      "text": "全部时间内，按 饮品类型 统计 月销量(杯) 的总和：拿铁 最高，为 60,700；其次是 美式咖啡，为 41,800。第一名占比 52.1%，是末位的 17.3 倍。共 4 个饮品类型。\n📊 统计摘要：均值 29,125，中位数 26,150，标准差 23,244.18，变异系数 0.80（中度离散）。\n🎯 集中度：CR1=52.1%，CR4=100.0%（高度集中）。\n          ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "各城市的门店分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 城市, SUM(月销量(杯)) AS 月销量(杯)\nFROM coffee_shop\nGROUP BY 城市",
+      "text": "全部时间内，按 城市 统计 月销量(杯) 的总和：北京 最高，为 27,300；其次是 上海，为 23,100。第一名占比 23.4%，是末位的 2.8 倍。共 6 个城市。\n📊 统计摘要：均值 19,416.67，中位数 21,850，标准差 6,168.58，变异系数 0.32（相对集中）。\n🎯 集中度：CR1=23.4%，CR4=80.8%（高度集中）。\n            \n   ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "各饮品类型占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 88,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 饮品类型, ROUND(SUM(月销量(杯)) * 100.0 / (SELECT SUM(月销量(杯)) FROM coffee_shop), 2) AS 占比百分比\nFROM coffee_shop\nGROUP BY 饮品类型",
+      "text": "全部时间内，按 饮品类型 统计占比分布：美式咖啡 占比最高，为 35.88%；其次是 拿铁，占比 52.1%；摩卡 9.01%、卡布奇诺 3%。共 4 个饮品类型。\n📊 统计摘要：均值 25，中位数 22.45，标准差 19.95，变异系数 0.80（中度离散）。\n🎯 集中度：CR1=35.9%，CR4=100.0%（高度集中）。\n            \n        \n         ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "各城市营业收入占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 88,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 城市, ROUND(SUM(营业收入(元)) * 100.0 / (SELECT SUM(营业收入(元)) FROM coffee_shop), 2) AS 占比百分比\nFROM coffee_shop\nGROUP BY 城市",
+      "text": "全部时间内，按 城市 统计占比分布：上海 占比最高，为 19.65%；其次是 北京，占比 24%；广州 19.69%、成都 17.49%、重庆 8.06%、杭州 11.1%。共 6 个城市。\n📊 统计摘要：均值 16.67，中位数 18.57，标准差 5.44，变异系数 0.33（相对集中）。\n🎯 集中度：CR1=19.7%，CR4=80.8%（高度集中）。\n            \n    ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "顾客评分低于4.2分的门店",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, SUM(顾客评分) AS 顾客评分\nFROM coffee_shop\nWHERE 顾客评分 < 4.2\nGROUP BY 门店名称",
+      "text": "全部时间内，按 门店名称 统计 顾客评分 的总和：瑞幸国贸店 最高，为 4.1；其次是 瑞幸观音桥店，为 4.1。第一名占比 11.4%，是末位的 1.1 倍。共 9 个门店名称。\n📊 统计摘要：均值 4.01，中位数 4，标准差 0.07，变异系数 0.02（相对集中）。\n🎯 集中度：CR1=11.4%，CR4=45.2%（相对分散）。\n            \n        \n     ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "月销量超过5000杯的门店",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, SUM(月销量(杯)) AS 月销量(杯)\nFROM coffee_shop\nWHERE 月销量(杯) > 5000\nGROUP BY 门店名称",
+      "text": "全部时间内，按 门店名称 统计 月销量(杯) 的总和：瑞幸西单店 最高，为 6,500；其次是 瑞幸国贸店，为 6,200。第一名占比 13.9%，是末位的 1.3 倍。共 8 个门店名称。\n📊 统计摘要：均值 5,862.5，中位数 5,850，标准差 383.85，变异系数 0.07（相对集中）。\n🎯 集中度：CR1=13.9%，CR4=52.7%（中度集中）。\n            \n",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "营业收入最高的门店",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, MAX(营业收入(元)) AS 营业收入(元)\nFROM coffee_shop\nGROUP BY 门店名称\nORDER BY 营业收入(元) DESC\nLIMIT 1",
+      "text": "全部时间内，按 门店名称 统计 营业收入(元) 的最大值（取前 1 个）：星巴克三里屯店 最高，为 171,000。共 1 个门店名称。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n         ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "顾客评分最低的门店",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 门店名称, MIN(顾客评分) AS 顾客评分\nFROM coffee_shop\nGROUP BY 门店名称\nORDER BY 顾客评分 ASC\nLIMIT 1",
+      "text": "全部时间内，按 门店名称 统计 顾客评分 的最小值（取前 1 个）：瑞幸春熙路店 最低，为 3.9；其次是 瑞幸交子大道店，为 3.9。第一名占比 50.0%，是末位的 1.0 倍。共 2 个门店名称。\n\n（共 2 条并列，已全部展示）\n            \n        \n          \n            \n              \n            \n       ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "门店名称"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "各城市的平均客单价和平均营业收入",
+      "type": "multi-metric",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 城市, AVG(客单价(元)) AS 客单价(元), AVG(营业收入(元)) AS 营业收入(元)\nFROM coffee_shop\nGROUP BY 城市",
+      "text": "按城市统计：上海 最高（客单价(元)=24.42，营业收入(元)=94,966.67）。共6个城市。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「城市",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "城市"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "客单价和营业收入之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 客单价(元), 营业收入(元) FROM coffee_shop -- 相关性分析 Pearson r=0.731",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.731（样本 n=30）\n结论：客单价(元) 与 营业收入(元) 之间存在中等正相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.731（样本 n=30）\n结论：客单价(元) 与 营业收入(元) 之间存在中等正相关关系。\n            \n        \n          \n            \n     ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "客单价(元)"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "月销量和顾客评分的相关性",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 月销量(杯), 顾客评分 FROM coffee_shop -- 相关性分析 Pearson r=-0.385",
+      "text": "📈 相关性分析\nPearson 相关系数 r = -0.385（样本 n=30）\n结论：月销量(杯) 与 顾客评分 之间存在弱负相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = -0.385（样本 n=30）\n结论：月销量(杯) 与 顾客评分 之间存在弱负相关关系。\n            \n        \n          \n            \n           ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "月销量(杯)"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "各饮品的平均客单价",
+      "type": "groupby",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 饮品类型, AVG(客单价(元)) AS 客单价(元)\nFROM coffee_shop\nGROUP BY 饮品类型",
+      "text": "全部时间内，按 饮品类型 统计 客单价(元) 的平均：卡布奇诺 最高，为 38；其次是 摩卡，为 35。第一名占比 32.3%，是末位的 2.0 倍。共 4 个饮品类型。\n📊 统计摘要：均值 29.46，中位数 30.43，标准差 7.53，变异系数 0.26（相对集中）。\n🎯 集中度：CR1=32.3%，CR4=100.0%（高度集中）。\n            \n        \n    ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "饮品类型"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "各城市的平均营业收入",
+      "type": "groupby",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 城市, AVG(营业收入(元)) AS 营业收入(元)\nFROM coffee_shop\nGROUP BY 城市",
+      "text": "全部时间内，按 城市 统计 营业收入(元) 的平均：北京 最高，为 115,966.67；其次是 杭州，为 107,233.33。第一名占比 20.1%，是末位的 1.5 倍。共 6 个城市。\n📊 统计摘要：均值 95,963.89，中位数 95,058.33，标准差 12,809.68，变异系数 0.13（相对集中）。\n🎯 集中度：CR1=20.1%，CR4=71.8%（中度集中）。\n   ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "城市"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "每个城市有多少家门店",
+      "type": "count",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 城市, COUNT(*) AS 计数\nFROM coffee_shop\nGROUP BY 城市",
+      "text": "全部时间内，按 城市 统计数量：上海 最多，为 6；其次是 北京，为 6。第一名占比 20.0%，是末位的 2.0 倍。共 6 个城市。\n📊 统计摘要：均值 5，中位数 6，标准差 1.41，变异系数 0.28（相对集中）。\n🎯 集中度：CR1=20.0%，CR4=80.0%（高度集中）。\n            \n        \n          \n            \n      ",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "城市"
+    },
+    {
+      "suite": "new-coffee",
+      "file": "coffee_shop.csv",
+      "category": "新数据集",
+      "q": "星巴克、瑞幸、Manner的平均营业收入",
+      "type": "complex",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(营业收入(元)) AS 营业收入(元)\nFROM coffee_shop",
+      "text": "全部时间内，营业收入(元)的平均为 96,640。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「营业收入(元)」，(取平均)\n        ",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "平均播放量是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(播放量(万)) AS 播放量(万)\nFROM streaming_platform",
+      "text": "全部时间内，播放量(万)的平均为 39,700。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「播放量(万)」，(取平均)\n          ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "平均评分是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(评分) AS 评分\nFROM streaming_platform",
+      "text": "全部时间内，评分的平均为 8.34。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「评分」，(取平均)\n              \n     ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "平均广告收入是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(广告收入(万元)) AS 广告收入(万元)\nFROM streaming_platform",
+      "text": "全部时间内，广告收入(万元)的平均为 2,980。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「广告收入(万元)」，(取平均)\n       ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "平均完播率是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(完播率(%)) AS 完播率(%)\nFROM streaming_platform",
+      "text": "全部时间内，完播率(%)的平均为 37.65。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「完播率(%)」，(取平均)\n           ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "各剧的播放量排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 剧名, SUM(播放量(万)) AS 播放量(万), AVG(会员播放占比(%)) AS 会员播放占比(%)\nFROM streaming_platform\nGROUP BY 剧名\nORDER BY 播放量(万) DESC\nLIMIT 10",
+      "text": "按剧名统计：庆余年2 最高（播放量(万)=78,900，会员播放占比(%)=72.1）。共10个剧名。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「剧",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "剧名"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "评分最高的前5部剧",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 剧名, MAX(评分) AS 评分\nFROM streaming_platform\nGROUP BY 剧名\nORDER BY 评分 DESC\nLIMIT 5",
+      "text": "全部时间内，按 剧名 统计 评分 的最大值（取前 5 个）：三体2 最高，为 9.5；其次是 我的阿勒泰，为 9.4。第一名占比 20.5%，是末位的 1.1 倍。共 5 个剧名。\n📊 统计摘要：均值 9.28，中位数 9.3，标准差 0.17，变异系数 0.02（相对集中）。\n🎯 集中度：CR1=20.5%，CR4=80.6%（高度集中）。\n            \n        \n   ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "剧名"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "广告收入最高的前3部剧",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 剧名, MAX(广告收入(万元)) AS 广告收入(万元)\nFROM streaming_platform\nGROUP BY 剧名\nORDER BY 广告收入(万元) DESC\nLIMIT 3",
+      "text": "全部时间内，按 剧名 统计 广告收入(万元) 的最大值（取前 3 个）：庆余年2 最高，为 5,800；其次是 狂飙2，为 5,200。第一名占比 36.7%，是末位的 1.2 倍。共 3 个剧名。\n📊 统计摘要：均值 5,266.67，中位数 5,200，标准差 410.96，变异系数 0.08（相对集中）。\n            \n        \n          \n         ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "剧名"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "播放量变化趋势",
+      "type": "trend",
+      "expects": {
+        "sql": true,
+        "intent": "trend"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 播出日期, SUM(会员播放占比(%)) AS 会员播放占比(%)\nFROM streaming_platform\nGROUP BY 播出日期",
+      "text": "全部时间内，会员播放占比(%)总和从 68.5（2024-01-05）下降至 63.2（2024-11-15）（-7.7%），共 30 天。\n📈 趋势分析：弱下降趋势（R²=0.09），平均环比增长 1.1%，波动率 17.0%。 峰值出现在 2024-01-20（72.1），谷值在 2024-09-20（48.6）。\n            \n        \n          \n     ",
+      "intent": "trend",
+      "chartType": "line",
+      "xAxisName": "播出日期"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "广告收入变化趋势",
+      "type": "trend",
+      "expects": {
+        "sql": true,
+        "intent": "trend"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 播出日期, SUM(广告收入(万元)) AS 广告收入(万元)\nFROM streaming_platform\nGROUP BY 播出日期",
+      "text": "全部时间内，广告收入(万元)总和从 3,200（2024-01-05）下降至 3,600（2024-11-15）（+12.5%），共 30 天。\n📈 趋势分析：弱下降趋势（R²=0.07），平均环比增长 8.2%，波动率 40.5%。 峰值出现在 2024-02-15（5,800），谷值在 2024-05-01（1,500）。\n            \n        \n          \n ",
+      "intent": "trend",
+      "chartType": "line",
+      "xAxisName": "播出日期"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "古装剧和都市剧的平均播放量对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 类型, AVG(播放量(万)) AS 播放量(万), AVG(会员播放占比(%)) AS 会员播放占比(%)\nFROM streaming_platform\nWHERE 类型 IN ('古装剧', '都市剧')\nGROUP BY 类型",
+      "text": "按类型统计：都市剧 最高（播放量(万)=38,500，会员播放占比(%)=348.2）。共2个类型。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「类型",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "类型"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "腾讯和爱奇艺的平均广告收入分别是多少",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 剧名, AVG(广告收入(万元)) AS 广告收入(万元)\nFROM streaming_platform\nGROUP BY 剧名",
+      "text": "全部时间内，按 剧名 统计 广告收入(万元) 的平均：庆余年2 最高，为 5,800；其次是 狂飙2，为 5,200。第一名占比 6.5%，是末位的 3.9 倍。共 30 个剧名。\n📊 统计摘要：均值 2,980，中位数 2,750，标准差 1,043.2，变异系数 0.35（相对集中）。\n⚠️ 检测到 1 个离群值：庆余年2，建议关注异常数据。\n🎯 集中度：CR1=6.5%，CR4=22.7",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "剧名"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "各类型的剧分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 类型, SUM(总集数) AS 总集数\nFROM streaming_platform\nGROUP BY 类型",
+      "text": "全部时间内，按 类型 统计 总集数 的总和：古装剧 最高，为 400；其次是 都市剧，为 210。第一名占比 42.1%，是末位的 50.0 倍。共 9 个类型。\n📊 统计摘要：均值 105.56，中位数 72，标准差 118.36，变异系数 1.12（高度离散）。\n⚠️ 检测到 2 个离群值：古装剧、都市剧，建议关注异常数据。\n🎯 集中度：CR1=42.1%，CR4=81.7%（高度集中）。",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "类型"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "各出品方的剧分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 出品方, SUM(总集数) AS 总集数\nFROM streaming_platform\nGROUP BY 出品方",
+      "text": "全部时间内，按 出品方 统计 总集数 的总和：央视 最高，为 332；其次是 腾讯，为 199。第一名占比 34.9%，是末位的 8.3 倍。共 6 个出品方。\n📊 统计摘要：均值 158.33，中位数 149.5，标准差 96.08，变异系数 0.61（中度离散）。\n🎯 集中度：CR1=34.9%，CR4=87.4%（高度集中）。\n            \n        \n        ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "各类型占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 88,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 类型, ROUND(SUM(会员播放占比(%)) * 100.0 / (SELECT SUM(会员播放占比(%)) FROM streaming_platform), 2) AS 占比百分比\nFROM streaming_platform\nGROUP BY 类型",
+      "text": "全部时间内，按 类型 统计占比分布：都市剧 占比最高，为 19.8%；其次是 年代剧，占比 6.56%；科幻剧 4.1%、犯罪剧 10.52%、古装剧 36.64%、谍战剧 3.17%。共 9 个类型。\n📊 统计摘要：均值 11.11，中位数 6.56，标准差 10.45，变异系数 0.94（中度离散）。\n⚠️ 检测到 1 个离群值：古装剧，建议关注异常数据。\n🎯 集中度：CR1=19.8%，",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "各出品方播放量占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 出品方, SUM(播放量(万)) AS 播放量(万), AVG(会员播放占比(%)) AS 会员播放占比(%)\nFROM streaming_platform\nGROUP BY 出品方",
+      "text": "按出品方统计：央视 最高（播放量(万)=412,000，会员播放占比(%)=657.9）。共6个出品方。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "出品方"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "评分超过8.5分的剧",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 剧名, SUM(评分) AS 评分\nFROM streaming_platform\nWHERE 评分 > 8.5\nGROUP BY 剧名",
+      "text": "全部时间内，按 剧名 统计 评分 的总和：三体2 最高，为 9.5；其次是 我的阿勒泰，为 9.4。第一名占比 9.6%，是末位的 1.1 倍。共 11 个剧名。\n📊 统计摘要：均值 8.98，中位数 8.9，标准差 0.31，变异系数 0.03（相对集中）。\n🎯 集中度：CR1=9.6%，CR4=37.9%（相对分散）。\n            \n        \n          \n  ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "剧名"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "完播率低于30%的剧",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 83,
+      "status": "PARTIAL",
+      "details": [
+        "SQL:OK",
+        "Intent:MISS(summary)",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT AVG(完播率(%)) AS 完播率(%)\nFROM streaming_platform\nWHERE 完播率(%) < 30",
+      "text": "全部时间内，按 剧名 统计 完播率(%) 的平均：承欢记 最高，为 29.5；其次是 花间令，为 28.9。第一名占比 15.2%，是末位的 1.2 倍。共 7 个剧名。\n📊 统计摘要：均值 27.77，中位数 27.8，标准差 1.3，变异系数 0.05（相对集中）。\n🎯 集中度：CR1=15.2%，CR4=59.0%（中度集中）。\n            \n        \n       ",
+      "intent": "summary",
+      "chartType": "bar",
+      "xAxisName": "剧名"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "播放量超过5万的剧",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 剧名, SUM(会员播放占比(%)) AS 会员播放占比(%)\nFROM streaming_platform\nWHERE 播放量(万) > 50000\nGROUP BY 剧名",
+      "text": "全部时间内，按 剧名 统计 会员播放占比(%) 的总和：三体2 最高，为 72.1；其次是 庆余年2，为 70.2。第一名占比 17.6%，是末位的 1.1 倍。共 6 个剧名。\n📊 统计摘要：均值 68.2，中位数 67.65，标准差 2.34，变异系数 0.03（相对集中）。\n🎯 集中度：CR1=17.6%，CR4=67.8%（中度集中）。\n            \n        \n  ",
+      "intent": "filter",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "播放量最高的剧",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 剧名, MAX(会员播放占比(%)) AS 会员播放占比(%)\nFROM streaming_platform\nGROUP BY 剧名\nORDER BY 会员播放占比(%) DESC\nLIMIT 1",
+      "text": "全部时间内，按 剧名 统计 会员播放占比(%) 的最大值（取前 1 个）：三体2 最高，为 72.1。共 1 个剧名。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想",
+      "intent": "ranking",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "完播率最低的剧",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 剧名, MIN(完播率(%)) AS 完播率(%)\nFROM streaming_platform\nGROUP BY 剧名\nORDER BY 完播率(%) ASC\nLIMIT 1",
+      "text": "全部时间内，按 剧名 统计 完播率(%) 的最小值（取前 1 个）：微暗之火 最低，为 25.3。共 1 个剧名。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "剧名"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "各类型的平均播放量和平均评分",
+      "type": "multi-metric",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 类型, AVG(播放量(万)) AS 播放量(万), AVG(评分) AS 评分, AVG(豆瓣评分) AS 豆瓣评分, AVG(会员播放占比(%)) AS 会员播放占比(%)\nFROM streaming_platform\nGROUP BY 类型",
+      "text": "按类型统计：都市剧 最高（播放量(万)=38,500，评分=8.3，豆瓣评分=7.62，会员播放占比(%)=348.2）。共9个类型。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n          ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "类型"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "播放量和评分之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 播放量(万), 评分 FROM streaming_platform -- 相关性分析 Pearson r=0.612",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.612（样本 n=30）\n结论：播放量(万) 与 评分 之间存在中等正相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.612（样本 n=30）\n结论：播放量(万) 与 评分 之间存在中等正相关关系。\n            \n        \n          \n            \n              \n",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "播放量(万)"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "会员播放占比和广告收入的相关性",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 会员播放占比(%), 广告收入(万元) FROM streaming_platform -- 相关性分析 Pearson r=0.824",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.824（样本 n=30）\n结论：会员播放占比(%) 与 广告收入(万元) 之间存在强正相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.824（样本 n=30）\n结论：会员播放占比(%) 与 广告收入(万元) 之间存在强正相关关系。\n            \n        \n          \n            ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "会员播放占比(%)"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "各类型的平均播放量",
+      "type": "groupby",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 类型, AVG(播放量(万)) AS 播放量(万), AVG(会员播放占比(%)) AS 会员播放占比(%)\nFROM streaming_platform\nGROUP BY 类型",
+      "text": "按类型统计：都市剧 最高（播放量(万)=38,500，会员播放占比(%)=348.2）。共9个类型。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「类型",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "类型"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "各出品方的平均广告收入",
+      "type": "groupby",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 出品方, AVG(广告收入(万元)) AS 广告收入(万元)\nFROM streaming_platform\nGROUP BY 出品方",
+      "text": "全部时间内，按 出品方 统计 广告收入(万元) 的平均：腾讯 最高，为 4,000；其次是 爱奇艺，为 3,166.67。第一名占比 22.5%，是末位的 1.6 倍。共 6 个出品方。\n📊 统计摘要：均值 2,964.65，中位数 2,777.27，标准差 509.26，变异系数 0.17（相对集中）。\n⚠️ 检测到 1 个离群值：腾讯，建议关注异常数据。\n🎯 集中度：CR1=22.5%，C",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "出品方"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "每个类型有多少部剧",
+      "type": "count",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 类型, COUNT(*) AS 计数\nFROM streaming_platform\nGROUP BY 类型",
+      "text": "全部时间内，按 类型 统计数量：古装剧 最多，为 11；其次是 都市剧，为 6。第一名占比 36.7%，是末位的 11.0 倍。共 9 个类型。\n📊 统计摘要：均值 3.33，中位数 2，标准差 3.16，变异系数 0.95（中度离散）。\n⚠️ 检测到 1 个离群值：古装剧，建议关注异常数据。\n🎯 集中度：CR1=36.7%，CR4=80.0%（高度集中）。\n            \n    ",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "类型"
+    },
+    {
+      "suite": "new-streaming",
+      "file": "streaming_platform.csv",
+      "category": "新数据集",
+      "q": "央视、腾讯、爱奇艺的平均播放量",
+      "type": "complex",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(播放量(万)) AS 播放量(万)\nFROM streaming_platform\nWHERE 出品方 = '爱奇艺'",
+      "text": "全部时间内，播放量(万)的平均为 39,266.67。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「播放量(万)」，(取平均)\n       ",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "平均通话时长是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users",
+      "text": "全部时间内，通话时长(分钟)的平均为 458.4。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「通话时长(分钟)」，(取平均)\n       ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "平均流量使用是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(流量使用(GB)) AS 流量使用(GB)\nFROM telecom_users",
+      "text": "全部时间内，流量使用(GB)的平均为 44.45。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「流量使用(GB)」，(取平均)\n       ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "平均宽带带宽是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(宽带带宽(Mbps)) AS 宽带带宽(Mbps)\nFROM telecom_users",
+      "text": "全部时间内，宽带带宽(Mbps)的平均为 425.45。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「宽带带宽(Mbps)」，(取平均)\n  ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "各省份月消费排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 所在省份, SUM(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users\nGROUP BY 所在省份\nORDER BY 通话时长(分钟) DESC\nLIMIT 10",
+      "text": "全部时间内，按 所在省份 统计 通话时长(分钟) 的总和（取前 10 个）：北京 最高，为 4,122；其次是 江苏，为 3,811。第一名占比 16.3%，是末位的 6.9 倍。共 10 个所在省份。\n📊 统计摘要：均值 2,521.2，中位数 2,956，标准差 1,251.37，变异系数 0.50（相对集中）。\n🎯 集中度：CR1=16.3%，CR4=59.4%（中度集中）。\n     ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "所在省份"
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "5G套餐和4G套餐的月消费对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 用户ID, SUM(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users\nGROUP BY 用户ID",
+      "text": "全部时间内，按 用户ID 统计 通话时长(分钟) 的总和：U20230001 最高，为 285；其次是 U20230002，为 187。第一名占比 4.3%，是末位的 0.4 倍。共 20 个用户ID。\n📊 统计摘要：均值 333.2，中位数 212.5，标准差 312.52，变异系数 0.94（中度离散）。\n⚠️ 检测到 2 个离群值：U20230006、U20230010，建议关注异常数据。",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "用户ID"
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "钻石用户和黄金用户的平均月消费对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT AVG(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users\nWHERE 用户等级 IN ('钻石')",
+      "text": "全部时间内，按 用户等级 统计 通话时长(分钟) 的平均：钻石 最高，为 434.5。共 1 个用户等级。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": "用户等级"
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "各用户等级的分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 用户等级, SUM(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users\nGROUP BY 用户等级",
+      "text": "全部时间内，按 用户等级 统计 通话时长(分钟) 的总和：普通 最高，为 11,687；其次是 银卡，为 6,648。第一名占比 46.4%，是末位的 6.7 倍。共 4 个用户等级。\n📊 统计摘要：均值 6,303，中位数 5,893.5，标准差 3,581.22，变异系数 0.57（中度离散）。\n🎯 集中度：CR1=46.4%，CR4=100.0%（高度集中）。\n            \n",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "各用户等级占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 88,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT ROUND(SUM(CASE WHEN 是否携号转网='是' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS ratio_pct\nFROM telecom_users\nGROUP BY 用户等级",
+      "text": "全部时间内，按 用户等级 统计占比分布：银卡 占比最高，为 26.37%；其次是 普通，占比 46.35%；钻石 6.89%、金卡 20.38%。共 4 个用户等级。\n📊 统计摘要：均值 25，中位数 23.38，标准差 14.2，变异系数 0.57（中度离散）。\n🎯 集中度：CR1=26.4%，CR4=100.0%（高度集中）。\n            \n        \n         ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "月消费超过100元的用户记录",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 用户等级, SUM(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users\nWHERE 月消费(元) > 100\nGROUP BY 用户等级",
+      "text": "全部时间内，按 用户等级 统计 通话时长(分钟) 的总和：普通 最高，为 11,101；其次是 银卡，为 6,627。第一名占比 45.3%，是末位的 6.4 倍。共 4 个用户等级。\n📊 统计摘要：均值 6,120.5，中位数 5,821.5，标准差 3,372.25，变异系数 0.55（中度离散）。\n🎯 集中度：CR1=45.3%，CR4=100.0%（高度集中）。\n           ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "用户等级"
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "月消费最高的用户",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 用户等级, MAX(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users\nGROUP BY 用户等级\nORDER BY 通话时长(分钟) DESC\nLIMIT 1",
+      "text": "全部时间内，按 用户等级 统计 通话时长(分钟) 的最大值（取前 1 个）：银卡 最高，为 1,422。共 1 个用户等级。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n               ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "用户等级"
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "通话时长和月消费之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 通话时长(分钟), 流量使用(GB) FROM telecom_users -- 相关性分析 Pearson r=0.578",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.578（样本 n=55）\n结论：通话时长(分钟) 与 流量使用(GB) 之间存在中等正相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.578（样本 n=55）\n结论：通话时长(分钟) 与 流量使用(GB) 之间存在中等正相关关系。\n            \n        \n          \n            ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "通话时长(分钟)"
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "各省份的平均月消费和平均流量使用",
+      "type": "multi-metric",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 所在省份, AVG(流量使用(GB)) AS 流量使用(GB)\nFROM telecom_users\nGROUP BY 所在省份",
+      "text": "全部时间内，按 所在省份 统计 流量使用(GB) 的平均：河南 最高，为 66.38；其次是 福建，为 56.54。第一名占比 14.7%，是末位的 2.1 倍。共 10 个所在省份。\n📊 统计摘要：均值 45.24，中位数 44.72，标准差 10.92，变异系数 0.24（相对集中）。\n🎯 集中度：CR1=14.7%，CR4=49.9%（相对分散）。\n            \n      ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "所在省份"
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "平均月消费超过80元的省份",
+      "type": "having",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 所在省份, AVG(通话时长(分钟)) AS 通话时长(分钟)\nFROM telecom_users\nGROUP BY 所在省份\nHAVING AVG(通话时长(分钟)) > 80",
+      "text": "全部时间内，按 所在省份 统计 通话时长(分钟) 的平均：福建 最高，为 770.75；其次是 北京，为 515.25。第一名占比 17.1%，是末位的 4.3 倍。共 10 个所在省份。\n📊 统计摘要：均值 450.51，中位数 477.11，标准差 158.6，变异系数 0.35（相对集中）。\n⚠️ 检测到 3 个离群值：福建、上海、湖北，建议关注异常数据。\n🎯 集中度：CR1=17.1%",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "所在省份"
+    },
+    {
+      "suite": "探索-电信用户",
+      "file": "telecom_users.csv",
+      "category": "未训练问题",
+      "q": "每个省份有多少用户",
+      "type": "count",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 所在省份, COUNT(*) AS 计数\nFROM telecom_users\nGROUP BY 所在省份",
+      "text": "全部时间内，按 所在省份 统计数量：江苏 最多，为 9；其次是 广东，为 8。第一名占比 16.4%，是末位的 3.0 倍。共 10 个所在省份。\n📊 统计摘要：均值 5.5，中位数 5，标准差 2.25，变异系数 0.41（相对集中）。\n🎯 集中度：CR1=16.4%，CR4=58.2%（中度集中）。\n            \n        \n          \n            ",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "所在省份"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "平均贷款金额是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(贷款金额(万元)) AS 贷款金额(万元)\nFROM banking_loans",
+      "text": "全部时间内，贷款金额(万元)的平均为 92.56。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「贷款金额(万元)」，(取平均)\n       ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "平均年利率是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(年利率(%)) AS 年利率(%)\nFROM banking_loans",
+      "text": "全部时间内，年利率(%)的平均为 6.03。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「年利率(%)」，(取平均)\n            ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "平均信用评分是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(信用评分) AS 信用评分\nFROM banking_loans",
+      "text": "全部时间内，信用评分的平均为 695.89。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「信用评分」，(取平均)\n              ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "各城市的贷款金额排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 所在城市, SUM(贷款金额(万元)) AS 贷款金额(万元), SUM(贷款期限(月)) AS 贷款期限(月)\nFROM banking_loans\nGROUP BY 所在城市\nORDER BY 贷款金额(万元) DESC\nLIMIT 10",
+      "text": "按所在城市统计：苏州 最高（贷款金额(万元)=844，贷款期限(月)=732）。共10个所在城市。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「所在城",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "所在城市"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "房贷和车贷的平均金额对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 贷款类型, AVG(贷款金额(万元)) AS 贷款金额(万元)\nFROM banking_loans\nGROUP BY 贷款类型",
+      "text": "全部时间内，按 贷款类型 统计 贷款金额(万元) 的平均：住房贷款 最高，为 194.05；其次是 经营贷款，为 180.23。第一名占比 41.3%，是末位的 11.2 倍。共 5 个贷款类型。\n📊 统计摘要：均值 94.01，中位数 53.12，标准差 77.09，变异系数 0.82（中度离散）。\n🎯 集中度：CR1=41.3%，CR4=96.3%（高度集中）。\n            \n",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "贷款类型"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "各还款方式的分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 还款方式, SUM(贷款金额(万元)) AS 贷款金额(万元)\nFROM banking_loans\nGROUP BY 还款方式",
+      "text": "全部时间内，按 还款方式 统计 贷款金额(万元) 的总和：等额本息 最高，为 1,898.1；其次是 等额本金，为 1,514.1。第一名占比 37.3%，是末位的 4.2 倍。共 4 个还款方式。\n📊 统计摘要：均值 1,272.7，中位数 1,370.4，标准差 530.38，变异系数 0.42（相对集中）。\n🎯 集中度：CR1=37.3%，CR4=100.0%（高度集中）。\n      ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "各贷款类型占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 88,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:MISS",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 贷款类型, SUM(贷款金额(万元)) AS 贷款金额(万元), SUM(贷款期限(月)) AS 贷款期限(月)\nFROM banking_loans\nGROUP BY 贷款类型",
+      "text": "按贷款类型统计：信用贷款 最高（贷款金额(万元)=207.8，贷款期限(月)=276）。共5个贷款类型。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "贷款类型"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "贷款金额超过100万的客户",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 客户姓名, SUM(贷款金额(万元)) AS 贷款金额(万元)\nFROM banking_loans\nGROUP BY 客户姓名\nHAVING SUM(贷款金额(万元)) > 1000000",
+      "text": "全部时间内，按 客户姓名 统计 贷款金额(万元) 的总和：杨杰 最高，为 403.9；其次是 许磊，为 289.6。第一名占比 7.9%，是末位的 52.5 倍。共 54 个客户姓名。\n📊 统计摘要：均值 94.27，中位数 57.95，标准差 90.38，变异系数 0.96（中度离散）。\n⚠️ 检测到 1 个离群值：杨杰，建议关注异常数据。\n🎯 集中度：CR1=7.9%，CR4=24.2%（",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "客户姓名"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "信用评分低于600分的客户",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 客户姓名, SUM(信用评分) AS 信用评分\nFROM banking_loans\nWHERE 信用评分 < 600\nGROUP BY 客户姓名",
+      "text": "全部时间内，按 客户姓名 统计 信用评分 的总和：张俊杰 最高，为 598；其次是 冯洋，为 580。第一名占比 50.8%，是末位的 1.0 倍。共 2 个客户姓名。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n        ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "客户姓名"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "贷款金额最高的客户",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 客户姓名, MAX(贷款金额(万元)) AS 贷款金额(万元)\nFROM banking_loans\nGROUP BY 客户姓名\nORDER BY 贷款金额(万元) DESC\nLIMIT 1",
+      "text": "全部时间内，按 客户姓名 统计 贷款金额(万元) 的最大值（取前 1 个）：杨杰 最高，为 403.9。共 1 个客户姓名。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n               ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "客户姓名"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "贷款金额和年利率之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 贷款金额(万元), 年利率(%) FROM banking_loans -- 相关性分析 Pearson r=-0.507",
+      "text": "📈 相关性分析\nPearson 相关系数 r = -0.507（样本 n=55）\n结论：贷款金额(万元) 与 年利率(%) 之间存在中等负相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = -0.507（样本 n=55）\n结论：贷款金额(万元) 与 年利率(%) 之间存在中等负相关关系。\n            \n        \n          \n            \n ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "贷款金额(万元)"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "各城市的平均贷款金额和平均信用评分",
+      "type": "multi-metric",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 所在城市, AVG(贷款金额(万元)) AS 贷款金额(万元), SUM(贷款期限(月)) AS 贷款期限(月), AVG(信用评分) AS 信用评分\nFROM banking_loans\nGROUP BY 所在城市",
+      "text": "按所在城市统计：大连 最高（贷款金额(万元)=68.26，贷款期限(月)=132，信用评分=684.8）。共16个所在城市。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n               ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "所在城市"
+    },
+    {
+      "suite": "探索-银行贷款",
+      "file": "banking_loans.csv",
+      "category": "未训练问题",
+      "q": "每个城市有多少客户",
+      "type": "count",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 所在城市, COUNT(*) AS 计数\nFROM banking_loans\nGROUP BY 所在城市",
+      "text": "全部时间内，按 所在城市 统计数量：武汉 最多，为 6；其次是 长沙，为 6。第一名占比 10.9%，是末位的 6.0 倍。共 16 个所在城市。\n📊 统计摘要：均值 3.44，中位数 4，标准差 1.62，变异系数 0.47（相对集中）。\n🎯 集中度：CR1=10.9%，CR4=40.0%（相对分散）。\n            \n        \n          \n           ",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "所在城市"
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "平均票价是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(票价(元)) AS 票价(元)\nFROM aviation_flights",
+      "text": "全部时间内，票价(元)的平均为 1,822.24。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「票价(元)」，(取平均)\n          ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "平均准点率是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(准点率(%)) AS 准点率(%)\nFROM aviation_flights",
+      "text": "全部时间内，准点率(%)的平均为 75.51。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「准点率(%)」，(取平均)\n           ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "平均旅客人数是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(旅客人数) AS 旅客人数\nFROM aviation_flights",
+      "text": "全部时间内，旅客人数的平均为 176.05。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「旅客人数」，(取平均)\n              ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "各航空公司的旅客人数排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 航空公司, COUNT(*) AS 计数\nFROM aviation_flights\nGROUP BY 航空公司\nORDER BY 计数 DESC\nLIMIT 10",
+      "text": "全部时间内，按 航空公司 统计数量（取前 10 个）：中国国航 最多，为 17；其次是 东方航空，为 14。第一名占比 30.9%，是末位的 2.4 倍。共 5 个航空公司。\n📊 统计摘要：均值 11，中位数 10，标准差 3.95，变异系数 0.36（相对集中）。\n🎯 集中度：CR1=30.9%，CR4=87.3%（高度集中）。\n            \n        \n         ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "航空公司"
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "北京和上海的平均票价对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 出发城市, AVG(票价(元)) AS 票价(元)\nFROM aviation_flights\nWHERE 出发城市 IN ('北京', '上海')\nGROUP BY 出发城市",
+      "text": "全部时间内，按 出发城市 统计 票价(元) 的平均：北京 最高，为 2,393；其次是 上海，为 1,562。第一名占比 60.5%，是末位的 1.5 倍。共 2 个出发城市。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n    ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "出发城市"
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "各航空公司的航班分布",
+      "type": "distribution",
+      "expects": {
+        "sql": true,
+        "intent": "distribution"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT 航空公司, SUM(飞行距离(km)) AS 飞行距离(km)\nFROM aviation_flights\nGROUP BY 航空公司",
+      "text": "全部时间内，按 航空公司 统计 飞行距离(km) 的总和：中国国航 最高，为 29,552；其次是 东方航空，为 24,678。第一名占比 32.9%，是末位的 2.8 倍。共 5 个航空公司。\n📊 统计摘要：均值 17,953.6，中位数 13,104，标准差 7,678.66，变异系数 0.43（相对集中）。\n🎯 集中度：CR1=32.9%，CR4=88.2%（高度集中）。\n       ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "各航空公司占比",
+      "type": "pct",
+      "expects": {
+        "sql": true,
+        "hasPercent": true
+      },
+      "score": 88,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "Pct:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT ROUND(SUM(CASE WHEN 是否延误='是' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS ratio_pct\nFROM aviation_flights\nGROUP BY 航空公司",
+      "text": "全部时间内，按 航空公司 统计占比分布：中国国航 占比最高，为 32.92%；其次是 东方航空，占比 27.49%；深圳航空 13.19%、海南航空 11.8%、南方航空 14.6%。共 5 个航空公司。\n📊 统计摘要：均值 20，中位数 14.6，标准差 8.55，变异系数 0.43（相对集中）。\n🎯 集中度：CR1=32.9%，CR4=85.4%（高度集中）。\n            \n ",
+      "intent": "distribution",
+      "chartType": "echarts",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "准点率低于80%的航班",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 航班号, AVG(准点率(%)) AS 准点率(%)\nFROM aviation_flights\nWHERE 准点率(%) < 80\nGROUP BY 航班号",
+      "text": "全部时间内，按 航班号 统计 准点率(%) 的平均：MU8167 最高，为 79.9；其次是 CZ8159，为 79.9。第一名占比 3.4%，是末位的 1.4 倍。共 34 个航班号。\n📊 统计摘要：均值 69.97，中位数 70.2，标准差 6.91，变异系数 0.10（相对集中）。\n🎯 集中度：CR1=3.4%，CR4=13.4%（相对分散）。\n            \n        ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "航班号"
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "票价最高的航班",
+      "type": "extreme",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 航班号, MAX(票价(元)) AS 票价(元)\nFROM aviation_flights\nGROUP BY 航班号\nORDER BY 票价(元) DESC\nLIMIT 1",
+      "text": "全部时间内，按 航班号 统计 票价(元) 的最大值（取前 1 个）：MU8088 最高，为 4,720。共 1 个航班号。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                ",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "航班号"
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "飞行距离和票价之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 飞行距离(km), 票价(元) FROM aviation_flights -- 相关性分析 Pearson r=0.934",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.934（样本 n=55）\n结论：飞行距离(km) 与 票价(元) 之间存在强正相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.934（样本 n=55）\n结论：飞行距离(km) 与 票价(元) 之间存在强正相关关系。\n            \n        \n          \n            \n       ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "飞行距离(km)"
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "各航空公司的平均票价和平均旅客人数",
+      "type": "multi-metric",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 航空公司, AVG(旅客人数) AS 旅客人数, AVG(票价(元)) AS 票价(元)\nFROM aviation_flights\nGROUP BY 航空公司",
+      "text": "按航空公司统计：中国国航 最高（旅客人数=164.88，票价(元)=1,970.06）。共5个航空公司。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "航空公司"
+    },
+    {
+      "suite": "探索-航空航班",
+      "file": "aviation_flights.csv",
+      "category": "未训练问题",
+      "q": "每个出发城市有多少航班",
+      "type": "count",
+      "expects": {
+        "sql": true
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 出发城市, COUNT(*) AS 计数\nFROM aviation_flights\nGROUP BY 出发城市",
+      "text": "全部时间内，按 出发城市 统计数量：乌鲁木齐 最多，为 6；其次是 上海，为 5。第一名占比 10.9%，是末位的 6.0 倍。共 18 个出发城市。\n📊 统计摘要：均值 3.06，中位数 3，标准差 1.58，变异系数 0.52（中度离散）。\n🎯 集中度：CR1=10.9%，CR4=38.2%（相对分散）。\n            \n        \n          \n         ",
+      "intent": "distribution",
+      "chartType": "bar",
+      "xAxisName": "出发城市"
+    },
+    {
+      "suite": "探索-制造业",
+      "file": "manufacturing_production.csv",
+      "category": "未训练问题",
+      "q": "平均产量是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(产量(件)) AS 产量(件)\nFROM manufacturing_production",
+      "text": "全部时间内，产量(件)的平均为 2,728.77。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「产量(件)」，(取平均)\n          ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-制造业",
+      "file": "manufacturing_production.csv",
+      "category": "未训练问题",
+      "q": "平均合格率是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(合格率(%)) AS 合格率(%)\nFROM manufacturing_production",
+      "text": "全部时间内，合格率(%)的平均为 92。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「合格率(%)」，(取平均)\n              ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-制造业",
+      "file": "manufacturing_production.csv",
+      "category": "未训练问题",
+      "q": "各工厂的产量排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 工厂编号, SUM(产量(件)) AS 产量(件)\nFROM manufacturing_production\nGROUP BY 工厂编号\nORDER BY 产量(件) DESC\nLIMIT 10",
+      "text": "全部时间内，按 工厂编号 统计 产量(件) 的总和（取前 10 个）：F001 最高，为 82,230；其次是 F002，为 68,052。第一名占比 15.1%，是末位的 0.9 倍。共 6 个工厂编号。\n📊 统计摘要：均值 90,958.83，中位数 90,075，标准差 14,103.08，变异系数 0.16（相对集中）。\n🎯 集中度：CR1=15.1%，CR4=63.8%（中度集中）。",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "工厂编号"
+    },
+    {
+      "suite": "探索-制造业",
+      "file": "manufacturing_production.csv",
+      "category": "未训练问题",
+      "q": "A工厂和B工厂的产量对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 工厂名称, SUM(产量(件)) AS 产量(件)\nFROM manufacturing_production\nGROUP BY 工厂名称",
+      "text": "全部时间内，按 工厂名称 统计 产量(件) 的总和：华北制造厂 最高，为 110,727；其次是 西南制造厂，为 104,594。第一名占比 20.3%，是末位的 1.6 倍。共 6 个工厂名称。\n📊 统计摘要：均值 90,958.83，中位数 90,075，标准差 14,103.08，变异系数 0.16（相对集中）。\n🎯 集中度：CR1=20.3%，CR4=72.5%（中度集中）。\n    ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "工厂名称"
+    },
+    {
+      "suite": "探索-制造业",
+      "file": "manufacturing_production.csv",
+      "category": "未训练问题",
+      "q": "合格率低于90%的生产记录",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 工厂名称, AVG(合格率(%)) AS 合格率(%)\nFROM manufacturing_production\nWHERE 合格率(%) < 90\nGROUP BY 工厂名称",
+      "text": "全部时间内，按 工厂名称 统计 合格率(%) 的平均：东北制造厂 最高，为 88.11；其次是 华北制造厂，为 87.98。第一名占比 16.8%，是末位的 1.0 倍。共 6 个工厂名称。\n📊 统计摘要：均值 87.5，中位数 87.45，标准差 0.46，变异系数 0.01（相对集中）。\n🎯 集中度：CR1=16.8%，CR4=66.9%（中度集中）。\n            \n     ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "工厂名称"
+    },
+    {
+      "suite": "探索-制造业",
+      "file": "manufacturing_production.csv",
+      "category": "未训练问题",
+      "q": "产量和合格率之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 产量(件), 合格率(%) FROM manufacturing_production -- 相关性分析 Pearson r=-0.175",
+      "text": "📈 相关性分析\nPearson 相关系数 r = -0.175（样本 n=200）\n结论：产量(件) 与 合格率(%) 之间存在极弱负相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = -0.175（样本 n=200）\n结论：产量(件) 与 合格率(%) 之间存在极弱负相关关系。\n            \n        \n          \n            \n     ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "产量(件)"
+    },
+    {
+      "suite": "探索-农业",
+      "file": "agriculture_farming.csv",
+      "category": "未训练问题",
+      "q": "平均亩产是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT RATIO(产量(吨)) AS 产量(吨)\nFROM agriculture_farming",
+      "text": "全部时间内，整体占比为 100%。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「产量(吨)」，(取ratio)\n              \n",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-农业",
+      "file": "agriculture_farming.csv",
+      "category": "未训练问题",
+      "q": "各农场的产量排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 农场编号, SUM(产量(吨)) AS 产量(吨)\nFROM agriculture_farming\nGROUP BY 农场编号\nORDER BY 产量(吨) DESC\nLIMIT 10",
+      "text": "全部时间内，按 农场编号 统计 产量(吨) 的总和（取前 10 个）：A001 最高，为 35,597.7；其次是 A002，为 25,680.1。第一名占比 19.4%，是末位的 2.3 倍。共 8 个农场编号。\n📊 统计摘要：均值 22,905.4，中位数 21,011.75，标准差 5,819.38，变异系数 0.25（相对集中）。\n⚠️ 检测到 1 个离群值：A001，建议关注异常数据。",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "农场编号"
+    },
+    {
+      "suite": "探索-农业",
+      "file": "agriculture_farming.csv",
+      "category": "未训练问题",
+      "q": "水稻和小麦的产量对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 农场名称, SUM(产量(吨)) AS 产量(吨)\nFROM agriculture_farming\nWHERE 作物种类 IN ('水稻', '小麦')\nGROUP BY 农场名称",
+      "text": "全部时间内，按 农场名称 统计 产量(吨) 的总和：江南农场 最高，为 9,355.6；其次是 绿源农场，为 9,235.4。第一名占比 19.2%，是末位的 5.3 倍。共 8 个农场名称。\n📊 统计摘要：均值 6,080.44，中位数 5,406.1，标准差 2,534.14，变异系数 0.42（相对集中）。\n🎯 集中度：CR1=19.2%，CR4=68.1%（中度集中）。\n       ",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "农场名称"
+    },
+    {
+      "suite": "探索-农业",
+      "file": "agriculture_farming.csv",
+      "category": "未训练问题",
+      "q": "产量超过500吨的农场",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 农场名称, SUM(产量(吨)) AS 产量(吨)\nFROM agriculture_farming\nWHERE 产量(吨) > 500 AND 土壤湿度(%) = '50'\nGROUP BY 农场名称",
+      "text": "全部时间内，按 农场名称 统计 产量(吨) 的总和：绿源农场 最高，为 33,525.6；其次是 江南农场，为 24,104.8。第一名占比 20.1%，是末位的 2.3 倍。共 8 个农场名称。\n📊 统计摘要：均值 20,874.14，中位数 19,482.9，标准差 5,646.3，变异系数 0.27（相对集中）。\n⚠️ 检测到 1 个离群值：绿源农场，建议关注异常数据。\n🎯 集中度：CR",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "农场名称"
+    },
+    {
+      "suite": "探索-农业",
+      "file": "agriculture_farming.csv",
+      "category": "未训练问题",
+      "q": "施肥量和产量之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 产量(吨), 施肥量(kg/亩) FROM agriculture_farming -- 相关性分析 Pearson r=-0.134",
+      "text": "📈 相关性分析\nPearson 相关系数 r = -0.134（样本 n=200）\n结论：产量(吨) 与 施肥量(kg/亩) 之间存在极弱负相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = -0.134（样本 n=200）\n结论：产量(吨) 与 施肥量(kg/亩) 之间存在极弱负相关关系。\n            \n        \n          \n            ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "产量(吨)"
+    },
+    {
+      "suite": "探索-电商",
+      "file": "e_commerce.csv",
+      "category": "未训练问题",
+      "q": "平均销售额是多少",
+      "type": "summary",
+      "expects": {
+        "sql": true,
+        "intent": "summary"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(销售额(元)) AS 销售额(元)\nFROM e_commerce",
+      "text": "全部时间内，销售额(元)的平均为 1,843.26。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「销售额(元)」，(取平均)\n        ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "探索-电商",
+      "file": "e_commerce.csv",
+      "category": "未训练问题",
+      "q": "各品类的销售额排名",
+      "type": "ranking",
+      "expects": {
+        "sql": true,
+        "intent": "ranking"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 商品类别, SUM(销售数量) AS 销售数量, SUM(销售额(元)) AS 销售额(元)\nFROM e_commerce\nGROUP BY 商品类别\nORDER BY 销售数量 DESC\nLIMIT 10",
+      "text": "按商品类别统计：服装鞋帽 最高（销售数量=107，销售额(元)=216,355.23）。共8个商品类别。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「",
+      "intent": "ranking",
+      "chartType": "bar",
+      "xAxisName": "商品类别"
+    },
+    {
+      "suite": "探索-电商",
+      "file": "e_commerce.csv",
+      "category": "未训练问题",
+      "q": "电子产品和服装的销售额对比",
+      "type": "compare",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 商品类别, SUM(销售数量) AS 销售数量, SUM(销售额(元)) AS 销售额(元)\nFROM e_commerce\nWHERE 商品类别 IN ('电子产品')\nGROUP BY 商品类别",
+      "text": "按商品类别统计：电子产品 最高（销售数量=86，销售额(元)=216,355.23）。共1个商品类别。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：按「商",
+      "intent": "comparison",
+      "chartType": "bar",
+      "xAxisName": "商品类别"
+    },
+    {
+      "suite": "探索-电商",
+      "file": "e_commerce.csv",
+      "category": "未训练问题",
+      "q": "退货率超过10%的商品",
+      "type": "filter",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 品牌名称, SUM(退货数量) AS 退货数量\nFROM e_commerce\nGROUP BY 品牌名称\nHAVING SUM(销售数量) > 10",
+      "text": "全部时间内，按 品牌名称 统计 退货数量 的总和：三只松鼠 最高，为 5；其次是 良品铺子，为 4。第一名占比 11.9%。共 39 个品牌名称。\n📊 统计摘要：均值 1.08，中位数 0，标准差 1.46，变异系数 1.35（高度离散）。\n🎯 集中度：CR1=11.9%，CR4=40.5%（相对分散）。\n            \n        \n          \n           ",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "品牌名称"
+    },
+    {
+      "suite": "探索-电商",
+      "file": "e_commerce.csv",
+      "category": "未训练问题",
+      "q": "价格和销量之间有什么关系",
+      "type": "correlation",
+      "expects": {
+        "sql": true,
+        "intent": "correlation"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 销售数量, 单价(元) FROM e_commerce -- 相关性分析 Pearson r=0.006",
+      "text": "📈 相关性分析\nPearson 相关系数 r = 0.006（样本 n=200）\n结论：销售数量 与 单价(元) 之间存在极弱无明显相关关系。\n\n📈 相关性分析\nPearson 相关系数 r = 0.006（样本 n=200）\n结论：销售数量 与 单价(元) 之间存在极弱无明显相关关系。\n            \n        \n          \n            \n       ",
+      "intent": "correlation",
+      "chartType": "scatter",
+      "xAxisName": "销售数量"
+    },
+    {
+      "suite": "stress-test",
+      "file": "financial_stocks.csv",
+      "category": "压力测试",
+      "q": "贵州茅台",
+      "type": "edge",
+      "expects": {
+        "sql": false
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "Text:OK",
+        "XAxis:N/A"
+      ],
+      "sql": "",
+      "text": "贵州茅台\n            股票名称 = 贵州茅台 · financial_stocks.csv\n          \n          已命中 1 条\n        \n        \n            交易日期\n            2024-01-02\n          \n            股票代码\n            600519\n          \n   ",
+      "intent": "summary",
+      "chartType": "",
+      "xAxisName": ""
+    },
+    {
+      "suite": "stress-test",
+      "file": "financial_stocks.csv",
+      "category": "压力测试",
+      "q": "成交量",
+      "type": "edge",
+      "expects": {
+        "sql": false
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "Text:OK",
+        "XAxis:N/A"
+      ],
+      "sql": "",
+      "text": "你好呀～文件已上传就可以问问题啦，例如：销售额趋势、转化率分析\n            \n            \n            \n            \n            \n            \n            \n        ● 高置信\n        \n        \n        \n        \n        \n        \n        \n",
+      "intent": "summary",
+      "chartType": "",
+      "xAxisName": ""
+    },
+    {
+      "suite": "stress-test",
+      "file": "financial_stocks.csv",
+      "category": "压力测试",
+      "q": "贵州茅台的收盘价",
+      "type": "edge",
+      "expects": {
+        "sql": true
+      },
+      "score": 60,
+      "status": "PARTIAL",
+      "details": [
+        "SQL:MISS",
+        "Text:OK",
+        "XAxis:N/A"
+      ],
+      "sql": "",
+      "text": "贵州茅台\n            股票名称 = 贵州茅台 · financial_stocks.csv\n          \n          已命中 1 条\n        \n        \n            交易日期\n            2024-01-02\n          \n            股票代码\n            600519\n          \n   ",
+      "intent": "summary",
+      "chartType": "",
+      "xAxisName": ""
+    },
+    {
+      "suite": "stress-test",
+      "file": "financial_stocks.csv",
+      "category": "压力测试",
+      "q": "贵州茅台和五粮液和宁德时代和小鹏的平均成交量",
+      "type": "complex",
+      "expects": {
+        "sql": true,
+        "intent": "comparison"
+      },
+      "score": 89,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(成交量) AS 成交量\nFROM financial_stocks\nWHERE 股票名称 = '贵州茅台'",
+      "text": "全部时间内，成交量的平均为 5,322,381.72。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：整体，统计「成交量」，(取平均)\n          ",
+      "intent": "comparison",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "stress-test",
+      "file": "financial_stocks.csv",
+      "category": "压力测试",
+      "q": "贵州茅台在2024年1月的平均收盘价",
+      "type": "complex",
+      "expects": {
+        "sql": true
+      },
+      "score": 87,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Text:OK",
+        "XAxis:MISS"
+      ],
+      "sql": "SELECT AVG(收盘价) AS 收盘价\nFROM financial_stocks\nWHERE 交易日期 >= '2024-01-01' AND 交易日期 <= '2024-12-31' AND 股票名称 = '贵州茅台'",
+      "text": "近 365 天内，收盘价的平均为 1,093.9。\n            \n        \n          \n            \n              \n            \n            \n              AI 理解\n              \n                我想你是在问：近 365 天，整体，统计「收盘价」，(取平均)\n    ",
+      "intent": "summary",
+      "chartType": "unknown",
+      "xAxisName": ""
+    },
+    {
+      "suite": "stress-test",
+      "file": "financial_stocks.csv",
+      "category": "压力测试",
+      "q": "成交量超过1万的交易日",
+      "type": "complex",
+      "expects": {
+        "sql": true,
+        "intent": "filter"
+      },
+      "score": 100,
+      "status": "PASS",
+      "details": [
+        "SQL:OK",
+        "Intent:OK",
+        "Text:OK",
+        "XAxis:OK"
+      ],
+      "sql": "SELECT 股票名称, SUM(成交量) AS 成交量\nFROM financial_stocks\nWHERE 成交量 > 10000\nGROUP BY 股票名称",
+      "text": "全部时间内，按 股票名称 统计 成交量 的总和：宁德时代 最高，为 466,079,465；其次是 贵州茅台，为 457,724,828。第一名占比 20.8%，是末位的 1.1 倍。共 5 个股票名称。\n📊 统计摘要：均值 448,977,867.8，中位数 452,676,067，标准差 13,366,276.01，变异系数 0.03（相对集中）。\n🎯 集中度：CR1=20.8%，CR4=",
+      "intent": "filter",
+      "chartType": "bar",
+      "xAxisName": "股票名称"
+    }
+  ],
+  "jsErrors": []
+}
