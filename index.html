@@ -7523,6 +7523,24 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
         const maxD = new Date(y, m, lastDay);
         return { field: dateField, minDate: minD, maxDate: maxD, days: null, label: y + '-' + String(m + 1).padStart(2, '0') };
       }
+      // Fix: 纯月份过滤 — "10月"无年份时默认用数据中最近的年份
+      const monthOnlyMatch = q.match(/(?:^|[^\d])(\d{1,2})\s*月(?:份)?/);
+      if (monthOnlyMatch) {
+        const _mm = parseInt(monthOnlyMatch[1], 10);
+        if (_mm >= 1 && _mm <= 12) {
+          const _allDatesForMonth = rows.map(r => parseDate(r[dateField])).filter(d => d).sort((a,b) => a-b);
+          let _yy;
+          if (_allDatesForMonth.length > 0) {
+            _yy = _allDatesForMonth[_allDatesForMonth.length - 1].getFullYear();
+          } else {
+            _yy = new Date().getFullYear();
+          }
+          const _lastDayOfMonth = new Date(_yy, _mm, 0).getDate();
+          const _minDM = new Date(_yy, _mm - 1, 1);
+          const _maxDM = new Date(_yy, _mm - 1, _lastDayOfMonth);
+          return { field: dateField, minDate: _minDM, maxDate: _maxDM, days: null, label: _yy + "年" + _mm + "月" };
+        }
+      }
       const allDates = rows.map(r => parseDate(r[dateField])).filter(d => d).sort((a,b) => a-b);
       if (allDates.length === 0) return null;
       const maxDate = allDates[allDates.length - 1];
@@ -9654,6 +9672,15 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
           if (_re.test(_q)) { _foundKnown = _knownEntities[_ke]; break; }
         }
         var entity = _foundKnown;
+        // Fix: 已知实体无count关键词也匹配(如'入职的'直接得到'员工')
+        if (!_foundKnown) {
+          for (var _ke2 = 0; _ke2 < _knownEntities.length; _ke2++) {
+            var _idx2 = _q.indexOf(_knownEntities[_ke2]);
+            if (_idx2 >= 0) { _foundKnown = _knownEntities[_ke2]; break; }
+          }
+        }
+        // Fix: 将known alone结果同步给entity
+        if (entity === null && _foundKnown) entity = _foundKnown;
         // 1. "统计...的 XX 数量"
         var _m4 = _q.match(/统计.*?的\s*([\u4e00-\u9fa5]{2,3})\s*(?:数量|总数)/);
         if (_m4) entity = _m4[1];
@@ -9684,7 +9711,11 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
           if (entity.startsWith('的')) entity = entity.slice(1);
           if (entity.endsWith('的')) entity = entity.slice(0, -1);
           if (entity.length > 2 && entity.endsWith('记录')) entity = entity.slice(0, -2);
-          if (['名', '个', '条', '位', '家', '只'].indexOf(entity[0]) >= 0 && entity.length > 1) entity = entity.slice(1);
+          if (['名个条位家只'].indexOf(entity[0]) >= 0 && entity.length > 1) entity = entity.slice(1);
+          // Fix: 黑名单中文虚词/动词，避免误匹配(如'入职的'被提取为'职')
+          var _entityBlacklist = ['的', '入', '职', '员', '工', '客', '户', '在', '到', '了', '过', '从', '是', '与', '和', '对', '于', '为', '把', '被', '让', '使', '而', '且', '或', '又', '也', '都', '全', '各', '每', '某', '本', '此', '该', '其', '他', '它', '我', '你', '他', '她', '们', '啊', '吧', '呢', '吗', '哦', '嗯', '呀', '哈'];
+          // Fix: 只对非已知实体应用黑名单(保护'员工'类的已知实体)
+          if (_knownEntities.indexOf(entity) < 0 && (_entityBlacklist.indexOf(entity) >= 0 || (_entityBlacklist.indexOf(entity[0]) >= 0 && entity.length <= 2))) entity = '人';
           _countEntity = entity;
         }
         if (_dimWords.indexOf(_countEntity) >= 0) _countEntity = '记录';
