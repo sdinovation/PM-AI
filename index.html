@@ -2223,11 +2223,16 @@
       // 2. 字段名直接匹配（含 camelCase 拆分）
       var directHit = bestFuzzyMatch(q, dimensionFields);
       if (directHit) return directHit;
-      // 3. 字段名直接包含
+      // 3. 字段名直接包含 — 优先返回最长匹配（更具体的字段如"股票代码"优先于"行业"）
+      var _bestMatch = null;
       for (var i=0; i<dimensionFields.length; i++) {
-        if (q.indexOf(dimensionFields[i]) >= 0) return dimensionFields[i];
+        if (q.indexOf(dimensionFields[i]) >= 0) {
+          if (!_bestMatch || dimensionFields[i].length > _bestMatch.length) {
+            _bestMatch = dimensionFields[i];
+          }
+        }
       }
-      return null;
+      return _bestMatch;
     }
     function adaptiveFindMetric(q, numericFields, columns) {
       var store = loadEdgeStore(), learned = store.learnedMetrics || {};
@@ -4690,7 +4695,7 @@
         var _hasGroupOrComp = /各|每|按|分别|不同|对比|比较|排名|Top|分布|占比|比例|趋势|走势|增长|变化|哪些|有什么|有哪些/.test(q) || _entityAndCount >= 2 || _entityDunhaoCount >= 1;
         var isScalar = (/是多少|为多少|是多少值/.test(q) || (q.length < 25 && !/各|每|排名|Top|对比|比较|分布|占比|趋势|走势|按|分组|哪些|有什么/.test(q) && !/且|并|同时|有哪些|超过|大于|小于|低于|高于|不低于|不超过|以上|以下|分别|不同/.test(q))) && !_hasGroupOrComp;
         var isRec = /怎么提升|如何提高|建议|怎么办|推荐|策略|方案/.test(q);
-        var isList = (/有哪些|有什么|哪些|什么产品|什么渠道/.test(q) && !/超过|大于|高于|不低于/.test(q) && !/关系|相关|之间|瓶颈|趋势|变化/.test(q) && !/最高|最低|最大|最小|最多|最少|最贵|最便宜|最好|最差|排名|Top/.test(q)) || (/(?:为|是)\s*[^\s,，。？?的]+\s*(?:的)?\s*(?:学生|同学|员工|人|记录|数据|商品|产品|订单|会员)/.test(q) && !/趋势|变化|增长/.test(q));
+        var isList = (/有哪些|有什么|哪些|什么产品|什么渠道/.test(q) && !/超过|大于|高于|不低于/.test(q) && !/关系|相关|之间|瓶颈|趋势|变化/.test(q) && !/最高|最低|最大|最小|最多|最少|最贵|最便宜|最好|最差|排名|Top/.test(q)) || (/(?:为|是)\s*[^\s,，。？?的]+\s*(?:的)?\s*(?:学生|同学|员工|人|记录|数据|商品|产品|订单|会员)/.test(q) && !/趋势|变化|增长/.test(q)) || ((/^[^\s]*的(股票|个股|产品|商品|门店|店铺|品牌)$/.test(q.replace(/[？?？\s]+/g, ''))) && !/[><≥≤]|大于|小于|超过|低于|高于|等于/.test(q)) || (/^(.{1,8}?)(的|有哪些|有什么|包括|包含)(哪些|什么|啥)(股票|个股|产品|商品|门店|店铺|品牌)/.test(q));
         // isFilter：扩展检测 — 条件筛选 + HAVING 条件
         // Fix: 扩展实体类型列表，增加"楼盘|学区房|房子|科室|公司|物流公司|股票|行业|地区"等；支持"在...以下"模式
         // Fix: 扩展实体类型列表，增加"学校|农场|工厂|工厂|出行|游客|产量|天气"等
@@ -4841,8 +4846,11 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
           var isMaxMin = /最高|最大|最多|最低|最小|最少/.test(q) && !/前|Top|排名/.test(q);
           var isTop = /第\s*一|第\s*1|排名第一|Top\s*1|最高|最大|最多|最低|最小|最少/.test(q);
           var lim = 10;
-          if (isMaxMin && !/几个|多少|什么/.test(q)) {
-            // 极值类默认 LIMIT 1（除非用户明确说"几个"等）
+          // Fix: 反极值：索引的类行值取用户回答中的数字（如最高的5位）
+          var _extMax = extractNumber(q, /(\d+)/);
+          if (_extMax && _extMax >= 1 && _extMax <= 100 && /(\d+)\s*(?:位|名|个|条|大|项|行|只)/.test(q)) { lim = _extMax; }
+          else if (isMaxMin && !/几个|多少|什么/.test(q)) {
+            // 极值类默认 LIMIT 1
             lim = 1;
           } else if (/一[个项条笔种名]|一个|单一|那个/.test(q)) lim = 1;
           else if (/两[个项条笔]|两个/.test(q)) lim = 2;
@@ -4995,7 +5003,10 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
             examples = 'SELECT '+dim+', SUM('+metric+') as total FROM '+table+' GROUP BY '+dim+' ORDER BY total DESC';
           } else if (intent === 'ranking') {
             var lim = 10;
-            if (/最高|最大|最多|最低|最小|最少/.test(q) && !/前|Top|排名/.test(q)) lim = 1;
+            // Fix: 反极值 — 也提取 "最高的5位" 中的数字
+            var _extMax2 = extractNumber(q, /(\d+)/);
+            if (_extMax2 && _extMax2 >= 1 && _extMax2 <= 100 && /(\d+)\s*(?:位|名|个|条|大|项|行|只)/.test(q)) { lim = _extMax2; }
+            else if (/最高|最大|最多|最低|最小|最少/.test(q) && !/前|Top|排名/.test(q)) lim = 1;
             else if (/前\s*([一二三四五六七八九十\d]+)/.test(q)) {
               var cnNum = q.match(/前\s*([一二三四五六七八九十\d]+)/)[1];
               var cnMap = {一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9,十:10};
@@ -5430,7 +5441,7 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
       // Fix 11: 趋势分析维度自动修正
       // Fix R4-6: 扩大趋势关键词匹配范围，包含"从X到Y"时间范围
       // Fix: 添加"逐月/逐季/逐周/逐日"等关键词，使用 getDateFieldName 兜底
-      if (/趋势|变化|增长|走势|波动|走势图|变化趋势|增长趋势|随时间|从\d{4}|复苏|逐月|逐季|逐周|逐日|逐季度|逐月份/.test(q)) {
+      if (/趋势|变化|增长|走势|波动|走势图|变化趋势|增长趋势|随时间|从\d{4}|复苏|逐月|逐季|逐周|逐日|逐季度|逐月份|按月|每月|各月|按月份|每月份|各月份|按季度|每季度|各季度|每月统计|每月银行/.test(q)) {
         var _dateField = getDateFieldName() || findFieldByType('date') || columns.find(function(c){ return /年份|year|月份|month|日期|date|季度|quarter|周|week/i.test(c); });
         if (_dateField && dimension !== _dateField) {
           console.log('[Fix11] 趋势问题：维度从 ' + dimension + ' 修正为时间字段 ' + _dateField);
@@ -6074,6 +6085,17 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
           }
         }
       }
+      // Fix: 在职/离职 触发 boolean 字段过滤 — "在职员工数量" → WHERE 是否在职=true
+      // 注意：必须在 _lastMultiConditions 处理后注入，避免被覆写
+      if (/在职/.test(q) && (!window._lastMultiConditions || !window._lastMultiConditions.some(function(c){return /在职|离职/.test(c.field);}))) {
+        var _activeCol = (parsedData.fieldInfo || []).find(function(f){ return /是否.*在职|在职|是否.*离职|是否在职/.test(f.name); });
+        if (_activeCol) {
+          window._lastMultiConditions = window._lastMultiConditions || [];
+          window._lastMultiConditions.push({ field: _activeCol.name, op: '=', value: true });
+          console.log('[Fix-在职] WHERE ' + _activeCol.name + ' = true');
+        }
+      }
+
       if (singleFilter) {
         window._lastExtraWhere = {};
         window._lastExtraWhere[singleFilter.field] = singleFilter.value;
@@ -6239,7 +6261,8 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
       const learnedDim = adaptiveFindDim(q, dimensionFields);
       const learnedMetric = adaptiveFindMetric(q, numericFields, columns);
       // Fix v3.1: 不覆盖 parseDimension 返回的 null（标量聚合场景，如"所有员工的总薪资"）
-      if (learnedDim && dimension !== null) dimension = learnedDim;
+      // Fix: 不覆盖 parseDimension 已经识别的维度 — 避免 "科技行业的股票" 被错误覆盖为 "行业"
+      if (learnedDim && dimension !== null && (learnedDim.length > (dimension.length || 0))) dimension = learnedDim;
       // Fix: 只在 parseMetric 返回默认值（第一个数值列）时才用边缘学习结果覆盖
       // 判断 metric 是否为默认值：检查 metric.field 是否是 numericFields[0]
       var _isDefaultMetric = metric && metric.field === numericFields[0] && numericFields.length > 1;
@@ -6556,6 +6579,19 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
       // 生成并执行查询
       let sql = generateSQL(timeRange, dimension, metric, aggregation, sortOrder, limit);
       let result = executeQuery(rows, timeRange, dimension, metric, aggregation, sortOrder, limit);
+      // Fix: 在 executeQuery 之后才清空过滤状态（避免被 generateSQL 提前清空）
+      window._lastHavingCond = null;
+      window._lastMultiConditions = null;
+      window._lastRangeFilter = null;
+      window._lastLikeFilter = null;
+      window._lastMultiDimensions = null;
+      window._countDistinctField = null;
+      window._lastMultiMetricFields = null;
+      window._lastExtraWhere = null;
+      window._numericFilter = null;
+      window._isScalar = false; window._ratioCond = null;
+      window._llmAggOverride = null; window._llmIsScalar = false;
+      window._llmRatioCond = null; window._llmSecondMetric = null;
 
       // ===== 结果校验与自动重试 =====
       function validateResult(rows, sqlStr, intent) {
@@ -7654,6 +7690,9 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
       
       // 问题中明确提到的维度词匹配
       const dimensionKeywords = [
+        // Fix: 股票/产品类问题优先匹配实体字段（必须在其他匹配之前）
+        { keywords: ['股票','个股','哪些股'], field: findFieldByKeywords(dimensionFields, ['股票代码','股票名称','股票']) },
+        { keywords: ['产品','商品'], field: findFieldByKeywords(dimensionFields, ['产品','商品','product','item','sku']) },
         { keywords: ['渠道','来源','通道'], field: findFieldByKeywords(dimensionFields, ['渠道','来源','channel','source']) },
         { keywords: ['城市','地区','地域'], field: findFieldByKeywords(dimensionFields, ['城市','地区','city','region']) },
         { keywords: ['品类','类别','分类','产品类型','产品线','产品类别'], field: findFieldByKeywords(dimensionFields, ['品类','类别','category','type','产品线','产品类别']) },
@@ -8435,8 +8474,11 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
       // 建议/清单类 — 不执行 SQL，纯 LLM 回复
       // 但如果有筛选条件（如"北京的女性员工"），应该走数据查询而非NOOP
       if (window._lastIntent && (window._lastIntent.intent === 'recommendation' || window._lastIntent.intent === 'list')) {
-        // 检查是否有明确的筛选条件
-        var hasFilter = /(北京|上海|深圳|广州|杭州|成都|武汉|男|女|研发部|市场部|销售部|人事部|财务部|运营部)/.test(q);
+        // Fix: 智能检测筛选条件 — 包括 singleFilter / _lastExtraWhere / 时间范围 / 任何分类值
+        var _hasExFilter = window._lastExtraWhere && Object.keys(window._lastExtraWhere).length > 0;
+        var _hasSingleFilter = window._lastMultiConditions && window._lastMultiConditions.length > 0;
+        var hasFilter = _hasExFilter || _hasSingleFilter ||
+          /(北京|上海|深圳|广州|杭州|成都|武汉|男|女|研发部|市场部|销售部|人事部|财务部|运营部|科技|金融|医疗|教育|互联网|制造|零售|消费)/.test(q);
         if (!hasFilter) {
           return { field: '__NOOP__', label: '文本回复' };
         }
@@ -8978,17 +9020,7 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
       var sortCol = metric.field === '__COUNT__' ? '计数' : (metric.field === '__COUNT_DISTINCT__' ? '去重计数' : (isRatio && window._ratioCond ? 'ratio_pct' : (_isRatioPct ? '占比百分比' : metric.field)));
       if (sortOrder) sql += '\nORDER BY ' + sortCol + ' ' + sortOrder.toUpperCase();
       if (limit) sql += '\nLIMIT ' + limit;
-      // 清空所有 LLM 状态，防下一轮污染
-      window._isScalar = false; window._ratioCond = null;
-      window._llmAggOverride = null; window._llmIsScalar = false;
-      window._llmRatioCond = null; window._llmSecondMetric = null;
-      window._lastMultiMetricFields = null;
-      window._lastHavingCond = null;
-      window._lastMultiConditions = null;
-      window._lastRangeFilter = null;
-      window._lastLikeFilter = null;
-      window._lastMultiDimensions = null;
-      window._countDistinctField = null;
+      // Fix: 不在这里清空 _lastMultiConditions 等过滤器，让 executeQuery 使用 — 清空移至 analyzeQuestion 主流程
       return sql;
     }
     
@@ -9097,7 +9129,8 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
         filtered = filtered.filter(function(r){
           return _mcFilter.every(function(cond) {
             var _cv = r[cond.field];
-            if (cond.op === '=') return String(_cv) === String(cond.value);
+            // Fix: 大小写不敏感 (boolean "True"/"true" 都能匹配)
+            if (cond.op === '=') return String(_cv).toLowerCase() === String(cond.value).toLowerCase();
             if (cond.op === '>') return Number(_cv) > Number(cond.value);
             if (cond.op === '<') return Number(_cv) < Number(cond.value);
             if (cond.op === '>=') return Number(_cv) >= Number(cond.value);
@@ -9722,6 +9755,11 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
         if (dimension && (_countEntity === dimension || _countEntity.indexOf(dimension) >= 0 || dimension.indexOf(_countEntity) >= 0)) _countEntity = '记录';
         if (['各', '所有', '每个', '每', '各部', '的', '别', '统计'].indexOf(_countEntity) >= 0) _countEntity = '记录';
         if (!_countEntity || _countEntity.length === 0) _countEntity = '记录';
+        // Fix: 根据数据集字段智能推断 — HR 数据集 (含员工编号/入职日期/部门/职位) 时，'人' → '员工'
+        if (_countEntity === '人' && parsedData && parsedData.fieldInfo) {
+          var _hasHR = parsedData.fieldInfo.some(function(f){ return /员工编号|员工姓名|员工|入职日期|部门|职位/.test(f.name); });
+          if (_hasHR) _countEntity = '员工';
+        }
       }
       return _countEntity;
     }
