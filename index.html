@@ -5455,6 +5455,23 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
           }
           console.log('[FixYear] 趋势分析按年份分组: ' + _yearCol);
         }
+        // Fix: 如果用户问"按月/每月/各月"，从日期中提取月份作为分组维度
+        if (/(按月|每月|各月|逐月|按月份|每月份|各月份|按季度|每季度|各季度|逐季)/.test(q) && _dateField) {
+          var _monthCol = '_月份';
+          rows.forEach(function(r) {
+            var d = r[_dateField];
+            if (d) {
+              var dt = d instanceof Date ? d : new Date(d);
+              if (!isNaN(dt)) r[_monthCol] = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0');
+            }
+          });
+          dimension = _monthCol;
+          if (parsedData.columns.indexOf(_monthCol) < 0) parsedData.columns.push(_monthCol);
+          if (!parsedData.fieldInfo.find(function(f){ return f.name === _monthCol; })) {
+            parsedData.fieldInfo.push({ name: _monthCol, type: 'text', nullRate: '0%', sample: '' });
+          }
+          console.log('[FixMonth] 按月分组: ' + _monthCol);
+        }
         // Fix R3-11: 趋势分析保留实体筛选 — "比亚迪销量增长趋势" 需要WHERE 厂商='比亚迪'
         var _trendEntity = null;
         for (var te_i = 0; te_i < dimensionFields.length; te_i++) {
@@ -9629,17 +9646,32 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
         var _q = question.toLowerCase();
         var _dimWords = ['部门', '城市', '性别', '地区', '国家', '类型', '类别', '分类', '等级', '级别', '品类'];
         var entity = null;
+        // Fix: 优先匹配已知业务实体词
+        var _knownEntities = ['员工', '学生', '客户', '用户', '订单', '会员', '病人', '医生', '老师', '乘客', '商品', '产品', '门店', '店铺', '公司', '股票', '套餐', '贷款', '保单', '菜品', '电影', '学员', '比赛', '球队', '球员', '消费者', '观众', '游客', '航班', '车次', '记录', '数据', '条目'];
+        var _foundKnown = null;
+        for (var _ke = 0; _ke < _knownEntities.length; _ke++) {
+          var _re = new RegExp(_knownEntities[_ke] + '\s*(?:数量|总数|总人数|个数|人数)');
+          if (_re.test(_q)) { _foundKnown = _knownEntities[_ke]; break; }
+        }
+        var entity = _foundKnown;
         // 1. "统计...的 XX 数量"
-        var _m4 = _q.match(/统计.*?的\s*([\u4e00-\u9fa5]{1,3})\s*(?:数量|总数)/);
+        var _m4 = _q.match(/统计.*?的\s*([\u4e00-\u9fa5]{2,3})\s*(?:数量|总数)/);
         if (_m4) entity = _m4[1];
         // 2. "统计 XX 数量"
-        if (!entity) { var _m5 = _q.match(/统计\s*([\u4e00-\u9fa5]{1,3})\s*(?:数量|总数)/); if (_m5) entity = _m5[1]; }
+        if (!entity) { var _m5 = _q.match(/统计\s*([\u4e00-\u9fa5]{2,3})\s*(?:数量|总数)/); if (_m5) entity = _m5[1]; }
         // 3. "多少名/个/条/位 XX"
-        if (!entity) { var _m1 = _q.match(/多少[名个条位家只]\s*([\u4e00-\u9fa5]{1,4})(?:[，。？\s]|$)/); if (_m1) entity = _m1[1]; }
+        if (!entity) { var _m1 = _q.match(/多少[名个条位家只]\s*([\u4e00-\u9fa5]{1,4})(?:[\\uFF0C\\u3002\\uFF1F\\s]|$)/); if (_m1) entity = _m1[1]; }
         // 4. "有多少 XX" / "有几 XX"
-        if (!entity) { var _m2 = _q.match(/有(?:多少|几)\s*([\u4e00-\u9fa5]{1,3})(?:[，。？\s]|$)/); if (_m2) entity = _m2[1]; }
+        if (!entity) { var _m2 = _q.match(/有(?:多少|几)\s*([\u4e00-\u9fa5]{1,3})(?:[\\uFF0C\\u3002\\uFF1F\\s]|$)/); if (_m2) entity = _m2[1]; }
         // 5. "XX 数量/总数/个数"
-        if (!entity) { var _m3 = _q.match(/([\u4e00-\u9fa5]{1,3})\s*(?:数量|总数|总人数|个数)/); if (_m3) entity = _m3[1]; }
+        if (!entity) {
+          var _mAll = _q.match(/([\u4e00-\u9fa5]{2,3})\s*(?:数量|总数|总人数|个数)/g);
+          if (_mAll && _mAll.length > 0) {
+            var _last = _mAll[_mAll.length - 1];
+            var _m3 = _last.match(/([\u4e00-\u9fa5]{2,3})\s*(?:数量|总数|总人数|个数)/);
+            if (_m3) entity = _m3[1];
+          }
+        }
         // 6. "XX 人数"
         if (!entity) {
           var _m6 = _q.match(/([\u4e00-\u9fa5]{1,2})\s*人数/);
@@ -9650,6 +9682,7 @@ else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,
         }
         if (entity) {
           if (entity.startsWith('的')) entity = entity.slice(1);
+          if (entity.endsWith('的')) entity = entity.slice(0, -1);
           if (entity.length > 2 && entity.endsWith('记录')) entity = entity.slice(0, -2);
           if (['名', '个', '条', '位', '家', '只'].indexOf(entity[0]) >= 0 && entity.length > 1) entity = entity.slice(1);
           _countEntity = entity;
