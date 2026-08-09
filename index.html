@@ -2015,7 +2015,10 @@
       '净利润': ['净利润','利润','profit','net_profit'],
       '预算': ['预算','budget','预估'],
       // ===== HR/人事 =====
-      '薪资': ['月薪','工资','薪水','salary','薪酬'],
+      '员工薪资': ['月薪(元)', '月薪', '工资', '薪水', 'salary', '薪酬'],
+      '员工工资': ['月薪(元)', '月薪'],
+      '员工薪水': ['月薪(元)', '月薪'],
+      '薪资': ['月薪(元)', '月薪', '工资', '薪水', 'salary', '薪酬'],
       '绩效': ['绩效评分','绩效','performance','考核'],
       '入职': ['入职日期','入职','hire_date'],
       '离职': ['离职','是否离职','turnover'],
@@ -4767,7 +4770,7 @@
 
         // 2.55️⃣ 细节查看："按X看Y" / "X的Y"
         // Fix: 不覆亦为"按X统计Y的总和"
-        else if (/(?:按照|按)(.{1,8}?)(?:看|查|是多少|是什么)(.{1,8}?)(?:看|查|是多少|是什么|$)/.test(q)) {
+else if (/(?:按照|按|每个)(.{1,8}?)(?:看|查|是多少|是什么|的)(.{1,8}?)(?:看|查|是多少|是什么|$)/.test(q)) {
           var _dvX = RegExp.$1.trim(); var _dvY = RegExp.$2.trim();
           var _dvTCols = (parsedData.fieldInfo || []).filter(function(f){return f.type === 'text';}).map(function(f){return f.name;});
           var _dvNCols = (parsedData.fieldInfo || []).filter(function(f){return ['int','float','currency','percent'].indexOf(f.type) >= 0;}).map(function(f){return f.name;});
